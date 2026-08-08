@@ -6,6 +6,7 @@ import {
   List,
   X,
   CaretDown,
+  Terminal,
   Gauge,
   Trophy,
   Broadcast,
@@ -45,6 +46,7 @@ type NavItem = {
 
 const PLATFORM_ITEMS: NavItem[] = [
   { label: "Overview", desc: "Best RPC & live comparison", href: "/", icon: Gauge },
+  { label: "Terminal Dashboard", desc: "Live provider integrity board", href: "/demo", icon: Terminal },
   { label: "RPC Leaderboard", desc: "Rank every RPC by integrity", href: "/rpcs", icon: Trophy },
   { label: "Incident Feed", desc: "Detections as they happen", href: "/rpcs", icon: Broadcast },
   { label: "Verify Evidence", desc: "Recompute any claim in your browser", href: "/verify", icon: ShieldCheck },

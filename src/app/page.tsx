@@ -3,10 +3,12 @@ import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/marketing/HeroSection";
 import { TrustBar } from "@/components/marketing/TrustBar";
 import { FeatureStory } from "@/components/marketing/FeatureStory";
+import { MetricsSection } from "@/components/marketing/MetricsSection";
 import { EvidenceSection } from "@/components/marketing/EvidenceSection";
+import { IntegrationsSection } from "@/components/marketing/IntegrationsSection";
 import { SecuritySection } from "@/components/marketing/SecuritySection";
+import { UseCasesSection } from "@/components/marketing/UseCasesSection";
 import { FinalCTA } from "@/components/marketing/FinalCTA";
-
 import { getLatestScores, getProviders, getRecentScoreRows } from "@/lib/db/queries";
 
 // Revalidate every 30s (ISR)
@@ -34,7 +36,11 @@ export default async function HomePage() {
         <HeroSection initialScores={scores} providers={providers} initialRows={rows} />
         <TrustBar />
         <FeatureStory />
+        <MetricsSection />
         <EvidenceSection />
+
+        <UseCasesSection />
+        <IntegrationsSection />
         <SecuritySection />
         <FinalCTA />
       </main>

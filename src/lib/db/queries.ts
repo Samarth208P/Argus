@@ -449,17 +449,25 @@ export async function getLatestScores(): Promise<DbScore[]> {
  * never fabricates multi-point history.
  */
 export async function getRecentScoreRows(limit = 600): Promise<DbScore[]> {
-  try {
-    const { data, error } = await supabaseServer
-      .from("scores")
-      .select("*")
-      .order("t", { ascending: false })
-      .limit(limit);
-    if (error || !data || data.length === 0) return MOCK_SCORES;
-    return ((data ?? []) as DbScore[]).reverse();
-  } catch {
-    return MOCK_SCORES;
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("scores")
+        .select("*")
+        .order("t", { ascending: false })
+        .limit(limit);
+      if (error) throw error;
+      if (data && data.length > 0) return ((data ?? []) as DbScore[]).reverse();
+    } catch (err) {
+      console.error("Supabase getRecentScoreRows error, falling back to local:", err);
+    }
   }
+
+  const local = readLocalDb();
+  const localRows = [...local.scores]
+    .sort((a, b) => new Date(b.t).getTime() - new Date(a.t).getTime())
+    .slice(0, limit);
+  return localRows.reverse();
 }
 
 export async function getScoreHistory(

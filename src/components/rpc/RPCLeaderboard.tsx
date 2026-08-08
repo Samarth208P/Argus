@@ -45,14 +45,50 @@ export function RPCLeaderboard({
   // ── Rank-delta tracking (only changes when ranking actually changes) ──
   const prevRanks = useRef<Map<string, number>>(new Map(ranked.map((r) => [r.provider_id, r.rank])));
   const [deltas, setDeltas] = useState<Map<string, RankDelta>>(new Map());
+  const [highlightedIds, setHighlightedIds] = useState<Set<string>>(new Set());
+  const [upIds, setUpIds] = useState<Set<string>>(new Set());
+  const [downIds, setDownIds] = useState<Set<string>>(new Set());
   useEffect(() => {
     const next = new Map<string, RankDelta>();
+    const nextRanks = new Map<string, number>();
+    const changedIds = new Set<string>();
+    const rising = new Set<string>();
+    const falling = new Set<string>();
+
     for (const r of ranked) {
       const prev = prevRanks.current.get(r.provider_id);
-      next.set(r.provider_id, prev == null ? "new" : prev - r.rank);
+      const delta = prev == null ? "new" : prev - r.rank;
+      const numericDelta = typeof delta === "number" ? delta : 0;
+      next.set(r.provider_id, delta);
+      nextRanks.set(r.provider_id, r.rank);
+      if (prev != null && prev !== r.rank) {
+        changedIds.add(r.provider_id);
+        if (numericDelta > 0) {
+          rising.add(r.provider_id);
+        } else if (numericDelta < 0) {
+          falling.add(r.provider_id);
+        }
+      }
     }
+
     setDeltas(next);
-    prevRanks.current = new Map(ranked.map((r) => [r.provider_id, r.rank]));
+    prevRanks.current = nextRanks;
+
+    if (changedIds.size > 0) {
+      setHighlightedIds(changedIds);
+      setUpIds(rising);
+      setDownIds(falling);
+      const timer = window.setTimeout(() => {
+        setHighlightedIds(new Set());
+        setUpIds(new Set());
+        setDownIds(new Set());
+      }, 800);
+      return () => window.clearTimeout(timer);
+    }
+
+    setHighlightedIds(new Set());
+    setUpIds(new Set());
+    setDownIds(new Set());
   }, [ranked]);
 
   // ── Filter + sort ──
@@ -135,8 +171,21 @@ export function RPCLeaderboard({
       <div className="flex flex-col gap-2 md:gap-1">
         <AnimatePresence initial={false}>
           {rows.map((r) => (
-            <motion.div key={r.provider_id} layout layoutId={r.provider_id} transition={SPRING} exit={{ opacity: 0, scale: 0.98 }}>
-              <RankingRow row={r} delta={deltas.get(r.provider_id) ?? 0} />
+            <motion.div
+              key={r.provider_id}
+              layout
+              layoutId={r.provider_id}
+              transition={SPRING}
+              exit={{ opacity: 0, scale: 0.98 }}
+              className="rounded-[12px]"
+            >
+              <RankingRow
+                row={r}
+                delta={deltas.get(r.provider_id) ?? 0}
+                isHighlighted={highlightedIds.has(r.provider_id)}
+                isMovingUp={upIds.has(r.provider_id)}
+                isMovingDown={downIds.has(r.provider_id)}
+              />
             </motion.div>
           ))}
         </AnimatePresence>
@@ -152,15 +201,37 @@ export function RPCLeaderboard({
 }
 
 /* ── Row (responsive: table on md+, card on mobile) ───────── */
-function RankingRow({ row, delta }: { row: RankedRPC; delta: RankDelta }) {
+function RankingRow({ row, delta, isHighlighted, isMovingUp, isMovingDown }: { row: RankedRPC; delta: RankDelta; isHighlighted: boolean; isMovingUp: boolean; isMovingDown: boolean }) {
   const sc = scoreColor(row.score);
   const label = providerLabel(row);
 
   return (
-    <Link
-      href={`/rpcs/${row.provider_id}`}
-      className="group block rounded-[12px] border border-white/8 bg-[#0f0f12] transition-colors hover:border-white/16 hover:bg-[#131316]"
+    <motion.div
+      layout
+      transition={{ type: "spring", stiffness: 380, damping: 32, mass: 0.85 }}
+      animate={
+        isHighlighted
+          ? isMovingUp
+            ? { scale: [1, 1.02, 1], y: [0, -5, 0], boxShadow: ["0 0 0 rgba(103,152,255,0)", "0 8px 24px rgba(103,152,255,0.18)", "0 0 0 rgba(103,152,255,0)"] }
+            : isMovingDown
+              ? { scale: [1, 1.02, 1], y: [0, 5, 0], boxShadow: ["0 0 0 rgba(255,107,107,0)", "0 8px 24px rgba(255,107,107,0.16)", "0 0 0 rgba(255,107,107,0)"] }
+              : { scale: [1, 1.012, 1], y: [0, -2, 0] }
+          : { scale: 1, y: 0, boxShadow: "0 0 0 rgba(0,0,0,0)" }
+      }
+      className="rounded-[12px]"
     >
+      <Link
+        href={`/rpcs/${row.provider_id}`}
+        className={`group block rounded-[12px] border transition-all duration-300 hover:border-white/16 hover:bg-[#131316] ${
+          isHighlighted
+            ? isMovingUp
+              ? "border-[#6798ff]/45 bg-[#14161d] shadow-[0_0_0_1px_rgba(103,152,255,0.2)]"
+              : isMovingDown
+                ? "border-[#ff6b6b]/40 bg-[#181214] shadow-[0_0_0_1px_rgba(255,107,107,0.18)]"
+                : "border-[#6798ff]/45 bg-[#14161d] shadow-[0_0_0_1px_rgba(103,152,255,0.2)]"
+            : "border-white/8 bg-[#0f0f12]"
+        }`}
+      >
       {/* Desktop */}
       <div className="hidden grid-cols-[44px_minmax(0,1fr)_repeat(4,84px)_72px] items-center gap-3 px-4 py-3.5 md:grid">
         <span className="text-[15px] font-semibold text-[#7c7c82] tnum" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>{row.rank}</span>
@@ -200,6 +271,7 @@ function RankingRow({ row, delta }: { row: RankedRPC; delta: RankDelta }) {
         </div>
       </div>
     </Link>
+    </motion.div>
   );
 }
 
