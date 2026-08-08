@@ -2,26 +2,15 @@
 
 import Link from "next/link";
 import { ArrowRight } from "@phosphor-icons/react";
-import type { DbScore, DbProvider } from "@/lib/db/types";
 import { providerLabel } from "@/lib/rpc";
-import { useLiveScores } from "./useLiveScores";
+import type { useLiveScores } from "./useLiveScores";
 import { CurrentBestRPC } from "./CurrentBestRPC";
 import { RPCComparisonChart } from "./RPCComparisonChart";
 
-export function RPCHeroShowcase({
-  initialScores,
-  providers,
-  initialRows,
-}: {
-  initialScores: DbScore[];
-  providers: DbProvider[];
-  initialRows?: DbScore[];
-}) {
-  const { ranked, best, advantage, lastUpdated, isRefreshing, series } = useLiveScores({
-    initialScores,
-    providers,
-    initialRows,
-  });
+type LiveScores = ReturnType<typeof useLiveScores>;
+
+export function RPCHeroShowcase({ live }: { live: LiveScores }) {
+  const { ranked, best, advantage, lastUpdated, isRefreshing, series } = live;
 
   const labelFor = (id: string) => {
     const r = ranked.find((x) => x.provider_id === id);

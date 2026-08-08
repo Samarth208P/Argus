@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import { ArrowRight, Trophy } from "@phosphor-icons/react";
 import type { DbScore, DbProvider } from "@/lib/db/types";
+import { useLiveScores } from "@/components/rpc/useLiveScores";
 import { RPCHeroShowcase } from "@/components/rpc/RPCHeroShowcase";
 import { ArgusEndpointCard } from "@/components/rpc/ArgusEndpointCard";
 
@@ -16,6 +17,10 @@ export function HeroSection({
   providers: DbProvider[];
   initialRows?: DbScore[];
 }) {
+  // Single live-scores source shared by the best-performing card and the
+  // endpoint card, so "Routing to" and "Best performing" always match.
+  const live = useLiveScores({ initialScores, providers, initialRows });
+
   const reduce = useReducedMotion();
   const entry = (delay: number) =>
     reduce
@@ -76,7 +81,7 @@ export function HeroSection({
 
           {/* Right: copyable Argus RPC endpoint */}
           <motion.div {...entry(0.26)} className="w-full lg:mt-12">
-            <ArgusEndpointCard providers={providers} />
+            <ArgusEndpointCard best={live.best} />
           </motion.div>
         </div>
 
@@ -92,7 +97,7 @@ export function HeroSection({
           className="relative mt-14 sm:mt-16"
         >
           <div aria-hidden className="pointer-events-none absolute -inset-x-8 -top-8 bottom-0 -z-10 bg-[radial-gradient(ellipse_60%_60%_at_50%_0%,rgba(103,152,255,0.12),transparent_70%)]" />
-          <RPCHeroShowcase initialScores={initialScores} providers={providers} initialRows={initialRows} />
+          <RPCHeroShowcase live={live} />
         </motion.div>
       </div>
     </section>

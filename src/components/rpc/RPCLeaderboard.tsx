@@ -208,7 +208,12 @@ function RankingRow({ row, delta, isHighlighted, isMovingUp, isMovingDown }: { r
   return (
     <motion.div
       layout
-      transition={{ type: "spring", stiffness: 380, damping: 32, mass: 0.85 }}
+      transition={{
+        layout: { type: "spring", stiffness: 380, damping: 32, mass: 0.85 },
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1],
+        times: [0, 0.5, 1],
+      }}
       animate={
         isHighlighted
           ? isMovingUp

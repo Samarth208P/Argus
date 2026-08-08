@@ -18,7 +18,6 @@ const RANGES: { key: string; label: string; ms: number }[] = [
   { key: "24h", label: "24h", ms: 86_400_000 },
   { key: "7d", label: "7d", ms: 604_800_000 },
 ];
-
 const POINT_FIELD: Record<MetricKey, keyof SeriesPoint> = {
   score: "score",
   latency_avg: "latency",
@@ -27,24 +26,7 @@ const POINT_FIELD: Record<MetricKey, keyof SeriesPoint> = {
   freshness_score: "score",
 };
 
-/** Catmull-Rom → cubic bezier smoothing. */
-function smoothPath(pts: [number, number][]): string {
-  if (pts.length === 0) return "";
-  if (pts.length === 1) return `M${pts[0][0]},${pts[0][1]}`;
-  let d = `M${pts[0][0]},${pts[0][1]}`;
-  for (let i = 0; i < pts.length - 1; i++) {
-    const p0 = pts[i - 1] ?? pts[i];
-    const p1 = pts[i];
-    const p2 = pts[i + 1];
-    const p3 = pts[i + 2] ?? p2;
-    const c1x = p1[0] + (p2[0] - p0[0]) / 6;
-    const c1y = p1[1] + (p2[1] - p0[1]) / 6;
-    const c2x = p2[0] - (p3[0] - p1[0]) / 6;
-    const c2y = p2[1] - (p3[1] - p1[1]) / 6;
-    d += ` C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`;
-  }
-  return d;
-}
+const MAX_SAMPLES = 60; // last N aligned poll samples, spaced evenly by index
 
 export function RPCComparisonChart({
   series,
@@ -56,7 +38,7 @@ export function RPCComparisonChart({
   const [metric, setMetric] = useState<MetricKey>("score");
   const [range, setRange] = useState("live");
   const [hidden, setHidden] = useState<Set<string>>(new Set());
-  const [hoverX, setHoverX] = useState<number | null>(null);
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
   const [width, setWidth] = useState(760);
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -69,65 +51,64 @@ export function RPCComparisonChart({
   }, []);
 
   const field = POINT_FIELD[metric];
-  const now = Date.now();
   const rangeMs = RANGES.find((r) => r.key === range)?.ms ?? Infinity;
-
-  // Filtered, visible series.
-  const visible = useMemo(
-    () =>
-      series
-        .filter((s) => !hidden.has(s.providerId))
-        .map((s) => ({
-          ...s,
-          color: seriesColor(s.providerId, series.indexOf(s)),
-          filtered: s.points.filter((p) => now - p.t <= rangeMs),
-        })),
-    [series, hidden, rangeMs, now]
-  );
-
-  const allPoints = visible.flatMap((s) => s.filtered);
-  const hasSeries = visible.some((s) => s.filtered.length >= 3);
 
   // Layout
   const height = 300;
-  const padL = 44;
-  const padR = 16;
-  const padT = 16;
-  const padB = 28;
+  const padL = 44, padR = 16, padT = 16, padB = 26;
   const plotW = Math.max(80, width - padL - padR);
   const plotH = height - padT - padB;
 
-  // Domains
-  const times = allPoints.map((p) => p.t);
-  const minT = times.length ? Math.min(...times) : now - 60_000;
-  const maxT = times.length ? Math.max(...times) : now;
-  const tSpan = maxT - minT || 1;
+  // ── Align every series onto a shared grid of the last N sample times ──
+  // Index-based x (not absolute time) so bursty/gappy polling data still
+  // fills the width cleanly. Values carry forward to the shared timestamps.
+  const model = useMemo(() => {
+    const now = Date.now();
+    const vis = series
+      .filter((s) => !hidden.has(s.providerId))
+      .map((s) => ({
+        id: s.providerId,
+        rank: s.rank,
+        color: seriesColor(s.providerId, series.indexOf(s)),
+        pts: s.points
+          .filter((p) => now - p.t <= rangeMs)
+          .map((p) => ({ t: p.t, v: p[field] as number }))
+          .sort((a, b) => a.t - b.t),
+      }));
 
-  const values = allPoints.map((p) => p[field] as number);
-  let yMin: number, yMax: number;
-  if (metric === "score") {
-    yMin = 0; yMax = 100;
-  } else if (metric === "latency_avg") {
-    yMin = 0; yMax = values.length ? Math.max(...values) * 1.15 : 500;
-  } else {
-    // accuracy / uptime: zoom into the high band
-    const lo = values.length ? Math.min(...values) : 90;
-    yMin = Math.max(0, Math.floor(lo) - 2); yMax = 100;
-  }
+    // Shared, evenly-spaced timeline = last N distinct sample timestamps.
+    let times = Array.from(new Set(vis.flatMap((s) => s.pts.map((p) => p.t)))).sort((a, b) => a - b);
+    if (times.length > MAX_SAMPLES) times = times.slice(-MAX_SAMPLES);
+    const N = times.length;
+
+    const withSamples = vis.map((s) => {
+      let ptr = 0;
+      let last: number | null = null;
+      const samples = times.map((t) => {
+        while (ptr < s.pts.length && s.pts[ptr].t <= t) { last = s.pts[ptr].v; ptr++; }
+        return last;
+      });
+      let lastVal: number | null = null;
+      for (let i = N - 1; i >= 0; i--) if (samples[i] != null) { lastVal = samples[i]; break; }
+      return { ...s, samples, lastVal };
+    });
+
+    const vals = withSamples.flatMap((s) => s.samples.filter((b): b is number => b != null));
+    let yMin: number, yMax: number;
+    if (metric === "score") { yMin = 0; yMax = 100; }
+    else if (metric === "latency_avg") { yMin = 0; yMax = vals.length ? Math.max(...vals) * 1.15 : 500; }
+    else { const lo = vals.length ? Math.min(...vals) : 90; yMin = Math.max(0, Math.floor(lo) - 2); yMax = 100; }
+
+    return { withSamples, times, N, yMin, yMax, hasSeries: N >= 4 };
+  }, [series, hidden, rangeMs, field, metric]);
+
+  const { withSamples, times, N, yMin, yMax, hasSeries } = model;
   const ySpan = yMax - yMin || 1;
-
-  const xOf = (t: number) => padL + ((t - minT) / tSpan) * plotW;
+  const xForIndex = (i: number) => (N <= 1 ? padL + plotW / 2 : padL + (i / (N - 1)) * plotW);
   const yOf = (v: number) => padT + (1 - (v - yMin) / ySpan) * plotH;
+  const tickVals = Array.from({ length: 5 }, (_, i) => yMin + (ySpan * i) / 4);
 
-  const yTicks = 4;
-  const tickVals = Array.from({ length: yTicks + 1 }, (_, i) => yMin + (ySpan * i) / yTicks);
-
-  // Hover → nearest timestamp among the union of sample times
-  const sampleTimes = useMemo(() => Array.from(new Set(times)).sort((a, b) => a - b), [times]);
-  const hoverT =
-    hoverX != null && sampleTimes.length
-      ? sampleTimes.reduce((best, t) => (Math.abs(xOf(t) - hoverX) < Math.abs(xOf(best) - hoverX) ? t : best), sampleTimes[0])
-      : null;
+  const snappedIdx = hoverIdx != null && N > 0 ? Math.min(N - 1, Math.max(0, hoverIdx)) : null;
 
   const toggle = (id: string) =>
     setHidden((prev) => {
@@ -135,6 +116,9 @@ export function RPCComparisonChart({
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
+
+  const fmt = (v: number) =>
+    metric === "latency_avg" ? `${Math.round(v)}ms` : metric === "score" ? `${Math.round(v)}` : `${v.toFixed(2)}%`;
 
   return (
     <div className="flex flex-col gap-4">
@@ -145,32 +129,25 @@ export function RPCComparisonChart({
             <button
               key={m}
               onClick={() => setMetric(m)}
-              className={`rounded-[7px] px-3 py-1.5 text-[12.5px] font-medium transition-colors ${
-                metric === m ? "bg-white/[0.07] text-white" : "text-[#7c7c82] hover:text-white"
-              }`}
+              className={`rounded-[7px] px-3 py-1.5 text-[12.5px] font-medium transition-colors ${metric === m ? "bg-white/[0.07] text-white" : "text-[#7c7c82] hover:text-white"}`}
               style={{ fontFamily: "var(--font-inter)" }}
             >
               {METRICS[m].short}
             </button>
           ))}
         </div>
-
-        {hasSeries && (
-          <div className="inline-flex rounded-[9px] border border-white/8 bg-white/[0.02] p-0.5">
-            {RANGES.map((r) => (
-              <button
-                key={r.key}
-                onClick={() => setRange(r.key)}
-                className={`rounded-[7px] px-2.5 py-1.5 text-[12px] font-medium transition-colors tnum ${
-                  range === r.key ? "bg-white/[0.07] text-white" : "text-[#7c7c82] hover:text-white"
-                }`}
-                style={{ fontFamily: "var(--font-jetbrains-mono)" }}
-              >
-                {r.label}
-              </button>
-            ))}
-          </div>
-        )}
+        <div className="inline-flex rounded-[9px] border border-white/8 bg-white/[0.02] p-0.5">
+          {RANGES.map((r) => (
+            <button
+              key={r.key}
+              onClick={() => setRange(r.key)}
+              className={`rounded-[7px] px-2.5 py-1.5 text-[12px] font-medium transition-colors tnum ${range === r.key ? "bg-white/[0.07] text-white" : "text-[#7c7c82] hover:text-white"}`}
+              style={{ fontFamily: "var(--font-jetbrains-mono)" }}
+            >
+              {r.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Chart */}
@@ -182,72 +159,88 @@ export function RPCComparisonChart({
             className="block w-full select-none"
             onMouseMove={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
-              setHoverX(((e.clientX - rect.left) / rect.width) * width);
+              const x = ((e.clientX - rect.left) / rect.width) * width;
+              setHoverIdx(Math.round(((x - padL) / plotW) * (N - 1)));
             }}
-            onMouseLeave={() => setHoverX(null)}
+            onMouseLeave={() => setHoverIdx(null)}
           >
             {/* Grid + y labels */}
             {tickVals.map((v, i) => (
               <g key={i}>
                 <line x1={padL} y1={yOf(v)} x2={width - padR} y2={yOf(v)} stroke="rgba(255,255,255,0.05)" strokeWidth={1} />
                 <text x={padL - 8} y={yOf(v) + 3} textAnchor="end" fontSize={10} fill="#54545a" fontFamily="var(--font-jetbrains-mono)">
-                  {metric === "latency_avg" ? Math.round(v) : Math.round(v)}
+                  {Math.round(v)}
                 </text>
               </g>
             ))}
 
-            {/* Series */}
-            {visible.map((s) => {
-              const pts: [number, number][] = s.filtered.map((p) => [xOf(p.t), yOf(p[field] as number)]);
+            {/* Series — segmented so leading gaps break the line */}
+            {withSamples.map((s) => {
               const isLeader = s.rank === 1;
+              const segments: [number, number][][] = [];
+              let cur: [number, number][] = [];
+              for (let i = 0; i < N; i++) {
+                const v = s.samples[i];
+                if (v == null) { if (cur.length) { segments.push(cur); cur = []; } }
+                else cur.push([xForIndex(i), yOf(v)]);
+              }
+              if (cur.length) segments.push(cur);
+
               return (
-                <g key={s.providerId} opacity={hoverT && !isLeader ? 0.85 : 1}>
-                  <motion.path
-                    d={smoothPath(pts)}
-                    fill="none"
-                    stroke={s.color}
-                    strokeWidth={isLeader ? 2.4 : 1.4}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    initial={{ pathLength: 0, opacity: 0 }}
-                    animate={{ pathLength: 1, opacity: isLeader ? 1 : 0.75 }}
-                    transition={{ duration: 0.9, ease: "easeOut" }}
-                  />
-                  {/* latest point marker */}
-                  {pts.length > 0 && (
-                    <circle cx={pts[pts.length - 1][0]} cy={pts[pts.length - 1][1]} r={isLeader ? 3.5 : 2.5} fill={s.color} />
+                <g key={s.id} opacity={snappedIdx != null && !isLeader ? 0.85 : 1}>
+                  {segments.map((seg, si) =>
+                    seg.length === 1 ? (
+                      <circle key={si} cx={seg[0][0]} cy={seg[0][1]} r={isLeader ? 2.6 : 2} fill={s.color} />
+                    ) : (
+                      <motion.path
+                        key={si}
+                        d={seg.map(([x, y], k) => `${k === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`).join(" ")}
+                        fill="none"
+                        stroke={s.color}
+                        strokeWidth={isLeader ? 2.2 : 1.4}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        opacity={isLeader ? 1 : 0.72}
+                        initial={{ pathLength: 0, opacity: 0 }}
+                        animate={{ pathLength: 1, opacity: isLeader ? 1 : 0.72 }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                      />
+                    )
+                  )}
+                  {/* latest marker */}
+                  {s.lastVal != null && (
+                    <circle cx={xForIndex(N - 1)} cy={yOf(s.lastVal)} r={isLeader ? 3.4 : 2.5} fill={s.color} />
                   )}
                 </g>
               );
             })}
 
-            {/* Hover crosshair */}
-            {hoverT != null && (
-              <line x1={xOf(hoverT)} y1={padT} x2={xOf(hoverT)} y2={height - padB} stroke="rgba(255,255,255,0.16)" strokeWidth={1} strokeDasharray="3 3" />
+            {/* Hover crosshair + dots */}
+            {snappedIdx != null && (
+              <>
+                <line x1={xForIndex(snappedIdx)} y1={padT} x2={xForIndex(snappedIdx)} y2={height - padB} stroke="rgba(255,255,255,0.16)" strokeWidth={1} strokeDasharray="3 3" />
+                {withSamples.map((s) =>
+                  s.samples[snappedIdx] != null ? (
+                    <circle key={s.id} cx={xForIndex(snappedIdx)} cy={yOf(s.samples[snappedIdx] as number)} r={3.4} fill={s.color} stroke="#0a0a0b" strokeWidth={1.5} />
+                  ) : null
+                )}
+              </>
             )}
-            {hoverT != null &&
-              visible.map((s) => {
-                const p = s.filtered.find((pp) => pp.t === hoverT);
-                if (!p) return null;
-                return <circle key={s.providerId} cx={xOf(hoverT)} cy={yOf(p[field] as number)} r={3.5} fill={s.color} stroke="#0a0a0b" strokeWidth={1.5} />;
-              })}
           </svg>
         ) : (
-          <SnapshotBars visible={visible} metric={metric} labelFor={labelFor} />
+          <SnapshotBars rows={withSamples} metric={metric} labelFor={labelFor} />
         )}
 
         {/* Tooltip */}
-        {hasSeries && hoverT != null && (
+        {hasSeries && snappedIdx != null && (
           <ChartTooltip
-            x={xOf(hoverT)}
+            x={xForIndex(snappedIdx)}
             width={width}
-            t={hoverT}
-            rows={visible
-              .map((s) => {
-                const p = s.filtered.find((pp) => pp.t === hoverT);
-                return p ? { id: s.providerId, color: s.color, value: p[field] as number } : null;
-              })
+            t={times[snappedIdx]}
+            rows={withSamples
+              .map((s) => (s.samples[snappedIdx] != null ? { id: s.id, color: s.color, value: s.samples[snappedIdx] as number } : null))
               .filter(Boolean) as { id: string; color: string; value: number }[]}
+            fmt={fmt}
             metric={metric}
             labelFor={labelFor}
           />
@@ -278,24 +271,20 @@ export function RPCComparisonChart({
 
 /* ── Snapshot (ranked bars) fallback for sparse history ───── */
 function SnapshotBars({
-  visible,
+  rows,
   metric,
   labelFor,
 }: {
-  visible: { providerId: string; rank: number; color: string; filtered: SeriesPoint[] }[];
+  rows: { id: string; color: string; rank: number; lastVal: number | null }[];
   metric: MetricKey;
   labelFor: (id: string) => string;
 }) {
-  const field = POINT_FIELD[metric];
   const cfg = METRICS[metric];
-  const rows = visible
-    .map((s) => {
-      const last = s.filtered[s.filtered.length - 1];
-      return last ? { id: s.providerId, color: s.color, rank: s.rank, value: last[field] as number } : null;
-    })
-    .filter(Boolean) as { id: string; color: string; rank: number; value: number }[];
+  const data = rows
+    .filter((r) => r.lastVal != null)
+    .map((r) => ({ id: r.id, color: r.color, value: r.lastVal as number }));
 
-  if (!rows.length) {
+  if (!data.length) {
     return (
       <div className="flex h-[240px] items-center justify-center text-[14px] text-[#54545a]" style={{ fontFamily: "var(--font-inter)" }}>
         Collecting live data…
@@ -303,19 +292,17 @@ function SnapshotBars({
     );
   }
 
-  const max = Math.max(...rows.map((r) => r.value));
-  const min = Math.min(...rows.map((r) => r.value));
-  rows.sort((a, b) => (cfg.better === "high" ? b.value - a.value : a.value - b.value));
+  const max = Math.max(...data.map((r) => r.value));
+  const min = Math.min(...data.map((r) => r.value));
+  data.sort((a, b) => (cfg.better === "high" ? b.value - a.value : a.value - b.value));
 
   return (
     <div className="flex flex-col gap-2.5 py-1">
-      {rows.map((r, i) => {
-        // normalise bar width so best fills the track
-        const norm = cfg.better === "high" ? r.value / (max || 1) : (min / (r.value || 1));
+      {data.map((r, i) => {
+        const norm = cfg.better === "high" ? r.value / (max || 1) : min / (r.value || 1);
         const pct = Math.max(8, Math.min(100, norm * 100));
-        const fmt =
-          metric === "latency_avg" ? `${Math.round(r.value)}ms` :
-          metric === "score" ? `${Math.round(r.value)}` : `${r.value.toFixed(2)}%`;
+        const label =
+          metric === "latency_avg" ? `${Math.round(r.value)}ms` : metric === "score" ? `${Math.round(r.value)}` : `${r.value.toFixed(2)}%`;
         return (
           <motion.div
             key={r.id}
@@ -326,15 +313,9 @@ function SnapshotBars({
           >
             <span className="truncate text-[13px] font-medium text-white" style={{ fontFamily: "var(--font-inter)" }}>{labelFor(r.id)}</span>
             <span className="h-2.5 w-full overflow-hidden rounded-full bg-white/6">
-              <motion.span
-                className="block h-full rounded-full"
-                style={{ background: r.color }}
-                initial={{ width: 0 }}
-                animate={{ width: `${pct}%` }}
-                transition={{ delay: i * 0.05 + 0.1, duration: 0.7, ease: [0.23, 1, 0.32, 1] }}
-              />
+              <motion.span className="block h-full rounded-full" style={{ background: r.color }} initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ delay: i * 0.05 + 0.1, duration: 0.7, ease: [0.23, 1, 0.32, 1] }} />
             </span>
-            <span className="w-16 text-right text-[13px] font-semibold text-white tnum" style={{ fontFamily: "var(--font-inter)" }}>{fmt}</span>
+            <span className="w-16 text-right text-[13px] font-semibold text-white tnum" style={{ fontFamily: "var(--font-inter)" }}>{label}</span>
           </motion.div>
         );
       })}
@@ -347,23 +328,18 @@ function SnapshotBars({
 
 /* ── Tooltip ──────────────────────────────────────────────── */
 function ChartTooltip({
-  x, width, t, rows, metric, labelFor,
+  x, width, t, rows, fmt, metric, labelFor,
 }: {
   x: number; width: number; t: number;
   rows: { id: string; color: string; value: number }[];
-  metric: MetricKey; labelFor: (id: string) => string;
+  fmt: (v: number) => string; metric: MetricKey; labelFor: (id: string) => string;
 }) {
   const sorted = [...rows].sort((a, b) => (metric === "latency_avg" ? a.value - b.value : b.value - a.value));
   const left = Math.min(Math.max(x, 90), width - 90);
-  const fmt = (v: number) =>
-    metric === "latency_avg" ? `${Math.round(v)}ms` : metric === "score" ? `${Math.round(v)}` : `${v.toFixed(2)}%`;
   return (
-    <div
-      className="pointer-events-none absolute top-2 z-10 -translate-x-1/2 rounded-[10px] border border-white/10 bg-[#141416]/95 px-3 py-2 shadow-[0_16px_40px_-16px_rgba(0,0,0,0.8)] backdrop-blur-md"
-      style={{ left }}
-    >
+    <div className="pointer-events-none absolute top-2 z-10 -translate-x-1/2 rounded-[10px] border border-white/10 bg-[#141416]/95 px-3 py-2 shadow-[0_16px_40px_-16px_rgba(0,0,0,0.8)] backdrop-blur-md" style={{ left }}>
       <p className="mb-1.5 text-[10px] text-[#7c7c82]" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
-        {new Date(t).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+        {new Date(t).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
       </p>
       <div className="flex flex-col gap-1">
         {sorted.slice(0, 6).map((r) => (

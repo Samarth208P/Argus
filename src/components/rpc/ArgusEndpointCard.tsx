@@ -3,37 +3,24 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Copy, Check, ArrowRight, Lightning } from "@phosphor-icons/react";
-import type { DbProvider } from "@/lib/db/types";
+import { providerLabel, type RankedRPC } from "@/lib/rpc";
 
 /**
  * The RPC endpoint Argus provides: a single drop-in URL (/api/rpc) that
- * routes every call to the highest-integrity provider with automatic failover.
- * Shows the live routed provider from /api/router/best.
+ * routes every call to the current best provider with automatic failover.
+ * `best` is passed in from the SAME useLiveScores instance that drives the
+ * best-performing card, so "Routing to" always matches it with no lag.
  */
-export function ArgusEndpointCard({ providers = [] }: { providers?: DbProvider[] }) {
+export function ArgusEndpointCard({ best }: { best: RankedRPC | null }) {
   const [origin, setOrigin] = useState("");
   const [copied, setCopied] = useState(false);
-  const [routed, setRouted] = useState<{ id: string; status: string } | null>(null);
 
   useEffect(() => {
     setOrigin(window.location.origin);
-    let cancelled = false;
-    fetch("/api/router/best")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (!cancelled && d?.candidates?.length) {
-          setRouted({ id: d.candidates[0].provider_id, status: d.status });
-        }
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
   }, []);
 
   const endpoint = `${origin || "https://argus.live"}/api/rpc`;
-  const routedLabel = routed ? providers.find((p) => p.id === routed.id)?.label ?? routed.id : null;
-  const healthy = routed?.status === "HEALTHY";
+  const routedLabel = best ? providerLabel(best) : null;
 
   const copy = async () => {
     try {
@@ -60,7 +47,7 @@ export function ArgusEndpointCard({ providers = [] }: { providers?: DbProvider[]
         </div>
 
         <p className="mb-4 text-[13.5px] leading-[1.55] text-[#a5a5ac]" style={{ fontFamily: "var(--font-inter)" }}>
-          Point any wallet or app here. Argus routes every call through a healthy, integrity-checked provider — with automatic failover.
+          Point any wallet or app here. Argus routes every call to the current best-performing provider — with automatic failover.
         </p>
 
         {/* Copyable endpoint */}
@@ -78,11 +65,11 @@ export function ArgusEndpointCard({ providers = [] }: { providers?: DbProvider[]
           </span>
         </button>
 
-        {/* Live routed provider + link */}
+        {/* Routed provider — same source as the best-performing card */}
         <div className="mt-4 flex items-center justify-between border-t border-white/8 pt-3.5">
           {routedLabel ? (
             <span className="inline-flex items-center gap-1.5 text-[12.5px] text-[#a5a5ac]" style={{ fontFamily: "var(--font-inter)" }}>
-              <span className={`h-1.5 w-1.5 rounded-full ${healthy ? "bg-[#57d9a3]" : "bg-[#ffbf59]"}`} />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#57d9a3]" />
               Routing to <span className="font-medium text-white">{routedLabel}</span>
             </span>
           ) : (
