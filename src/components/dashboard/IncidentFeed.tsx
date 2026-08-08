@@ -66,9 +66,8 @@ export function IncidentFeed({ incidents, scores, onSelectIncident }: IncidentFe
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.35, ease: "easeOut", delay: i === 0 ? 0 : 0 }}
-              onClick={() => setSelectedId(selectedId === incident.id ? null : incident.id)}
+              onClick={() => onSelectIncident?.(incident.id)}
               className="w-full rounded-[8px] bg-[#141414] border border-[#1e1e1e] px-5 py-3.5 flex items-center gap-4 text-left hover:border-[#313131] hover:bg-[#1e1e1e]/50 transition-all duration-200 ease-out"
-              aria-expanded={selectedId === incident.id}
               id={`incident-row-${incident.id}`}
             >
               <Icon
