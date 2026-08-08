@@ -1,0 +1,261 @@
+/* ============================================================
+   Argus Design System — Dovetail-derived dark command-center
+   Source: DESIGN.md
+   ============================================================ */
+
+@import "tailwindcss";
+
+@theme {
+  /* ── Colors (Argus Acid Command Center) ─────────────────── */
+  --color-soft-indigo: #00f0ff; /* Electric Cyan accent */
+  --color-pure-black: #000000;
+  --color-carbon: #000000; /* Pure black canvas */
+  --color-graphite: #050505; /* Barely lifted surface */
+  --color-iron: #111111; /* Subtle border */
+  --color-slate-edge: #222222; /* Hover edge */
+  --color-smoke: #333333;
+  --color-mist: #666666;
+  --color-ash: #888888;
+  --color-bone: #ffffff;
+
+  /* ── Easings (Emil Design Eng) ─────────────────────────── */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* ── Typography ──────────────────────────────────────────── */
+  --font-cinzel: 'Cinzel', serif;
+  --font-outfit: 'Outfit', sans-serif;
+  --font-jetbrains-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* ── Type Scale ──────────────────────────────────────────── */
+  --text-caption: 12px;
+  --leading-caption: 1.4;
+  --tracking-caption: 0.85px;
+
+  --text-body-sm: 14px;
+  --leading-body-sm: 1.57;
+  --tracking-body-sm: -0.25px;
+
+  --text-body: 16px;
+  --leading-body: 1.5;
+  --tracking-body: -0.25px;
+
+  --text-heading-sm: 20px;
+  --leading-heading-sm: 1.33;
+  --tracking-heading-sm: -0.42px;
+
+  --text-heading: 24px;
+  --leading-heading: 1.29;
+  --tracking-heading: -0.6px;
+
+  --text-heading-lg: 40px;
+  --leading-heading-lg: 1.2;
+  --tracking-heading-lg: -0.84px;
+
+  --text-display-sm: 56px;
+  --leading-display-sm: 1.14;
+  --tracking-display-sm: -1.74px;
+
+  --text-display: 64px;
+  --leading-display: 1.13;
+  --tracking-display: -2.3px;
+
+  /* ── Spacing (8px base) ──────────────────────────────────── */
+  --spacing-8: 8px;
+  --spacing-16: 16px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-64: 64px;
+  --spacing-96: 96px;
+  --spacing-200: 200px;
+
+  /* ── Border Radius ───────────────────────────────────────── */
+  --radius-tag: 4px;
+  --radius-card: 8px;
+  --radius-input: 8px;
+  --radius-button: 8px;
+  --radius-pill: 9999px;
+}
+
+/* ── Global Base ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  font-family: var(--font-outfit);
+  background-color: var(--color-carbon);
+  color: var(--color-bone);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-carbon);
+  min-height: 100dvh;
+}
+
+/* ── Ambient Space (Signature Background) ────────────────── */
+@keyframes cinematic-breathe {
+  0% { transform: scale(1) translate(0, 0); opacity: 0.05; }
+  33% { transform: scale(1.1) translate(2%, 2%); opacity: 0.15; }
+  66% { transform: scale(0.95) translate(-1%, -1%); opacity: 0.08; }
+  100% { transform: scale(1) translate(0, 0); opacity: 0.05; }
+}
+
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(20px) scale(0.98); filter: blur(8px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  opacity: 0;
+}
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+
+.blueprint-grid {
+  position: relative;
+  overflow-x: hidden;
+}
+.blueprint-grid::before {
+  content: "";
+  position: absolute;
+  inset: -20%; /* bleed out to allow scale */
+  z-index: 0;
+  background: radial-gradient(circle at 40% 20%, rgba(0, 240, 255, 1) 0%, transparent 40%),
+              radial-gradient(circle at 80% 60%, rgba(94, 53, 177, 0.8) 0%, transparent 40%);
+  filter: blur(80px);
+  animation: cinematic-breathe 25s infinite ease-in-out;
+  pointer-events: none;
+}
+.blueprint-grid > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Scrollbar Styling ───────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--color-carbon); }
+::-webkit-scrollbar-thumb { background: var(--color-iron); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-slate-edge); }
+
+/* ── Button Tactile Feedback ─────────────────────────────── */
+.btn-primary {
+  background-color: var(--color-bone);
+  color: var(--color-carbon);
+  border-radius: var(--radius-button);
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--font-outfit);
+  letter-spacing: -0.25px;
+  transition: transform 160ms var(--ease-out), filter 200ms var(--ease-out), background-color 200ms ease;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-primary:active { transform: scale(0.97); }
+.btn-primary:hover { opacity: 0.95; box-shadow: 0 0 15px rgba(255,255,255,0.1); }
+.btn-primary.transitioning { filter: blur(2px); opacity: 0.8; }
+
+.btn-ghost {
+  background-color: transparent;
+  color: var(--color-bone);
+  border-radius: var(--radius-button);
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--font-inter);
+  letter-spacing: -0.25px;
+  border: 1px solid var(--color-smoke);
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), border-color 150ms ease;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-ghost:active { transform: scale(0.97); }
+.btn-ghost:hover { border-color: var(--color-mist); }
+
+/* ── Eyebrow Label ───────────────────────────────────────── */
+.eyebrow {
+  font-family: var(--font-jetbrains-mono);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.85px;
+  text-transform: uppercase;
+  color: var(--color-ash);
+}
+
+/* ── Monospace Code ──────────────────────────────────────── */
+.mono-code {
+  font-family: var(--font-jetbrains-mono);
+  font-size: 12px;
+  background-color: var(--color-graphite);
+  border: 1px solid var(--color-slate-edge);
+  border-radius: var(--radius-tag);
+  padding: 2px 6px;
+  color: var(--color-soft-indigo);
+}
+
+/* ── Card Surface ────────────────────────────────────────── */
+.card {
+  background-color: var(--color-graphite);
+  border: 1px solid var(--color-iron);
+  border-radius: var(--radius-card);
+  padding: var(--spacing-24);
+}
+
+/* ── Incident Kind Badges ────────────────────────────────── */
+.badge-deviant  { background: #3a1c1c; color: #ff6b6b; border: 1px solid #5a2020; border-radius: var(--radius-tag); padding: 2px 8px; font-size: 12px; font-family: var(--font-jetbrains-mono); letter-spacing: 0.5px; text-transform: uppercase; }
+.badge-stale    { background: #2a2218; color: #ffc04d; border: 1px solid #4a3820; border-radius: var(--radius-tag); padding: 2px 8px; font-size: 12px; font-family: var(--font-jetbrains-mono); letter-spacing: 0.5px; text-transform: uppercase; }
+.badge-censoring { background: #1a1a3a; color: #9898ff; border: 1px solid #2a2a5a; border-radius: var(--radius-tag); padding: 2px 8px; font-size: 12px; font-family: var(--font-jetbrains-mono); letter-spacing: 0.5px; text-transform: uppercase; }
+.badge-down     { background: #1e1e1e; color: #7c7c7c; border: 1px solid #313131; border-radius: var(--radius-tag); padding: 2px 8px; font-size: 12px; font-family: var(--font-jetbrains-mono); letter-spacing: 0.5px; text-transform: uppercase; }
+.badge-ok       { background: #0f2a1f; color: #4dffb0; border: 1px solid #1a4030; border-radius: var(--radius-tag); padding: 2px 8px; font-size: 12px; font-family: var(--font-jetbrains-mono); letter-spacing: 0.5px; text-transform: uppercase; }
+
+/* ── Trend Badges ────────────────────────────────────────── */
+.trend-improving { color: #4dffb0; font-size: 12px; font-family: var(--font-jetbrains-mono); }
+.trend-degrading { color: #ff6b6b; font-size: 12px; font-family: var(--font-jetbrains-mono); }
+.trend-stable    { color: var(--color-ash); font-size: 12px; font-family: var(--font-jetbrains-mono); }
+
+/* ── Selection ───────────────────────────────────────────── */
+::selection { background: rgba(103, 152, 255, 0.25); }
+
+/* ── Custom Select & Inputs (Dovetail Command Center Spec) ── */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23a7a7a7' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 18px;
+  padding-right: 36px !important;
+  cursor: pointer;
+}
+input[type="text"], input[type="url"], select {
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+}
+input[type="text"]:focus, input[type="url"]:focus, select:focus {
+  border-color: var(--color-soft-indigo) !important;
+  box-shadow: 0 0 0 2px rgba(103, 152, 255, 0.12);
+  background-color: var(--color-pure-black);
+}
+
+/* ── Card Easing & Elevating ──────────────────────────────── */
+.card {
+  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+}
+.card:hover {
+  border-color: var(--color-slate-edge);
+}
+
