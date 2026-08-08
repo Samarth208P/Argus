@@ -15,7 +15,7 @@ const FOOTER_COLUMNS = [
     heading: "Verify",
     links: [
       { label: "Verify a Claim", href: "/verify" },
-      { label: "Evidence API", href: "/api/evidence" },
+      { label: "Evidence API", href: "/api/evidence?id=<incidentId>" },
       { label: "Sepolia Etherscan", href: "https://sepolia.etherscan.io", external: true },
     ],
   },

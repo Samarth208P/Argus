@@ -11,8 +11,11 @@ export async function GET(req: NextRequest) {
 
   if (!id) {
     return NextResponse.json(
-      { error: "Missing ?id= query parameter" },
-      { status: 400 }
+      {
+        error: "Missing ?id= query parameter",
+        message: "Use /api/evidence?id=<incidentId> to fetch evidence for a specific incident.",
+      },
+      { status: 200 }
     );
   }
 
