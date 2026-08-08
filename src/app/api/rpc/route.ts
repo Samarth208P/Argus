@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     let lastErrorPayload: string | null = null;
     let lastErrorProvider: string | null = null;
 
-    for (const c of candidates.slice(0, 3)) {
+    for (const c of candidates) {
       try {
         const res = await fetch(c.url, {
           method: "POST",
