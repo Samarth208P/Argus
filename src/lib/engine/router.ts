@@ -42,17 +42,18 @@ export async function selectRoute(): Promise<RouteDecision> {
     });
   }
 
-  // Fail-open: if no monitoring scores are fresh, fall back to registered providers
-  // using a default score and setting them as healthy to keep the RPC endpoint functioning.
-  if (candidates.length === 0) {
-    for (const p of providers) {
-      if (p.is_sim) continue;
+  // Append fallback candidates for any registered providers that don't have fresh scores in the DB.
+  // This guarantees that we always have a complete failover chain of up to 3+ upstreams.
+  const candidateIds = new Set(candidates.map((c) => c.provider_id));
+  for (const p of providers) {
+    if (p.is_sim) continue;
+    if (!candidateIds.has(p.id)) {
       candidates.push({
         provider_id: p.id,
         url: p.url,
-        score: 100,
+        score: 50, // default score for unmonitored fallbacks
         trend: "STABLE",
-        healthy: true,
+        healthy: !badRecent.has(p.id),
       });
     }
   }
