@@ -38,7 +38,10 @@ export default async function HomePage() {
   }
 
   const scoreMap = Object.fromEntries(scores.map((s) => [s.provider_id, s.score]));
-  const best = scores[0];
+const best = scores.reduce<(typeof scores)[number] | undefined>(
+    (acc, s) => (!acc || s.score > acc.score ? s : acc),
+    undefined
+  );
   const bestUrl = best ? providers.find((p) => p.id === best.provider_id)?.url ?? best.provider_id : null;
 
   return (
