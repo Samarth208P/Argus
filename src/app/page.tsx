@@ -3,28 +3,38 @@ import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/marketing/HeroSection";
 import { TrustBar } from "@/components/marketing/TrustBar";
 import { FeatureStory } from "@/components/marketing/FeatureStory";
-import { MetricsSection } from "@/components/marketing/MetricsSection";
 import { EvidenceSection } from "@/components/marketing/EvidenceSection";
-import { IntegrationsSection } from "@/components/marketing/IntegrationsSection";
 import { SecuritySection } from "@/components/marketing/SecuritySection";
-import { UseCasesSection } from "@/components/marketing/UseCasesSection";
 import { FinalCTA } from "@/components/marketing/FinalCTA";
 
-export default function HomePage() {
+import { getLatestScores, getProviders, getRecentScoreRows } from "@/lib/db/queries";
+
+// Revalidate every 30s (ISR)
+export const revalidate = 30;
+
+export default async function HomePage() {
+  let scores: Awaited<ReturnType<typeof getLatestScores>> = [];
+  let providers: Awaited<ReturnType<typeof getProviders>> = [];
+  let rows: Awaited<ReturnType<typeof getRecentScoreRows>> = [];
+
+  try {
+    [scores, providers, rows] = await Promise.all([
+      getLatestScores(),
+      getProviders(),
+      getRecentScoreRows(600),
+    ]);
+  } catch {
+    // Supabase not yet configured — render with empty/fallback state
+  }
+
   return (
     <>
       <Navbar />
       <main role="main">
-        {/* ── Marketing narrative ─────────────────────────── */}
-        <HeroSection />
+        <HeroSection initialScores={scores} providers={providers} initialRows={rows} />
         <TrustBar />
         <FeatureStory />
-        <MetricsSection />
         <EvidenceSection />
-
-        {/* ── Closing narrative ───────────────────────────── */}
-        <UseCasesSection />
-        <IntegrationsSection />
         <SecuritySection />
         <FinalCTA />
       </main>

@@ -31,13 +31,13 @@ type Cmd = {
 };
 
 const COMMANDS: Cmd[] = [
-  { id: "monitor", label: "Live Monitor", hint: "Real-time dashboard", group: "Navigate", icon: Gauge, href: "/terminal", keywords: "home dashboard" },
-  { id: "leaderboard", label: "Integrity Leaderboard", hint: "Provider scores", group: "Navigate", icon: Trophy, href: "/terminal#leaderboard", keywords: "rank score rpc" },
-  { id: "feed", label: "Incident Feed", hint: "Live detections", group: "Navigate", icon: Broadcast, href: "/terminal#live-feed", keywords: "incidents events" },
+  { id: "monitor", label: "Overview", hint: "Best RPC & comparison", group: "Navigate", icon: Gauge, href: "/", keywords: "home dashboard best" },
+  { id: "leaderboard", label: "RPC Leaderboard", hint: "Every provider ranked", group: "Navigate", icon: Trophy, href: "/rpcs", keywords: "rank score rpc leaderboard" },
+  { id: "feed", label: "Incident Feed", hint: "Live detections", group: "Navigate", icon: Broadcast, href: "/rpcs", keywords: "incidents events" },
   { id: "verify", label: "Verify Evidence", hint: "Recompute a claim", group: "Verify", icon: ShieldCheck, href: "/verify", keywords: "proof merkle consensus" },
   { id: "evidence-api", label: "Open Evidence API", hint: "Raw JSON bundle", group: "Verify", icon: FileCode, href: "/api/evidence", keywords: "json api receipts" },
-  { id: "add", label: "Add RPC Provider", hint: "Register an endpoint", group: "Actions", icon: Plus, href: "/terminal", keywords: "new node infura alchemy" },
-  { id: "adversary", label: "Adversary Console", hint: "Inject a fault", group: "Actions", icon: Skull, href: "/terminal", keywords: "attack simulate censor stale mutate" },
+  { id: "add", label: "Add RPC Provider", hint: "Register an endpoint", group: "Actions", icon: Plus, href: "/rpcs", keywords: "new node infura alchemy" },
+  { id: "adversary", label: "Adversary Console", hint: "Inject a fault", group: "Actions", icon: Skull, href: "/rpcs", keywords: "attack simulate censor stale mutate" },
 ];
 
 const GROUP_ORDER: Cmd["group"][] = ["Navigate", "Actions", "Verify"];

@@ -19,12 +19,12 @@ export function FinalCTA() {
               Stop trusting your RPC. Start verifying it.
             </h2>
             <p className="mx-auto mt-6 max-w-[52ch] text-[18px] leading-[1.6] text-[#a5a5ac]" style={{ fontFamily: "var(--font-inter)" }}>
-              Open the live terminal to watch every provider get cross-examined in
-              real time — or paste an incident ID and verify the evidence yourself.
+              See every provider ranked by live integrity — or paste an incident ID
+              and verify the evidence yourself.
             </p>
             <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-              <Link href="/terminal" className="btn-primary">
-                Open the terminal
+              <Link href="/rpcs" className="btn-primary">
+                Explore all RPCs
                 <ArrowRight size={16} weight="bold" />
               </Link>
               <Link href="/verify" className="btn-ghost">
