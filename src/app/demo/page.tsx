@@ -18,7 +18,7 @@ export default function DemoPage() {
   return (
     <>
       <Navbar />
-      <main role="main" className="blueprint-grid min-h-[100dvh] pt-32 pb-16">
+      <main role="main" className="blueprint-grid min-h-[100dvh] pt-[112px] pb-16">
         <div className="container-page">
           <Link href="/" className="mb-8 inline-flex items-center gap-1.5 text-[13px] text-[#7c7c82] transition-colors hover:text-white" style={{ fontFamily: "var(--font-inter)" }}>
             <ArrowLeft size={13} /> Back to overview

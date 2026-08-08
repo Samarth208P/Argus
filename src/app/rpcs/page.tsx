@@ -36,7 +36,7 @@ export default async function RpcsPage() {
       <main role="main" className="relative">
         <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[420px] aurora opacity-60" />
 
-        <div className="container-page pt-32 pb-20 sm:pt-40">
+        <div className="container-page pt-[112px] pb-20 sm:pt-[144px]">
           {/* Header */}
           <Link href="/" className="mb-8 inline-flex items-center gap-1.5 text-[13px] text-[#7c7c82] transition-colors hover:text-white" style={{ fontFamily: "var(--font-inter)" }}>
             <ArrowLeft size={13} /> Back to overview

@@ -220,6 +220,43 @@ body { background-color: var(--color-carbon); min-height: 100dvh; overflow-x: hi
 
 .btn-sm { height: 36px; padding: 0 14px; font-size: 13px; }
 
+/* ── Launch App button (the loud one) ────────────────────── */
+@keyframes launch-flow { 0% { background-position: 0% 50%; } 100% { background-position: 220% 50%; } }
+@keyframes launch-glow {
+  0%, 100% { box-shadow: 0 6px 22px -6px rgba(103,152,255,0.55), 0 0 0 0 rgba(87,217,163,0); }
+  50% { box-shadow: 0 10px 30px -6px rgba(87,217,163,0.5), 0 0 0 1px rgba(87,217,163,0.35); }
+}
+@keyframes launch-shine { 0% { transform: translateX(-160%) skewX(-18deg); } 60%, 100% { transform: translateX(320%) skewX(-18deg); } }
+
+.launch-btn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  height: 38px; padding: 0 17px; border: none; cursor: pointer; white-space: nowrap;
+  border-radius: 11px; color: #05070d;
+  font-family: var(--font-inter); font-size: 14px; font-weight: 600; letter-spacing: -0.1px;
+  background: linear-gradient(110deg, #6798ff 0%, #7cc0ff 22%, #57d9a3 50%, #7cc0ff 78%, #6798ff 100%);
+  background-size: 220% 100%;
+  animation: launch-flow 5s linear infinite, launch-glow 3.4s ease-in-out infinite;
+  transition: transform 150ms var(--ease-out), filter 200ms ease;
+  overflow: hidden;
+}
+.launch-btn > * { position: relative; z-index: 1; }
+.launch-btn::after {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 42%; z-index: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+  transform: translateX(-160%) skewX(-18deg);
+}
+.launch-btn:hover { transform: translateY(-1px) scale(1.02); filter: saturate(1.1); }
+.launch-btn:hover::after { animation: launch-shine 0.9s ease; }
+.launch-btn:active { transform: scale(0.97); }
+.launch-btn:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-carbon), 0 0 0 4px var(--color-soft-indigo); }
+.launch-btn .launch-rocket { transition: transform 200ms var(--ease-spring); }
+.launch-btn:hover .launch-rocket { transform: translateX(1px) translateY(-1px) rotate(8deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .launch-btn { animation: none; background-position: 30% 50%; }
+  .launch-btn:hover::after { animation: none; }
+}
+
 /* ── Badges (incident kinds) ─────────────────────────────── */
 .badge-deviant, .badge-stale, .badge-censoring, .badge-down, .badge-ok {
   display: inline-flex; align-items: center; gap: 5px;

@@ -14,7 +14,7 @@ export default function TerminalPage() {
   return (
     <>
       <Navbar />
-      <main className="blueprint-grid min-h-[100dvh] pt-24 pb-12" id="terminal-main" role="main">
+      <main className="blueprint-grid min-h-[100dvh] pt-[112px] pb-12" id="terminal-main" role="main">
         <div className="container-page py-4">
           <DashboardContainer />
         </div>
