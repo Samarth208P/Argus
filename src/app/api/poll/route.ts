@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MAINNET_PROVIDERS } from "@/lib/engine/registry";
-import { determineConsensus } from "@/lib/engine/consensus";
+import { canonicalize, determineConsensus, extractBlockTuple } from "@/lib/engine/consensus";
 import { classifySingleResponse, checkFreshness } from "@/lib/engine/classifier";
 import { computeScore } from "@/lib/engine/scorer";
 import { getIndependenceShare } from "@/lib/engine/registry";
@@ -14,8 +14,7 @@ import {
 import { logIncidentOnChain } from "@/lib/engine/attestationWriter";
 import { getAdversaryState } from "@/lib/engine/adversaryState";
 import { fanOutRPC } from "@/lib/engine/poller";
-import { verifyBlockContinuity } from "@/lib/engine/continuityWatch";
-import { sendCensorshipProbe } from "@/lib/engine/censorshipProbe";
+import { processPendingMerkleRoots } from "@/lib/engine/merkle";
 
 
 export const dynamic = "force-dynamic";
@@ -24,6 +23,7 @@ export const maxDuration = 60;
 
 const TIMEOUT_MS = 3000;
 const MIN_PARTICIPATION = 5;
+const TARGET_ADDRESS = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"; // vitalik.eth
 
 // ── Validate cron secret ──────────────────────────────────
 function validateCronSecret(req: NextRequest): boolean {
@@ -31,6 +31,14 @@ function validateCronSecret(req: NextRequest): boolean {
   if (!secret) return true; // dev mode — no secret required
   const auth = req.headers.get("x-cron-secret") ?? req.headers.get("authorization");
   return auth === secret || auth === `Bearer ${secret}`;
+}
+
+function validateDbConfig() {
+  const missing: string[] = [];
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) missing.push("NEXT_PUBLIC_SUPABASE_URL");
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) missing.push("SUPABASE_SERVICE_ROLE_KEY");
+  if (missing.length === 0) return null;
+  return `Missing required Supabase env vars: ${missing.join(", ")}`;
 }
 
 // ── Fan out to all active providers ──────────────────────
@@ -65,10 +73,37 @@ async function fanOut(
   });
 }
 
+function normalizeBlockResult(result: unknown) {
+  if (!result || typeof result !== "object") return null;
+  return extractBlockTuple(result as Record<string, string>);
+}
+
+async function retryConfirmsDeviation(
+  provider: { id: string; url: string },
+  method: string,
+  params: unknown[],
+  expectedHash: string,
+  normalize: (value: unknown) => unknown = (value) => value
+) {
+  for (let i = 0; i < 2; i++) {
+    const [retry] = await fanOut([provider], method, params);
+    if (retry?.status !== "ok") continue;
+    const retryHash = await canonicalize(normalize(retry.result));
+    if (retryHash === expectedHash) return false;
+  }
+  return true;
+}
+
 
 export async function POST(req: NextRequest) {
   if (!validateCronSecret(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const dbConfigError = validateDbConfig();
+  if (dbConfigError) {
+    console.error(dbConfigError);
+    return NextResponse.json({ error: "DB_CONFIG_MISSING", detail: dbConfigError }, { status: 500 });
   }
 
   try {
@@ -95,6 +130,12 @@ export async function POST(req: NextRequest) {
     const blockNumbers = blockResults
       .filter((r) => r.status === "ok" && r.result)
       .map((r) => BigInt(r.result as string));
+    if (blockNumbers.length < MIN_PARTICIPATION) {
+      return NextResponse.json(
+        { error: "Not enough live providers", liveProviders: blockNumbers.length },
+        { status: 503 }
+      );
+    }
     const poolMax = blockNumbers.reduce((a, b) => (b > a ? b : a), 0n);
 
     // Use poolMax - 10 as the pinned "finalized" approximation
@@ -102,7 +143,6 @@ export async function POST(req: NextRequest) {
     const pinnedBlockHex = "0x" + pinnedBlock.toString(16);
 
     // ── C1: eth_getBalance (state honesty) ───────────────
-    const TARGET_ADDRESS = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"; // vitalik.eth
     const balanceResults = await fanOut(allProviders, "eth_getBalance", [
       TARGET_ADDRESS,
       pinnedBlockHex,
@@ -122,6 +162,13 @@ export async function POST(req: NextRequest) {
       status: r.status,
     }));
 
+    const blockConsensusResponses = blockDataResults.map((r) => ({
+      providerId: r.id,
+      result: normalizeBlockResult(r.result),
+      latencyMs: r.latencyMs,
+      status: r.status,
+    }));
+
     // Build independence weights
     const weights: Record<string, number> = {};
     for (const p of allProviders) {
@@ -130,11 +177,13 @@ export async function POST(req: NextRequest) {
 
     // ── Run consensus ────────────────────────────────────
     const consensusResult = await determineConsensus(consensusResponses, weights);
+    const blockConsensusResult = await determineConsensus(blockConsensusResponses, weights);
 
     // ── Build battery ─────────────────────────────────────
     const battery = allProviders.map((p) => {
       const balRes = balanceResults.find((r) => r.id === p.id)!;
       const blkRes = blockDataResults.find((r) => r.id === p.id)!;
+      const blockTuple = normalizeBlockResult(blkRes.result);
       const lagBlocks = blkRes.result
         ? checkFreshness(
             BigInt((blkRes.result as Record<string, string>)?.number ?? "0x0"),
@@ -142,52 +191,108 @@ export async function POST(req: NextRequest) {
           )
         : 999;
 
-      const isOutlier = consensusResult.outliers.includes(p.id);
+      const balanceOutlier =
+        consensusResult.status === "CONSENSUS" && consensusResult.outliers.includes(p.id);
+      const blockOutlier =
+        blockConsensusResult.status === "CONSENSUS" && blockConsensusResult.outliers.includes(p.id);
+      const adv = getAdversaryState();
       const kind = classifySingleResponse(
         { providerId: p.id, result: balRes.result, latencyMs: balRes.latencyMs, status: balRes.status },
-        isOutlier,
+        balanceOutlier || blockOutlier,
         lagBlocks
       );
+      const simulatedCensor =
+        adv.targetId === p.id && adv.mode === "censor" && balRes.status !== "ok";
 
       return {
         providerId: p.id,
         balance: balRes.result,
+        block: blockTuple,
         latencyMs: balRes.latencyMs,
         status: balRes.status,
         lagBlocks,
-        kind,
-        isOutlier,
+        kind: simulatedCensor ? "CENSORING" : kind,
+        isOutlier: balanceOutlier || blockOutlier,
+        balanceOutlier,
+        blockOutlier,
+        deviationCheck: blockOutlier ? "block" : balanceOutlier ? "balance" : null,
       };
     });
 
     // ── Persist poll ──────────────────────────────────────
-    let pollId: string | null = null;
+    let pollId: string;
     try {
       pollId = await insertPoll({
         battery,
         pinned_block_hex: pinnedBlockHex,
         consensus_hash: consensusResult.truthHash,
         merkle_root: null,
-        status: consensusResult.status,
+        status:
+          consensusResult.status === "CONSENSUS" && blockConsensusResult.status === "CONSENSUS"
+            ? "ok"
+            : "INCONCLUSIVE",
       });
-    } catch { /* DB not connected */ }
+    } catch (err) {
+      console.error("Failed to insert poll:", err);
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "DB_INSERT_FAILED",
+          detail: String(err),
+          consensus: consensusResult.status,
+          blockConsensus: blockConsensusResult.status,
+          providersPolled: allProviders.length,
+        },
+        { status: 503 }
+      );
+    }
 
     // ── Persist incidents for confirmed outliers ──────────
     const incidents: string[] = [];
     for (const item of battery) {
-      if (item.kind && item.kind !== "DOWN") {
+      if (item.kind) {
         try {
+          if (item.kind === "DEVIANT") {
+            const provider = allProviders.find((p) => p.id === item.providerId);
+            const expectedHash =
+              item.deviationCheck === "block"
+                ? blockConsensusResult.truthHash
+                : consensusResult.truthHash;
+            if (!provider || !expectedHash) continue;
+
+            const confirmed = await retryConfirmsDeviation(
+              provider,
+              item.deviationCheck === "block" ? "eth_getBlockByNumber" : "eth_getBalance",
+              item.deviationCheck === "block"
+                ? [pinnedBlockHex, false]
+                : [TARGET_ADDRESS, pinnedBlockHex],
+              expectedHash,
+              item.deviationCheck === "block" ? normalizeBlockResult : (value) => value
+            );
+            if (!confirmed) continue;
+          }
+
           // Log on-chain first to get the tx hash (attestation receipt)
-          const txHash = await logIncidentOnChain(pollId ?? "00000000-0000-0000-0000-000000000000", item.kind, item.providerId);
+          const txHash = await logIncidentOnChain(pollId, item.kind, item.providerId);
           const receipts = txHash ? { txHash, network: "sepolia" } : null;
+          const expected =
+            item.deviationCheck === "block"
+              ? blockConsensusResult.truthHash
+              : consensusResult.truthHash;
 
           const incidentId = await insertIncident({
             provider_id: item.providerId,
             kind: item.kind,
             poll_id: pollId,
-            request: { method: "eth_getBalance", params: [TARGET_ADDRESS, pinnedBlockHex] },
-            expected: consensusResult.truthHash,
-            got: item.balance !== null ? String(item.balance) : null,
+            request:
+              item.deviationCheck === "block"
+                ? { method: "eth_getBlockByNumber", params: [pinnedBlockHex, false] }
+                : { method: "eth_getBalance", params: [TARGET_ADDRESS, pinnedBlockHex] },
+            expected,
+            got:
+              item.deviationCheck === "block"
+                ? JSON.stringify(item.block)
+                : item.balance !== null ? String(item.balance) : null,
             receipts,
           });
           incidents.push(incidentId);
@@ -204,7 +309,9 @@ export async function POST(req: NextRequest) {
         const batteryItem = battery.find((b) => b.providerId === p.id);
         const pollRecord = {
           providerId: p.id,
-          wasInConsensus: consensusResult.truthGroup.includes(p.id),
+          wasInConsensus:
+            (consensusResult.status !== "CONSENSUS" || consensusResult.truthGroup.includes(p.id)) &&
+            (blockConsensusResult.status !== "CONSENSUS" || blockConsensusResult.truthGroup.includes(p.id)),
           wasOnline: batteryItem?.status === "ok",
           latencyMs: batteryItem?.latencyMs ?? TIMEOUT_MS,
           lagBlocks: batteryItem?.lagBlocks ?? 999,
@@ -231,13 +338,21 @@ export async function POST(req: NextRequest) {
       } catch { /* DB not connected */ }
     }
 
+    // ── Hourly Merkle Notarization ────────────────────────
+    try {
+      await processPendingMerkleRoots();
+    } catch (merkleErr) {
+      console.error("Failed to process hourly Merkle roots:", merkleErr);
+    }
+
     return NextResponse.json({
       ok: true,
       pinnedBlockHex,
       pollId,
       consensus: consensusResult.status,
+      blockConsensus: blockConsensusResult.status,
       truthHash: consensusResult.truthHash,
-      outliers: consensusResult.outliers,
+      outliers: [...new Set([...consensusResult.outliers, ...blockConsensusResult.outliers])],
       incidents,
       providersPolled: allProviders.length,
     });

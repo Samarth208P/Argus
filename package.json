@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "ping-poll": "node scripts/poll-heartbeat.js"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
