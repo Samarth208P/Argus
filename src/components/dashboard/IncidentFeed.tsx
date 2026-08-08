@@ -11,6 +11,7 @@ import { COLORS, scoreColor } from "@/lib/design-tokens";
 interface IncidentFeedProps {
   initialIncidents: DbIncident[];
   scores: Record<string, number>; // providerId → score
+  onSelectIncident?: (id: string) => void;
 }
 
 const KIND_ICONS = {
@@ -34,9 +35,8 @@ function timeAgo(isoString: string): string {
   return `${Math.floor(diff / 3600)}h ago`;
 }
 
-export function IncidentFeed({ initialIncidents, scores }: IncidentFeedProps) {
+export function IncidentFeed({ initialIncidents, scores, onSelectIncident }: IncidentFeedProps) {
   const [incidents, setIncidents] = useState<DbIncident[]>(initialIncidents);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // ── Supabase Realtime subscription ───────────────────────
   useEffect(() => {
