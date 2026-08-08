@@ -33,7 +33,7 @@ export function AdversaryPanel({ providers }: AdversaryPanelProps) {
           if (data.mode) setMode(data.mode);
         }
       } catch (err) {
-        console.error("Failed to fetch adversary state:", err);
+        console.warn("Failed to fetch adversary state:", err);
       }
     }
     checkState();
@@ -60,7 +60,7 @@ export function AdversaryPanel({ providers }: AdversaryPanelProps) {
         setActiveAdversary(data);
       }
     } catch (err) {
-      console.error("Failed to update adversary:", err);
+      console.warn("Failed to update adversary:", err);
     } finally {
       setLoading(false);
     }
