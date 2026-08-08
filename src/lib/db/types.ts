@@ -58,8 +58,8 @@ export interface Database {
     Tables: {
       providers: { Row: DbProvider; Insert: Omit<DbProvider, "created_at">; Update: Partial<DbProvider> };
       polls: { Row: DbPoll; Insert: Omit<DbPoll, "id" | "t">; Update: Partial<DbPoll> };
-      incidents: { Row: DbIncident; Insert: Omit<DbIncident, "id" | "t">; Update: Partial<DbIncident> };
-      scores: { Row: DbScore; Insert: Omit<DbScore, "id" | "t">; Update: Partial<DbScore> };
+      incidents: { Row: DbIncident; Insert: Omit<DbIncident, "id" | "t"> & { id?: string; t?: string }; Update: Partial<DbIncident> };
+      scores: { Row: DbScore; Insert: Omit<DbScore, "id" | "t"> & { id?: string; t?: string }; Update: Partial<DbScore> };
     };
   };
 }

@@ -45,7 +45,7 @@ export function Footer() {
               How it works
             </Link>
             <a
-              href="https://github.com"
+              href="https://github.com/Samarth208P/Argus"
               target="_blank"
               rel="noopener noreferrer"
               className="group inline-flex items-center gap-1 text-[13px] text-[#7c7c82] transition-colors hover:text-white"
