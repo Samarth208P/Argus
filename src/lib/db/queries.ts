@@ -1,9 +1,11 @@
 // ============================================================
 // Typed Query Functions for Local JSON Database (Fallback Core)
+// & Supabase Production Database
 // ============================================================
 
 import type { DbIncident, DbProvider, DbScore, DbPoll } from "./types";
 import { MAINNET_PROVIDERS } from "@/lib/engine/registry";
+import { isSupabaseConfigured, supabaseAdmin } from "./supabase";
 import * as fs from "fs";
 import * as path from "path";
 import crypto from "crypto";
@@ -108,6 +110,16 @@ const BUILT_IN_PROVIDERS: DbProvider[] = MAINNET_PROVIDERS.map((p) => ({
 
 // ── Providers ─────────────────────────────────────────────
 export async function getProviders(): Promise<DbProvider[]> {
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin.from("providers").select("*");
+      if (error) throw error;
+      if (data && data.length > 0) return data as DbProvider[];
+    } catch (err) {
+      console.error("Supabase getProviders error, falling back to local:", err);
+    }
+  }
+
   const local = readLocalDb();
   if (local.providers.length > 0) return local.providers;
   return BUILT_IN_PROVIDERS;
@@ -116,6 +128,24 @@ export async function getProviders(): Promise<DbProvider[]> {
 export async function upsertProvider(
   provider: Omit<DbProvider, "created_at">
 ): Promise<void> {
+  if (isSupabaseConfigured) {
+    try {
+      const { error } = await supabaseAdmin.from("providers").upsert({
+        id: provider.id,
+        url: provider.url,
+        label: provider.label,
+        operator: provider.operator,
+        type: provider.type,
+        is_sim: provider.is_sim,
+        network: provider.network,
+      });
+      if (error) throw error;
+      return;
+    } catch (err) {
+      console.error("Supabase upsertProvider error, falling back to local:", err);
+    }
+  }
+
   const local = readLocalDb();
   const idx = local.providers.findIndex((p) => p.id === provider.id);
   const updatedProvider: DbProvider = {
@@ -139,6 +169,26 @@ export async function insertPoll(poll: {
   merkle_root: string | null;
   status: string;
 }): Promise<string> {
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("polls")
+        .insert({
+          battery: poll.battery,
+          pinned_block_hex: poll.pinned_block_hex,
+          consensus_hash: poll.consensus_hash,
+          merkle_root: poll.merkle_root,
+          status: poll.status,
+        })
+        .select("id")
+        .single();
+      if (error) throw error;
+      if (data) return data.id;
+    } catch (err) {
+      console.error("Supabase insertPoll error, falling back to local:", err);
+    }
+  }
+
   const pollId = generateUUID();
   const newPoll: DbPoll = {
     id: pollId,
@@ -152,17 +202,45 @@ export async function insertPoll(poll: {
   return pollId;
 }
 
-export async function getPollById(id: string) {
+export async function getPollById(id: string): Promise<DbPoll | null> {
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("polls")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+      if (error) throw error;
+      if (data) return data as DbPoll;
+    } catch (err) {
+      console.error("Supabase getPollById error, falling back to local:", err);
+    }
+  }
+
   const local = readLocalDb();
   const found = local.polls.find((p) => p.id === id);
   return found || null;
 }
 
-export async function getPollsByHour(hour: Date) {
+export async function getPollsByHour(hour: Date): Promise<DbPoll[]> {
   const start = new Date(hour);
   start.setMinutes(0, 0, 0);
   const end = new Date(start);
   end.setHours(end.getHours() + 1);
+
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("polls")
+        .select("*")
+        .gte("t", start.toISOString())
+        .lt("t", end.toISOString());
+      if (error) throw error;
+      if (data) return data as DbPoll[];
+    } catch (err) {
+      console.error("Supabase getPollsByHour error, falling back to local:", err);
+    }
+  }
 
   const local = readLocalDb();
   return local.polls.filter((p) => {
@@ -171,7 +249,22 @@ export async function getPollsByHour(hour: Date) {
   });
 }
 
-export async function getPollsWithoutMerkleRoot(beforeTime: string): Promise<any[]> {
+export async function getPollsWithoutMerkleRoot(beforeTime: string): Promise<DbPoll[]> {
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("polls")
+        .select("*")
+        .is("merkle_root", null)
+        .lt("t", beforeTime)
+        .order("t", { ascending: true });
+      if (error) throw error;
+      if (data) return data as DbPoll[];
+    } catch (err) {
+      console.error("Supabase getPollsWithoutMerkleRoot error, falling back to local:", err);
+    }
+  }
+
   const local = readLocalDb();
   return local.polls
     .filter((p) => p.merkle_root === null && p.t < beforeTime)
@@ -179,6 +272,19 @@ export async function getPollsWithoutMerkleRoot(beforeTime: string): Promise<any
 }
 
 export async function updatePollsMerkleRoot(ids: string[], root: string): Promise<void> {
+  if (isSupabaseConfigured) {
+    try {
+      const { error } = await supabaseAdmin
+        .from("polls")
+        .update({ merkle_root: root })
+        .in("id", ids);
+      if (error) throw error;
+      return;
+    } catch (err) {
+      console.error("Supabase updatePollsMerkleRoot error, falling back to local:", err);
+    }
+  }
+
   const local = readLocalDb();
   local.polls.forEach((p) => {
     if (ids.includes(p.id)) {
@@ -192,6 +298,28 @@ export async function updatePollsMerkleRoot(ids: string[], root: string): Promis
 export async function insertIncident(
   incident: Omit<DbIncident, "id" | "t">
 ): Promise<string> {
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("incidents")
+        .insert({
+          provider_id: incident.provider_id,
+          kind: incident.kind,
+          poll_id: incident.poll_id,
+          request: incident.request,
+          expected: incident.expected,
+          got: incident.got,
+          receipts: incident.receipts,
+        })
+        .select("id")
+        .single();
+      if (error) throw error;
+      if (data) return data.id;
+    } catch (err) {
+      console.error("Supabase insertIncident error, falling back to local:", err);
+    }
+  }
+
   const incidentId = generateUUID();
   const newIncident: DbIncident = {
     id: incidentId,
@@ -206,6 +334,20 @@ export async function insertIncident(
 }
 
 export async function getRecentIncidents(limit = 50): Promise<DbIncident[]> {
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("incidents")
+        .select("*")
+        .order("t", { ascending: false })
+        .limit(limit);
+      if (error) throw error;
+      if (data) return data as DbIncident[];
+    } catch (err) {
+      console.error("Supabase getRecentIncidents error, falling back to local:", err);
+    }
+  }
+
   const local = readLocalDb();
   return local.incidents
     .sort((a, b) => new Date(b.t).getTime() - new Date(a.t).getTime())
@@ -213,6 +355,20 @@ export async function getRecentIncidents(limit = 50): Promise<DbIncident[]> {
 }
 
 export async function getIncidentById(id: string): Promise<DbIncident | null> {
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("incidents")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+      if (error) throw error;
+      if (data) return data as DbIncident;
+    } catch (err) {
+      console.error("Supabase getIncidentById error, falling back to local:", err);
+    }
+  }
+
   const local = readLocalDb();
   const found = local.incidents.find((i) => i.id === id);
   return found || null;
@@ -222,6 +378,24 @@ export async function getIncidentById(id: string): Promise<DbIncident | null> {
 export async function upsertScore(
   score: Omit<DbScore, "id" | "t">
 ): Promise<void> {
+  if (isSupabaseConfigured) {
+    try {
+      const { error } = await supabaseAdmin.from("scores").insert({
+        provider_id: score.provider_id,
+        score: score.score,
+        accuracy: score.accuracy,
+        uptime: score.uptime,
+        latency_avg: score.latency_avg,
+        freshness_score: score.freshness_score,
+        trend: score.trend,
+      });
+      if (error) throw error;
+      return;
+    } catch (err) {
+      console.error("Supabase upsertScore error, falling back to local:", err);
+    }
+  }
+
   const scoreId = generateUUID();
   const newScore: DbScore = {
     id: scoreId,
@@ -235,6 +409,28 @@ export async function upsertScore(
 }
 
 export async function getLatestScores(): Promise<DbScore[]> {
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("scores")
+        .select("*")
+        .order("t", { ascending: false })
+        .limit(200);
+      if (error) throw error;
+      if (data) {
+        const latest = new Map<string, DbScore>();
+        for (const row of data) {
+          if (!latest.has(row.provider_id)) {
+            latest.set(row.provider_id, row as DbScore);
+          }
+        }
+        return [...latest.values()].sort((a, b) => b.score - a.score);
+      }
+    } catch (err) {
+      console.error("Supabase getLatestScores error, falling back to local:", err);
+    }
+  }
+
   const latest = new Map<string, DbScore>();
   const local = readLocalDb();
   const sortedLocal = [...local.scores].sort((a, b) => new Date(b.t).getTime() - new Date(a.t).getTime());
@@ -250,6 +446,21 @@ export async function getScoreHistory(
   providerId: string,
   limit = 50
 ): Promise<DbScore[]> {
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("scores")
+        .select("*")
+        .eq("provider_id", providerId)
+        .order("t", { ascending: false })
+        .limit(limit);
+      if (error) throw error;
+      if (data) return (data as DbScore[]).reverse();
+    } catch (err) {
+      console.error("Supabase getScoreHistory error, falling back to local:", err);
+    }
+  }
+
   const local = readLocalDb();
   const filtered = local.scores
     .filter((s) => s.provider_id === providerId)
@@ -260,9 +471,46 @@ export async function getScoreHistory(
 
 export async function getProvidersWithRecentIncidents(): Promise<Set<string>> {
   const thirtyMinAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+  const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("incidents")
+        .select("provider_id, kind, t")
+        .gte("t", thirtyMinAgo);
+      if (error) throw error;
+      if (data) {
+        const ids = data
+          .filter((i) => {
+            if (["CENSORING", "DEVIANT"].includes(i.kind)) {
+              return i.t >= thirtyMinAgo;
+            }
+            if (["STALE", "DOWN"].includes(i.kind)) {
+              return i.t >= fiveMinAgo;
+            }
+            return false;
+          })
+          .map((i) => i.provider_id);
+        return new Set<string>(ids);
+      }
+    } catch (err) {
+      console.error("Supabase getProvidersWithRecentIncidents error, falling back to local:", err);
+    }
+  }
+
   const local = readLocalDb();
   const ids = local.incidents
-    .filter((i) => i.t >= thirtyMinAgo && ["CENSORING", "DEVIANT", "STALE", "DOWN"].includes(i.kind))
+    .filter((i) => {
+      if (["CENSORING", "DEVIANT"].includes(i.kind)) {
+        return i.t >= thirtyMinAgo;
+      }
+      if (["STALE", "DOWN"].includes(i.kind)) {
+        return i.t >= fiveMinAgo;
+      }
+      return false;
+    })
     .map((i) => i.provider_id);
   return new Set<string>(ids);
 }
+

@@ -436,8 +436,17 @@ export function DashboardContainer() {
   // ── Reactive Router Decision ─────────────────────────────
   const badRecentProviders = useMemo(() => {
     const thirtyMinAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
     const ids = incidents
-      .filter((i) => i.t >= thirtyMinAgo && ["CENSORING", "DEVIANT", "STALE", "DOWN"].includes(i.kind))
+      .filter((i) => {
+        if (["CENSORING", "DEVIANT"].includes(i.kind)) {
+          return i.t >= thirtyMinAgo;
+        }
+        if (["STALE", "DOWN"].includes(i.kind)) {
+          return i.t >= fiveMinAgo;
+        }
+        return false;
+      })
       .map((i) => i.provider_id);
     return new Set<string>(ids);
   }, [incidents]);

@@ -42,6 +42,21 @@ export async function selectRoute(): Promise<RouteDecision> {
     });
   }
 
+  // Fail-open: if no monitoring scores are fresh, fall back to registered providers
+  // using a default score and setting them as healthy to keep the RPC endpoint functioning.
+  if (candidates.length === 0) {
+    for (const p of providers) {
+      if (p.is_sim) continue;
+      candidates.push({
+        provider_id: p.id,
+        url: p.url,
+        score: 100,
+        trend: "STABLE",
+        healthy: true,
+      });
+    }
+  }
+
   const healthy = candidates.filter((c) => c.healthy);
   const chain = healthy.length ? healthy : candidates;              // fail-open, but FLAGGED
   return {
