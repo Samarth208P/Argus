@@ -8,13 +8,13 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 export const isSupabaseConfigured = !!(supabaseUrl && (supabaseAnonKey || supabaseServiceKey));
 
 // Public client
-export const supabase = createClient<Database>(
+export const supabase = createClient(
   supabaseUrl,
   supabaseAnonKey || supabaseServiceKey
 );
 
 // Admin client for server-side writes that bypass RLS
-export const supabaseAdmin = createClient<Database>(
+export const supabaseAdmin = createClient(
   supabaseUrl,
   supabaseServiceKey || supabaseAnonKey
 );
