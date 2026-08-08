@@ -442,34 +442,6 @@ export async function getLatestScores(): Promise<DbScore[]> {
   return [...latest.values()].sort((a, b) => b.score - a.score);
 }
 
-/**
- * Recent raw score rows across all providers (not deduped), oldest→newest.
- * Used to build the real time-series comparison chart. Falls back to the
- * latest snapshot (one point per provider) when no history exists yet —
- * never fabricates multi-point history.
- */
-export async function getRecentScoreRows(limit = 600): Promise<DbScore[]> {
-  if (isSupabaseConfigured) {
-    try {
-      const { data, error } = await supabaseAdmin
-        .from("scores")
-        .select("*")
-        .order("t", { ascending: false })
-        .limit(limit);
-      if (error) throw error;
-      if (data && data.length > 0) return ((data ?? []) as DbScore[]).reverse();
-    } catch (err) {
-      console.error("Supabase getRecentScoreRows error, falling back to local:", err);
-    }
-  }
-
-  const local = readLocalDb();
-  const localRows = [...local.scores]
-    .sort((a, b) => new Date(b.t).getTime() - new Date(a.t).getTime())
-    .slice(0, limit);
-  return localRows.reverse();
-}
-
 export async function getScoreHistory(
   providerId: string,
   limit = 50
