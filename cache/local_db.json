@@ -1908,6 +1908,826 @@
         "txHash": "0x0612bff86c0048d28b888e0331c59dab",
         "network": "sepolia"
       }
+    },
+    {
+      "id": "47b46278-aba5-4f3c-b15f-b12af9fb5871",
+      "t": "2026-08-08T12:33:29.390Z",
+      "provider_id": "llama",
+      "kind": "DOWN",
+      "poll_id": "2d2e58cc-3290-4883-80f6-5e4d271ed798",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb0"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0xec2615cedbb64f538389648d5ee28b7c",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "4e0ff8f0-46e4-468d-bf32-40f2413f7d6e",
+      "t": "2026-08-08T12:33:29.589Z",
+      "provider_id": "drpc",
+      "kind": "DEVIANT",
+      "poll_id": "2d2e58cc-3290-4883-80f6-5e4d271ed798",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eb0",
+          false
+        ]
+      },
+      "expected": "46a2ece55ab181d218cf096d925d2a6c40ea5eccf006cb8a80f07f93fca56d5c",
+      "got": "null",
+      "receipts": {
+        "txHash": "0xe1c28cee47d743a0acf190c3b62c0e69",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "39ad85dd-6fc7-4cdf-a632-9388cbc8a2b3",
+      "t": "2026-08-08T12:33:29.787Z",
+      "provider_id": "onfinality",
+      "kind": "DEVIANT",
+      "poll_id": "2d2e58cc-3290-4883-80f6-5e4d271ed798",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb0"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0xf99763c402b5472e873610e56525c6b1",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "bcf0336b-d0f6-47e2-8e5f-95bb69f18ac2",
+      "t": "2026-08-08T12:33:29.989Z",
+      "provider_id": "flashbots",
+      "kind": "DOWN",
+      "poll_id": "2d2e58cc-3290-4883-80f6-5e4d271ed798",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb0"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0xe05f603f30a14578a9f60ec0d349a0f6",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "b30b6500-26be-4640-aed2-8b1330c5a17e",
+      "t": "2026-08-08T12:33:37.102Z",
+      "provider_id": "cloudflare",
+      "kind": "STALE",
+      "poll_id": "23eb22e2-991a-4ceb-a06f-e42497105053",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eb1",
+          false
+        ]
+      },
+      "expected": "d37f977bc9941b4e06b835af4920c09cb507566e76d2657e0e4689503d82ac45",
+      "got": "null",
+      "receipts": {
+        "txHash": "0xadc1c11f13b84177a143e15f23954d0e",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "012dc494-9536-43b6-a8d9-54bf3c88ff51",
+      "t": "2026-08-08T12:33:37.314Z",
+      "provider_id": "llama",
+      "kind": "DOWN",
+      "poll_id": "23eb22e2-991a-4ceb-a06f-e42497105053",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb1"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x3e3f65aa864c4ede8a34bbe05ad34d6f",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "a8c1dbc2-340c-494f-8b11-d9807c761a40",
+      "t": "2026-08-08T12:33:37.501Z",
+      "provider_id": "onfinality",
+      "kind": "DEVIANT",
+      "poll_id": "23eb22e2-991a-4ceb-a06f-e42497105053",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eb1",
+          false
+        ]
+      },
+      "expected": "d37f977bc9941b4e06b835af4920c09cb507566e76d2657e0e4689503d82ac45",
+      "got": "null",
+      "receipts": {
+        "txHash": "0x64df29eb9a9f4d6e964a30a31c512694",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "a8c32b60-950d-49e2-b334-6a667b7eb58c",
+      "t": "2026-08-08T12:33:37.750Z",
+      "provider_id": "flashbots",
+      "kind": "DOWN",
+      "poll_id": "23eb22e2-991a-4ceb-a06f-e42497105053",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb1"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x74e8d79773a74fc4a21354e9afb5714a",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "a0ceeb62-1bf0-4dfc-8cc9-b87013006381",
+      "t": "2026-08-08T12:33:58.206Z",
+      "provider_id": "cloudflare",
+      "kind": "STALE",
+      "poll_id": "537f797d-45b4-425e-af70-96522e409454",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eb3",
+          false
+        ]
+      },
+      "expected": "d52228d80fcba1d6ccb8516a5da386475fcd6a5fecec97bdc26ae50093d4ff6f",
+      "got": "null",
+      "receipts": {
+        "txHash": "0x8ea4119dd9e5416e889e807bb3148c73",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "86001a42-d089-4e1c-baac-bb4ceb998251",
+      "t": "2026-08-08T12:33:58.407Z",
+      "provider_id": "llama",
+      "kind": "DOWN",
+      "poll_id": "537f797d-45b4-425e-af70-96522e409454",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb3"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x333d8400f9bc4f32834b2ae5911108ac",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "5c8a2f2d-92c2-451b-8f93-9e174a98d2ba",
+      "t": "2026-08-08T12:33:58.611Z",
+      "provider_id": "onfinality",
+      "kind": "DEVIANT",
+      "poll_id": "537f797d-45b4-425e-af70-96522e409454",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb3"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x4b832c01213a438f8ae0098a18e6be11",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "c5247411-83cc-437d-b076-41679e38d863",
+      "t": "2026-08-08T12:33:58.817Z",
+      "provider_id": "flashbots",
+      "kind": "DOWN",
+      "poll_id": "537f797d-45b4-425e-af70-96522e409454",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb3"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x365e644483794cdabaf08c8a69d0e675",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "2ffdd9ec-9bee-4130-ae08-d3c1c0bd5b23",
+      "t": "2026-08-08T12:34:05.294Z",
+      "provider_id": "cloudflare",
+      "kind": "STALE",
+      "poll_id": "dac98308-eb91-4b4d-a17e-414d7ca9cee9",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eb3",
+          false
+        ]
+      },
+      "expected": "d52228d80fcba1d6ccb8516a5da386475fcd6a5fecec97bdc26ae50093d4ff6f",
+      "got": "null",
+      "receipts": {
+        "txHash": "0x94bf15c46d0b4bb795840634914017ee",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "73a9a3d3-6449-4179-91e8-986202afd613",
+      "t": "2026-08-08T12:34:05.512Z",
+      "provider_id": "llama",
+      "kind": "DOWN",
+      "poll_id": "dac98308-eb91-4b4d-a17e-414d7ca9cee9",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb3"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0xa46f2d9eb3f24bd395e4cba9fe257575",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "2b5abef0-879d-4140-a4ac-b9519a9debbf",
+      "t": "2026-08-08T12:34:05.718Z",
+      "provider_id": "onfinality",
+      "kind": "DEVIANT",
+      "poll_id": "dac98308-eb91-4b4d-a17e-414d7ca9cee9",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eb3",
+          false
+        ]
+      },
+      "expected": "d52228d80fcba1d6ccb8516a5da386475fcd6a5fecec97bdc26ae50093d4ff6f",
+      "got": "null",
+      "receipts": {
+        "txHash": "0x7bfb7f1cf0dc4d41a7879948110db16f",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "e745eb0e-a542-4105-a1e6-b94c21d1cbbd",
+      "t": "2026-08-08T12:34:05.931Z",
+      "provider_id": "flashbots",
+      "kind": "DOWN",
+      "poll_id": "dac98308-eb91-4b4d-a17e-414d7ca9cee9",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb3"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x15572630c04f48e2b9680d234eb7d890",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "43eb387b-d4b8-4089-8417-3ba28ad7d48b",
+      "t": "2026-08-08T12:34:13.168Z",
+      "provider_id": "cloudflare",
+      "kind": "STALE",
+      "poll_id": "0c2f0878-dcf2-418c-9464-ae17ded8817b",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eb4",
+          false
+        ]
+      },
+      "expected": "b0e90ebdb0740839b6dc7d48198a359a20cf31216a5b03a931a2236d902dd505",
+      "got": "null",
+      "receipts": {
+        "txHash": "0xe5556e4c97484e2e84a36a152af85ba2",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "9d94741f-20a6-43f4-bcad-cc96cc4abbbf",
+      "t": "2026-08-08T12:34:13.356Z",
+      "provider_id": "llama",
+      "kind": "DOWN",
+      "poll_id": "0c2f0878-dcf2-418c-9464-ae17ded8817b",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb4"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0xe582e9fb75d64a4cacac3fdd636d58af",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "91706895-af25-424a-9ac0-9c2b6b3fc142",
+      "t": "2026-08-08T12:34:13.571Z",
+      "provider_id": "onfinality",
+      "kind": "DEVIANT",
+      "poll_id": "0c2f0878-dcf2-418c-9464-ae17ded8817b",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eb4",
+          false
+        ]
+      },
+      "expected": "b0e90ebdb0740839b6dc7d48198a359a20cf31216a5b03a931a2236d902dd505",
+      "got": "null",
+      "receipts": {
+        "txHash": "0x0325e7650cc14ca18485f56740929328",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "2dcfac8f-3c96-4040-8b0d-0a34706f3027",
+      "t": "2026-08-08T12:34:13.756Z",
+      "provider_id": "flashbots",
+      "kind": "DOWN",
+      "poll_id": "0c2f0878-dcf2-418c-9464-ae17ded8817b",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb4"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x3698610d5dd64bee873dcfd23ded2b9f",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "2838096a-813d-4a64-ad3f-29efb2bd16f7",
+      "t": "2026-08-08T12:34:34.642Z",
+      "provider_id": "cloudflare",
+      "kind": "STALE",
+      "poll_id": "3160a302-4bda-4bbb-8aed-38d50eb8e042",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eb6",
+          false
+        ]
+      },
+      "expected": "1623ef869a54d4c1e549bf5800fe0b2219cdbdcd0e6a4c08abe6f2c99c89fb80",
+      "got": "null",
+      "receipts": {
+        "txHash": "0x29dc2d2f79664474bdf19c67afe719e8",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "6ab6f9b0-bf1c-410f-83d6-6a92a8bdbaa0",
+      "t": "2026-08-08T12:34:34.844Z",
+      "provider_id": "llama",
+      "kind": "DOWN",
+      "poll_id": "3160a302-4bda-4bbb-8aed-38d50eb8e042",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb6"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0xb527657e98a64bc68da9c0f6c109de9d",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "018d2b30-57b6-434c-aa70-0261c35e6fbe",
+      "t": "2026-08-08T12:34:35.045Z",
+      "provider_id": "1rpc",
+      "kind": "DOWN",
+      "poll_id": "3160a302-4bda-4bbb-8aed-38d50eb8e042",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb6"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x59e2f0f5a410454399817f9a25dcd807",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "8e801386-be38-44bc-b321-f3c088ff98c9",
+      "t": "2026-08-08T12:34:35.260Z",
+      "provider_id": "onfinality",
+      "kind": "DEVIANT",
+      "poll_id": "3160a302-4bda-4bbb-8aed-38d50eb8e042",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eb6",
+          false
+        ]
+      },
+      "expected": "1623ef869a54d4c1e549bf5800fe0b2219cdbdcd0e6a4c08abe6f2c99c89fb80",
+      "got": "null",
+      "receipts": {
+        "txHash": "0x8ed4432f3b4a43fcaa5f1c8b7ec09422",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "8e71a9b6-130d-419f-ab41-9179feb9aad6",
+      "t": "2026-08-08T12:34:35.471Z",
+      "provider_id": "flashbots",
+      "kind": "DOWN",
+      "poll_id": "3160a302-4bda-4bbb-8aed-38d50eb8e042",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb6"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x3fce5d64e8984e1c9a0a694a49935271",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "4ade441b-78a6-49c0-840c-86e1fda4d764",
+      "t": "2026-08-08T12:34:43.383Z",
+      "provider_id": "cloudflare",
+      "kind": "STALE",
+      "poll_id": "761276d2-ffe7-4f74-9739-7b786f98723c",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eb6",
+          false
+        ]
+      },
+      "expected": "1623ef869a54d4c1e549bf5800fe0b2219cdbdcd0e6a4c08abe6f2c99c89fb80",
+      "got": "null",
+      "receipts": {
+        "txHash": "0xeccc4ab4ba764431979a079e86c68150",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "69f66fee-40b7-46bf-b645-6b9f75edb216",
+      "t": "2026-08-08T12:34:43.577Z",
+      "provider_id": "llama",
+      "kind": "DOWN",
+      "poll_id": "761276d2-ffe7-4f74-9739-7b786f98723c",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb6"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x0d4d3644d9734fffbfa9bc95fb553772",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "fbffca23-dbba-453c-bc99-4cf681249c8e",
+      "t": "2026-08-08T12:34:44.109Z",
+      "provider_id": "onfinality",
+      "kind": "DEVIANT",
+      "poll_id": "761276d2-ffe7-4f74-9739-7b786f98723c",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eb6",
+          false
+        ]
+      },
+      "expected": "1623ef869a54d4c1e549bf5800fe0b2219cdbdcd0e6a4c08abe6f2c99c89fb80",
+      "got": "null",
+      "receipts": {
+        "txHash": "0xa7fd9ae14fae494583bef35ace436a8e",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "68036591-203f-4bf8-9b53-b49e8b02255e",
+      "t": "2026-08-08T12:34:44.289Z",
+      "provider_id": "flashbots",
+      "kind": "DOWN",
+      "poll_id": "761276d2-ffe7-4f74-9739-7b786f98723c",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb6"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0xf96648857cd04e29ab4047d9ce556b88",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "fa95b718-cf72-4b40-a8cb-cbd03c2cef7b",
+      "t": "2026-08-08T12:34:50.072Z",
+      "provider_id": "cloudflare",
+      "kind": "STALE",
+      "poll_id": "50195b75-2c8a-4e33-a289-dce514b3117c",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eb7",
+          false
+        ]
+      },
+      "expected": "73764d84296c8729e5bb32e72740647ca79831bb801d0774a2f826c8d98489cb",
+      "got": "null",
+      "receipts": {
+        "txHash": "0xea8de4df1cc04be8b2db026c6326fd0e",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "a2702295-34dd-47af-a280-4c2b51e6e535",
+      "t": "2026-08-08T12:34:50.262Z",
+      "provider_id": "llama",
+      "kind": "DOWN",
+      "poll_id": "50195b75-2c8a-4e33-a289-dce514b3117c",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb7"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x3cd928b74cf5481da87016c7b1d41cce",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "8a7ad4ee-52e5-4f45-b5a3-9a9e6423faf3",
+      "t": "2026-08-08T12:34:50.471Z",
+      "provider_id": "onfinality",
+      "kind": "DEVIANT",
+      "poll_id": "50195b75-2c8a-4e33-a289-dce514b3117c",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eb7",
+          false
+        ]
+      },
+      "expected": "73764d84296c8729e5bb32e72740647ca79831bb801d0774a2f826c8d98489cb",
+      "got": "null",
+      "receipts": {
+        "txHash": "0xb6e564b0129642859c4faa0b58fd1004",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "19d57957-9790-4920-be67-e122be5ad232",
+      "t": "2026-08-08T12:34:50.652Z",
+      "provider_id": "flashbots",
+      "kind": "DOWN",
+      "poll_id": "50195b75-2c8a-4e33-a289-dce514b3117c",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb7"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0xaa936572a71349c58057b2cded033d1a",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "0cb047cf-c10f-49e9-bf18-4939cc22b50c",
+      "t": "2026-08-08T12:34:57.187Z",
+      "provider_id": "cloudflare",
+      "kind": "STALE",
+      "poll_id": "02bd3dbd-c6dc-4e2d-9eb6-bfcd11c2ac3e",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eb8",
+          false
+        ]
+      },
+      "expected": "422a183c8d895dad05c70986ca1074724cc34103b9fad75e88dc2282035e9e2d",
+      "got": "null",
+      "receipts": {
+        "txHash": "0xbc793782ab484455b4c99fe3b52a4970",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "80da7e25-b9cc-4ec1-9b5a-917c1f3f5694",
+      "t": "2026-08-08T12:34:57.394Z",
+      "provider_id": "llama",
+      "kind": "DOWN",
+      "poll_id": "02bd3dbd-c6dc-4e2d-9eb6-bfcd11c2ac3e",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb8"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x43081dad5ed443c69041f806fb36ffa6",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "3230aaee-64a1-4ee3-ba8a-3dc6f789e542",
+      "t": "2026-08-08T12:34:57.577Z",
+      "provider_id": "onfinality",
+      "kind": "DEVIANT",
+      "poll_id": "02bd3dbd-c6dc-4e2d-9eb6-bfcd11c2ac3e",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eb8",
+          false
+        ]
+      },
+      "expected": "422a183c8d895dad05c70986ca1074724cc34103b9fad75e88dc2282035e9e2d",
+      "got": "null",
+      "receipts": {
+        "txHash": "0x5f98bb817b554cc2af3c3b8dea09e3e8",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "d8bfcb86-7247-4fba-bc68-5857799d2c64",
+      "t": "2026-08-08T12:34:57.770Z",
+      "provider_id": "flashbots",
+      "kind": "DOWN",
+      "poll_id": "02bd3dbd-c6dc-4e2d-9eb6-bfcd11c2ac3e",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb8"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0xe37d3999d9a9499498a973ffbacb7516",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "e1bc9d29-99e5-4dd2-8c8e-2c41fce4839a",
+      "t": "2026-08-08T12:35:05.362Z",
+      "provider_id": "cloudflare",
+      "kind": "STALE",
+      "poll_id": "f33a28e4-4548-436f-b1ac-41e5593f49cb",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eb8",
+          false
+        ]
+      },
+      "expected": "422a183c8d895dad05c70986ca1074724cc34103b9fad75e88dc2282035e9e2d",
+      "got": "null",
+      "receipts": {
+        "txHash": "0x7c1d300168d044c4bcac8737ce850fc3",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "d978c76b-5d67-4c98-8a29-ff84209d3ea0",
+      "t": "2026-08-08T12:35:05.552Z",
+      "provider_id": "llama",
+      "kind": "DOWN",
+      "poll_id": "f33a28e4-4548-436f-b1ac-41e5593f49cb",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb8"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x425e12a5c20145368bf8a210eb9e6438",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "2e160ce8-9091-4a86-8111-6c204eed2f81",
+      "t": "2026-08-08T12:35:06.053Z",
+      "provider_id": "onfinality",
+      "kind": "DEVIANT",
+      "poll_id": "f33a28e4-4548-436f-b1ac-41e5593f49cb",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb8"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x94b07f27ff9341b496a48caada44bb38",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "bbebcce6-e65a-497b-9cc6-0b8bf7fb8ad2",
+      "t": "2026-08-08T12:35:06.237Z",
+      "provider_id": "flashbots",
+      "kind": "DOWN",
+      "poll_id": "f33a28e4-4548-436f-b1ac-41e5593f49cb",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eb8"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0xa714b0b32cb444bb95800368d28f2c63",
+        "network": "sepolia"
+      }
     }
   ],
   "scores": [
@@ -13678,6 +14498,996 @@
       "accuracy": 1,
       "uptime": 1,
       "latency_avg": 57.708335022147175,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "5fc01644-cea9-48bc-97ff-8aac7de974f9",
+      "t": "2026-08-08T12:33:35.134Z",
+      "provider_id": "cloudflare",
+      "score": 98,
+      "accuracy": 0.9782608695652174,
+      "uptime": 1,
+      "latency_avg": 42.13743353430726,
+      "freshness_score": 0.9782608695652174,
+      "trend": "STABLE"
+    },
+    {
+      "id": "38621a88-4c9f-4a31-8428-60aa33fa890d",
+      "t": "2026-08-08T12:33:35.376Z",
+      "provider_id": "llama",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.9782608695652174,
+      "latency_avg": 74.12035937067117,
+      "freshness_score": 0.9782608695652174,
+      "trend": "STABLE"
+    },
+    {
+      "id": "444cd377-f70e-4de8-acd5-d20975a21ede",
+      "t": "2026-08-08T12:33:35.605Z",
+      "provider_id": "publicnode",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 82.41886127665944,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "2c76fd68-b1e5-4f3c-80e7-60136e70f021",
+      "t": "2026-08-08T12:33:35.798Z",
+      "provider_id": "drpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 111.99374207367563,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "6ce18f8d-7899-4d73-bb8d-10870508b282",
+      "t": "2026-08-08T12:33:35.985Z",
+      "provider_id": "1rpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 131.57353835931664,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "a24a4f17-9653-41c9-ba1c-11c3f7b2b25c",
+      "t": "2026-08-08T12:33:36.171Z",
+      "provider_id": "blast",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 128.55672333315601,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "3099cee4-24fa-445e-9e36-e2a661862bec",
+      "t": "2026-08-08T12:33:36.350Z",
+      "provider_id": "tenderly",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 96.11123141538883,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "75be078e-f76a-4f85-83cc-0a5a3fcbf880",
+      "t": "2026-08-08T12:33:36.539Z",
+      "provider_id": "onfinality",
+      "score": 97,
+      "accuracy": 0.9782608695652174,
+      "uptime": 1,
+      "latency_avg": 162.5631149134188,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "9f085516-72b9-4680-bed4-a5a7bc2e0f2f",
+      "t": "2026-08-08T12:33:36.726Z",
+      "provider_id": "flashbots",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.9782608695652174,
+      "latency_avg": 166.90014446396083,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "af7652c6-bb76-4987-bae0-c2fc26162452",
+      "t": "2026-08-08T12:33:36.917Z",
+      "provider_id": "mevblocker",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 57.5561611091037,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "a20af7de-4e18-405c-8bae-504ac462baf8",
+      "t": "2026-08-08T12:33:56.131Z",
+      "provider_id": "cloudflare",
+      "score": 98,
+      "accuracy": 0.9787234042553191,
+      "uptime": 1,
+      "latency_avg": 42.13743353430726,
+      "freshness_score": 0.9787234042553191,
+      "trend": "STABLE"
+    },
+    {
+      "id": "4b9b6a9c-b93c-4f5c-ac26-79a2785417db",
+      "t": "2026-08-08T12:33:56.399Z",
+      "provider_id": "llama",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 0.9787234042553191,
+      "latency_avg": 74.01397639194776,
+      "freshness_score": 0.9787234042553191,
+      "trend": "STABLE"
+    },
+    {
+      "id": "2b2f0a8f-b035-44ee-a471-437960c36425",
+      "t": "2026-08-08T12:33:56.628Z",
+      "provider_id": "publicnode",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 82.63162723410625,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "2c09fd33-cd6e-482a-b8b5-db988376cdda",
+      "t": "2026-08-08T12:33:56.832Z",
+      "provider_id": "drpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 111.99374207367563,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "cd8dc6a5-768f-4c5e-8f6b-7844f6e8c7af",
+      "t": "2026-08-08T12:33:57.032Z",
+      "provider_id": "1rpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 105.616091550806,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "d30c5c9e-a7b2-48fb-8769-ad8cee157da2",
+      "t": "2026-08-08T12:33:57.226Z",
+      "provider_id": "blast",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 128.19502120549643,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "68f8d0f0-99b8-4e28-b8be-38e7c6e057f4",
+      "t": "2026-08-08T12:33:57.413Z",
+      "provider_id": "tenderly",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 96.00484843666543,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "c18987fd-946b-4058-8d86-de3711bf36ba",
+      "t": "2026-08-08T12:33:57.610Z",
+      "provider_id": "onfinality",
+      "score": 97,
+      "accuracy": 0.9787234042553191,
+      "uptime": 1,
+      "latency_avg": 149.7971574666103,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "7b101bb6-e3d1-4457-ae4c-c8940b560165",
+      "t": "2026-08-08T12:33:57.807Z",
+      "provider_id": "flashbots",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.9787234042553191,
+      "latency_avg": 183.21929340013105,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "8213964a-bbee-46f8-90f9-e5b5ad8fc0f8",
+      "t": "2026-08-08T12:33:58.014Z",
+      "provider_id": "mevblocker",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 58.79020366229519,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "9dcf4af4-188e-4564-b8a7-7e6f26f562fb",
+      "t": "2026-08-08T12:34:03.139Z",
+      "provider_id": "cloudflare",
+      "score": 98,
+      "accuracy": 0.9791666666666666,
+      "uptime": 1,
+      "latency_avg": 42.24160020097393,
+      "freshness_score": 0.9791666666666666,
+      "trend": "STABLE"
+    },
+    {
+      "id": "43d2ab53-ed0c-4f74-85fc-41d44816a16a",
+      "t": "2026-08-08T12:34:03.432Z",
+      "provider_id": "llama",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 0.9791666666666666,
+      "latency_avg": 73.99314305861442,
+      "freshness_score": 0.9791666666666666,
+      "trend": "STABLE"
+    },
+    {
+      "id": "2b3f17fb-5190-4a53-95bf-248aa45846ab",
+      "t": "2026-08-08T12:34:03.684Z",
+      "provider_id": "publicnode",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 82.52746056743958,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "cf19d0a0-8e82-49c7-9788-50a1a82ff7ce",
+      "t": "2026-08-08T12:34:03.895Z",
+      "provider_id": "drpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 111.93124207367565,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "77497cd6-9695-4470-bef0-c333d4269035",
+      "t": "2026-08-08T12:34:04.089Z",
+      "provider_id": "1rpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 138.491091550806,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "453b3fcf-55bb-4b9b-9db7-72827183cf19",
+      "t": "2026-08-08T12:34:04.293Z",
+      "provider_id": "blast",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 127.96585453882977,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "a8365f0b-c557-4eda-a66d-c5524103d94f",
+      "t": "2026-08-08T12:34:04.488Z",
+      "provider_id": "tenderly",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 95.83818176999876,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "a63d4ccf-4522-47cd-a55f-f665d2371dd8",
+      "t": "2026-08-08T12:34:04.695Z",
+      "provider_id": "onfinality",
+      "score": 97,
+      "accuracy": 0.9791666666666666,
+      "uptime": 1,
+      "latency_avg": 150.0054907999436,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "62b97c4b-2925-4f5c-b7c8-384b3e9d2767",
+      "t": "2026-08-08T12:34:04.894Z",
+      "provider_id": "flashbots",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.9791666666666666,
+      "latency_avg": 173.0734600667977,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "f8e89d87-76d5-43de-a146-7cbcdade49f2",
+      "t": "2026-08-08T12:34:05.102Z",
+      "provider_id": "mevblocker",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 57.74853699562852,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "f6cf19dd-bc67-4f8c-a6aa-e6752ac01977",
+      "t": "2026-08-08T12:34:11.128Z",
+      "provider_id": "cloudflare",
+      "score": 98,
+      "accuracy": 0.9795918367346939,
+      "uptime": 1,
+      "latency_avg": 42.1191512213821,
+      "freshness_score": 0.9795918367346939,
+      "trend": "STABLE"
+    },
+    {
+      "id": "5561dc42-cb44-4653-b363-d4b726bd53da",
+      "t": "2026-08-08T12:34:11.361Z",
+      "provider_id": "llama",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 0.9795918367346939,
+      "latency_avg": 74.03395938514504,
+      "freshness_score": 0.9795918367346939,
+      "trend": "STABLE"
+    },
+    {
+      "id": "7d495db6-2bce-45d2-bb68-ffb00a18f81a",
+      "t": "2026-08-08T12:34:11.624Z",
+      "provider_id": "publicnode",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 82.79276668988855,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "6d18178e-4f84-4282-8aaf-c2ef1d2e4642",
+      "t": "2026-08-08T12:34:11.815Z",
+      "provider_id": "drpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 111.91083391041035,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "2494cf59-2e52-482a-bd4d-37b1e18cc945",
+      "t": "2026-08-08T12:34:12.036Z",
+      "provider_id": "1rpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 137.65435685692844,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "eeb2705c-7571-4a1a-8a9c-79eb64a5c23a",
+      "t": "2026-08-08T12:34:12.220Z",
+      "provider_id": "blast",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 128.21075249801345,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "e276bb30-63d0-447b-978e-2193bfce48f6",
+      "t": "2026-08-08T12:34:12.401Z",
+      "provider_id": "tenderly",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 95.89940625979469,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "4c68335d-fc42-45a2-a424-bbd093f05c1a",
+      "t": "2026-08-08T12:34:12.588Z",
+      "provider_id": "onfinality",
+      "score": 97,
+      "accuracy": 0.9795918367346939,
+      "uptime": 1,
+      "latency_avg": 148.86263365708646,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "e58d146f-53d7-4482-9d25-eb21cb5e2277",
+      "t": "2026-08-08T12:34:12.788Z",
+      "provider_id": "flashbots",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.9795918367346939,
+      "latency_avg": 184.27754169945078,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "510ad5d3-0183-482e-9b2c-a3a57365158a",
+      "t": "2026-08-08T12:34:12.974Z",
+      "provider_id": "mevblocker",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 57.524047199710154,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "96de3847-b3d3-473a-af6c-4d6147bc108f",
+      "t": "2026-08-08T12:34:32.141Z",
+      "provider_id": "cloudflare",
+      "score": 97,
+      "accuracy": 0.9629629629629629,
+      "uptime": 1,
+      "latency_avg": 38,
+      "freshness_score": 0.9629629629629629,
+      "trend": "STABLE"
+    },
+    {
+      "id": "34dc2343-bcf6-4568-a57e-79fbb9aeeb92",
+      "t": "2026-08-08T12:34:32.625Z",
+      "provider_id": "llama",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.9629629629629629,
+      "latency_avg": 73.5925925925926,
+      "freshness_score": 0.9629629629629629,
+      "trend": "STABLE"
+    },
+    {
+      "id": "cc802855-a37e-4aa1-8e60-1284e78e7281",
+      "t": "2026-08-08T12:34:32.858Z",
+      "provider_id": "publicnode",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 84.29629629629629,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "078c9443-ca43-4b4e-911a-1e0a9262e304",
+      "t": "2026-08-08T12:34:33.061Z",
+      "provider_id": "drpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 112.55555555555556,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "e8a8f40a-0411-4f2f-9b20-a065b03c48a6",
+      "t": "2026-08-08T12:34:33.246Z",
+      "provider_id": "1rpc",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.9629629629629629,
+      "latency_avg": 131.5185185185185,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "7ffcde33-9c56-4187-8253-53bb346d8fcf",
+      "t": "2026-08-08T12:34:33.448Z",
+      "provider_id": "blast",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 126.22222222222223,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "ef6d797a-0fa0-457f-abec-7a321a4a04c5",
+      "t": "2026-08-08T12:34:33.632Z",
+      "provider_id": "tenderly",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 96.29629629629629,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "ffca3e10-a169-45b8-be1c-ad2ca75200d4",
+      "t": "2026-08-08T12:34:33.832Z",
+      "provider_id": "onfinality",
+      "score": 97,
+      "accuracy": 0.9629629629629629,
+      "uptime": 1,
+      "latency_avg": 147.62962962962962,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "42ef4e25-fae0-4ead-b558-09af693ff129",
+      "t": "2026-08-08T12:34:34.265Z",
+      "provider_id": "flashbots",
+      "score": 97,
+      "accuracy": 1,
+      "uptime": 0.9629629629629629,
+      "latency_avg": 188.88888888888889,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "e2a04dba-1da8-4ffd-a10b-0fffa6625217",
+      "t": "2026-08-08T12:34:34.465Z",
+      "provider_id": "mevblocker",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 59.925925925925924,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "258e944e-f1c0-4ce1-92bb-20a596c68582",
+      "t": "2026-08-08T12:34:40.130Z",
+      "provider_id": "cloudflare",
+      "score": 97,
+      "accuracy": 0.9642857142857143,
+      "uptime": 1,
+      "latency_avg": 40.57142857142857,
+      "freshness_score": 0.9642857142857143,
+      "trend": "STABLE"
+    },
+    {
+      "id": "4d4e1760-3c48-4d81-9cec-9b4e45a3e7c5",
+      "t": "2026-08-08T12:34:40.382Z",
+      "provider_id": "llama",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.9642857142857143,
+      "latency_avg": 73.8068783068783,
+      "freshness_score": 0.9642857142857143,
+      "trend": "STABLE"
+    },
+    {
+      "id": "5e83bf04-ed36-4ee1-ae68-91154feddf4e",
+      "t": "2026-08-08T12:34:40.619Z",
+      "provider_id": "publicnode",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 84.260582010582,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "fc7f363c-5c81-4e0c-92fe-5dea191b0e99",
+      "t": "2026-08-08T12:34:40.813Z",
+      "provider_id": "drpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 110.73412698412699,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "6fecad13-a2e1-47b7-9a2a-96fd06601d00",
+      "t": "2026-08-08T12:34:40.997Z",
+      "provider_id": "1rpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 136.73280423280423,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "8586156c-8723-4d8e-a842-88b6fe884638",
+      "t": "2026-08-08T12:34:41.175Z",
+      "provider_id": "blast",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 126.11507936507937,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "c9d69b1a-e48d-43d3-b252-313e0c430d6c",
+      "t": "2026-08-08T12:34:41.582Z",
+      "provider_id": "tenderly",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 96.15343915343915,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "641448e3-034d-48b3-aa8a-d794c35f2a0b",
+      "t": "2026-08-08T12:34:42.518Z",
+      "provider_id": "onfinality",
+      "score": 97,
+      "accuracy": 0.9642857142857143,
+      "uptime": 1,
+      "latency_avg": 144.41534391534393,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "a7fbf7c0-ee57-47d8-a408-047780317c33",
+      "t": "2026-08-08T12:34:42.996Z",
+      "provider_id": "flashbots",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.9642857142857143,
+      "latency_avg": 170.3531746031746,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "3a53dc68-b0c8-47f1-9ae8-01744cbcc100",
+      "t": "2026-08-08T12:34:43.188Z",
+      "provider_id": "mevblocker",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 59.96164021164021,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "a9a34c49-8c84-42a8-bad7-e581b98fd215",
+      "t": "2026-08-08T12:34:48.126Z",
+      "provider_id": "cloudflare",
+      "score": 97,
+      "accuracy": 0.9655172413793104,
+      "uptime": 1,
+      "latency_avg": 38.08866995073892,
+      "freshness_score": 0.9655172413793104,
+      "trend": "STABLE"
+    },
+    {
+      "id": "c55a65b1-fecd-461a-a3f2-653297016e17",
+      "t": "2026-08-08T12:34:48.334Z",
+      "provider_id": "llama",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.9655172413793104,
+      "latency_avg": 73.4965334792921,
+      "freshness_score": 0.9655172413793104,
+      "trend": "STABLE"
+    },
+    {
+      "id": "9e75b03d-6dad-4f94-b5be-f025784f364e",
+      "t": "2026-08-08T12:34:48.575Z",
+      "provider_id": "publicnode",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 84.43299580368544,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "5b8f8bf0-a268-4c7a-a838-ae7e1fed7d52",
+      "t": "2026-08-08T12:34:48.760Z",
+      "provider_id": "drpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 112.94102353585113,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "953d5b2c-ff89-4ddb-a372-e326729cce1b",
+      "t": "2026-08-08T12:34:48.952Z",
+      "provider_id": "1rpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 113.56039043970078,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "012db5de-a1e1-410a-8027-9573e68ee706",
+      "t": "2026-08-08T12:34:49.136Z",
+      "provider_id": "blast",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 126.32197591680351,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "c6cc16f7-4178-4d12-a23c-84926277edfe",
+      "t": "2026-08-08T12:34:49.321Z",
+      "provider_id": "tenderly",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 96.42930122240466,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "f4fe9136-0d07-4f46-9acb-079b4741d5ed",
+      "t": "2026-08-08T12:34:49.503Z",
+      "provider_id": "onfinality",
+      "score": 97,
+      "accuracy": 0.9655172413793104,
+      "uptime": 1,
+      "latency_avg": 174.86361977741285,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "347251a6-82b0-4e58-8611-4a89cc26b73c",
+      "t": "2026-08-08T12:34:49.692Z",
+      "provider_id": "flashbots",
+      "score": 97,
+      "accuracy": 1,
+      "uptime": 0.9655172413793104,
+      "latency_avg": 188.59455391351943,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "51ce75f2-999d-49e9-b6bf-94c1d0164c00",
+      "t": "2026-08-08T12:34:49.876Z",
+      "provider_id": "mevblocker",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 61.47888159095056,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "fb10dc19-6c23-4c7b-ae91-cc65afc5024a",
+      "t": "2026-08-08T12:34:55.128Z",
+      "provider_id": "cloudflare",
+      "score": 97,
+      "accuracy": 0.9666666666666667,
+      "uptime": 1,
+      "latency_avg": 42.355336617405584,
+      "freshness_score": 0.9666666666666667,
+      "trend": "STABLE"
+    },
+    {
+      "id": "0b6f6418-5949-4d42-9b64-fe781d9918ac",
+      "t": "2026-08-08T12:34:55.419Z",
+      "provider_id": "llama",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.9666666666666667,
+      "latency_avg": 78.56320014595876,
+      "freshness_score": 0.9666666666666667,
+      "trend": "STABLE"
+    },
+    {
+      "id": "c3950718-8bc8-4fbf-9ed0-6f1e28db2a73",
+      "t": "2026-08-08T12:34:55.655Z",
+      "provider_id": "publicnode",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 84.49966247035212,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "2e5b6f25-e8b4-4172-b883-9fedf57fcc3d",
+      "t": "2026-08-08T12:34:55.849Z",
+      "provider_id": "drpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 111.04102353585112,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "a4ad3226-e1a1-46a3-b3ec-f09d4f2ab738",
+      "t": "2026-08-08T12:34:56.034Z",
+      "provider_id": "1rpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 142.76039043970079,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "7b910fa8-d5b1-4bc9-894d-23b164dc1212",
+      "t": "2026-08-08T12:34:56.214Z",
+      "provider_id": "blast",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 126.58864258347018,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "86fd90b0-1e8d-43f8-ae82-410a2362ad0a",
+      "t": "2026-08-08T12:34:56.434Z",
+      "provider_id": "tenderly",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 98.79596788907133,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "55f19559-6241-4b41-8041-601c7b84cd64",
+      "t": "2026-08-08T12:34:56.618Z",
+      "provider_id": "onfinality",
+      "score": 97,
+      "accuracy": 0.9666666666666667,
+      "uptime": 1,
+      "latency_avg": 147.96361977741287,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "1108c25e-ec40-4e21-96da-ba72efe62a7a",
+      "t": "2026-08-08T12:34:56.810Z",
+      "provider_id": "flashbots",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.9666666666666667,
+      "latency_avg": 163.96122058018608,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "5bed5483-790d-47ac-ab4f-38b92c957949",
+      "t": "2026-08-08T12:34:57.000Z",
+      "provider_id": "mevblocker",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 64.47888159095056,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "f12330c0-a9a6-4827-9119-e2537f3388c7",
+      "t": "2026-08-08T12:35:03.133Z",
+      "provider_id": "cloudflare",
+      "score": 98,
+      "accuracy": 0.967741935483871,
+      "uptime": 1,
+      "latency_avg": 38.355336617405584,
+      "freshness_score": 0.967741935483871,
+      "trend": "STABLE"
+    },
+    {
+      "id": "a2ce4e09-9655-44c2-a566-33bc5096784a",
+      "t": "2026-08-08T12:35:03.357Z",
+      "provider_id": "llama",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.967741935483871,
+      "latency_avg": 73.5954582104749,
+      "freshness_score": 0.967741935483871,
+      "trend": "STABLE"
+    },
+    {
+      "id": "e7786020-aa0f-472e-917d-072e637da61c",
+      "t": "2026-08-08T12:35:03.604Z",
+      "provider_id": "publicnode",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 84.98353343809406,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "efd7bda0-562d-4d54-a55b-632b14fed543",
+      "t": "2026-08-08T12:35:03.802Z",
+      "provider_id": "drpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 110.81521708423823,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "2bf7b408-a5db-4546-89c0-be1fdfdb8de2",
+      "t": "2026-08-08T12:35:03.994Z",
+      "provider_id": "1rpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 96.82490656873304,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "00b9943f-e67c-4dcb-b1b9-2f82b338dedd",
+      "t": "2026-08-08T12:35:04.197Z",
+      "provider_id": "blast",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 126.07251355121211,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "fe98192d-89f1-43ab-8484-33613a7265eb",
+      "t": "2026-08-08T12:35:04.612Z",
+      "provider_id": "tenderly",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 96.73145176003908,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "3dae4ce4-f341-4c03-8779-8114ffb85eb2",
+      "t": "2026-08-08T12:35:04.794Z",
+      "provider_id": "onfinality",
+      "score": 97,
+      "accuracy": 0.967741935483871,
+      "uptime": 1,
+      "latency_avg": 144.6732971967677,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "6aac8481-06ff-4547-becd-89bc5b135505",
+      "t": "2026-08-08T12:35:04.983Z",
+      "provider_id": "flashbots",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.967741935483871,
+      "latency_avg": 163.18702703179898,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "040cd31d-33c3-4646-bb58-6afd3c246c15",
+      "t": "2026-08-08T12:35:05.170Z",
+      "provider_id": "mevblocker",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 60.4143654619183,
       "freshness_score": 1,
       "trend": "STABLE"
     }

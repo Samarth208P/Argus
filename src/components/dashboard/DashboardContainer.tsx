@@ -98,12 +98,57 @@ export function DashboardContainer() {
 
   const [isDemo, setIsDemo] = useState(false);
 
+  // Load from localStorage on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
       setOrigin(window.location.origin);
       setIsDemo(window.location.pathname.includes("/demo"));
+
+      try {
+        const cachedProviders = localStorage.getItem("argus_providers");
+        if (cachedProviders) setProviders(JSON.parse(cachedProviders));
+
+        const cachedScores = localStorage.getItem("argus_scores");
+        if (cachedScores) setScores(JSON.parse(cachedScores));
+
+        const cachedIncidents = localStorage.getItem("argus_incidents");
+        if (cachedIncidents) setIncidents(JSON.parse(cachedIncidents));
+      } catch (err) {
+        console.warn("Failed to load cached states from localStorage:", err);
+      }
     }
   }, []);
+
+  // Save to localStorage when states change
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("argus_providers", JSON.stringify(providers));
+      } catch (err) {
+        console.warn("Failed to save providers to localStorage:", err);
+      }
+    }
+  }, [providers]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("argus_scores", JSON.stringify(scores));
+      } catch (err) {
+        console.warn("Failed to save scores to localStorage:", err);
+      }
+    }
+  }, [scores]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("argus_incidents", JSON.stringify(incidents));
+      } catch (err) {
+        console.warn("Failed to save incidents to localStorage:", err);
+      }
+    }
+  }, [incidents]);
 
   const rpcUrl = `${origin}/api/rpc`;
 
@@ -348,7 +393,17 @@ export function DashboardContainer() {
         updatedScores.push(scoreRow);
         newScoresToSync.push(scoreRow);
       }
-      setScores(updatedScores);
+
+      // Auto-clear old data: only keep the last 50 score records per provider
+      const prunedScores: DbScore[] = [];
+      for (const p of providers) {
+        const pScores = updatedScores
+          .filter((s) => s.provider_id === p.id)
+          .sort((a, b) => new Date(a.t).getTime() - new Date(b.t).getTime())
+          .slice(-50);
+        prunedScores.push(...pScores);
+      }
+      setScores(prunedScores);
 
       // Dispatch non-blocking sync to server API
       fetch("/api/poll/sync", {
