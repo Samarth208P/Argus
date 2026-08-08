@@ -4,10 +4,10 @@ import { useState } from "react";
 import { Plus, Spinner, CheckCircle } from "@phosphor-icons/react";
 
 interface AddProviderFormProps {
-  onSuccess?: () => void;
+  onAddProvider: (url: string, label: string, operator: string) => void;
 }
 
-export function AddProviderForm({ onSuccess }: AddProviderFormProps) {
+export function AddProviderForm({ onAddProvider }: AddProviderFormProps) {
   const [url, setUrl] = useState("");
   const [label, setLabel] = useState("");
   const [operator, setOperator] = useState("");
@@ -24,25 +24,13 @@ export function AddProviderForm({ onSuccess }: AddProviderFormProps) {
     setSuccess(false);
 
     try {
-      const res = await fetch("/api/providers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: url.trim(), label: label.trim(), operator: operator.trim() || "custom" }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.error ?? "Failed to add provider");
-        return;
-      }
-
+      onAddProvider(url.trim(), label.trim(), operator.trim() || "custom");
       setSuccess(true);
       setUrl("");
       setLabel("");
       setOperator("");
-      if (onSuccess) onSuccess();
     } catch (err) {
-      setError("Network error — could not reach the API");
+      setError("Error registering provider");
     } finally {
       setLoading(false);
     }

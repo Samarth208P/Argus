@@ -461,6 +461,531 @@
       "consensus_hash": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
       "merkle_root": null,
       "status": "ok"
+    },
+    {
+      "id": "a4e6f77a-6915-4fe7-9070-a48f80b664c7",
+      "t": "2026-08-08T12:24:09.942Z",
+      "battery": [
+        {
+          "providerId": "cloudflare",
+          "balance": null,
+          "block": null,
+          "latencyMs": 44,
+          "status": "ok",
+          "lagBlocks": 999,
+          "kind": "STALE",
+          "isOutlier": true,
+          "balanceOutlier": true,
+          "blockOutlier": true,
+          "deviationCheck": "block"
+        },
+        {
+          "providerId": "llama",
+          "balance": null,
+          "block": null,
+          "latencyMs": 281,
+          "status": "error",
+          "lagBlocks": 999,
+          "kind": "DOWN",
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        },
+        {
+          "providerId": "publicnode",
+          "balance": "0x5c10c75d8a22e326",
+          "block": {
+            "hash": "0xa3faca36a99ec3c2dc0a06a896cd68ecab5eb447e11ead40a462389a46ce3824",
+            "parentHash": "0xaf8ca5f085be825af02d312ab04bf40baa348ad44c0993bb45ebe6e5e4a37ee4",
+            "stateRoot": "0x4899765761010fde50496ee6250c2c5c59ff19f12e38a460199202deed5b03c6",
+            "transactionsRoot": "0xa504545cbefe1d8aba67f8dbade54410988d201d5d459763b216c4bb8d405e98"
+          },
+          "latencyMs": 247,
+          "status": "ok",
+          "lagBlocks": 0,
+          "kind": null,
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        },
+        {
+          "providerId": "drpc",
+          "balance": "0x5c10c75d8a22e326",
+          "block": {
+            "hash": "0xa3faca36a99ec3c2dc0a06a896cd68ecab5eb447e11ead40a462389a46ce3824",
+            "parentHash": "0xaf8ca5f085be825af02d312ab04bf40baa348ad44c0993bb45ebe6e5e4a37ee4",
+            "stateRoot": "0x4899765761010fde50496ee6250c2c5c59ff19f12e38a460199202deed5b03c6",
+            "transactionsRoot": "0xa504545cbefe1d8aba67f8dbade54410988d201d5d459763b216c4bb8d405e98"
+          },
+          "latencyMs": 291,
+          "status": "ok",
+          "lagBlocks": 0,
+          "kind": null,
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        },
+        {
+          "providerId": "1rpc",
+          "balance": null,
+          "block": {
+            "hash": "0xa3faca36a99ec3c2dc0a06a896cd68ecab5eb447e11ead40a462389a46ce3824",
+            "parentHash": "0xaf8ca5f085be825af02d312ab04bf40baa348ad44c0993bb45ebe6e5e4a37ee4",
+            "stateRoot": "0x4899765761010fde50496ee6250c2c5c59ff19f12e38a460199202deed5b03c6",
+            "transactionsRoot": "0xa504545cbefe1d8aba67f8dbade54410988d201d5d459763b216c4bb8d405e98"
+          },
+          "latencyMs": 1207,
+          "status": "ok",
+          "lagBlocks": 1,
+          "kind": "DEVIANT",
+          "isOutlier": true,
+          "balanceOutlier": true,
+          "blockOutlier": false,
+          "deviationCheck": "balance"
+        },
+        {
+          "providerId": "blast",
+          "balance": "0x5c10c75d8a22e326",
+          "block": {
+            "hash": "0xa3faca36a99ec3c2dc0a06a896cd68ecab5eb447e11ead40a462389a46ce3824",
+            "parentHash": "0xaf8ca5f085be825af02d312ab04bf40baa348ad44c0993bb45ebe6e5e4a37ee4",
+            "stateRoot": "0x4899765761010fde50496ee6250c2c5c59ff19f12e38a460199202deed5b03c6",
+            "transactionsRoot": "0xa504545cbefe1d8aba67f8dbade54410988d201d5d459763b216c4bb8d405e98"
+          },
+          "latencyMs": 259,
+          "status": "ok",
+          "lagBlocks": 0,
+          "kind": null,
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        },
+        {
+          "providerId": "tenderly",
+          "balance": "0x5c10c75d8a22e326",
+          "block": {
+            "hash": "0xa3faca36a99ec3c2dc0a06a896cd68ecab5eb447e11ead40a462389a46ce3824",
+            "parentHash": "0xaf8ca5f085be825af02d312ab04bf40baa348ad44c0993bb45ebe6e5e4a37ee4",
+            "stateRoot": "0x4899765761010fde50496ee6250c2c5c59ff19f12e38a460199202deed5b03c6",
+            "transactionsRoot": "0xa504545cbefe1d8aba67f8dbade54410988d201d5d459763b216c4bb8d405e98"
+          },
+          "latencyMs": 312,
+          "status": "ok",
+          "lagBlocks": 0,
+          "kind": null,
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        },
+        {
+          "providerId": "onfinality",
+          "balance": "0x5c10c75d8a22e326",
+          "block": {
+            "hash": "0xa3faca36a99ec3c2dc0a06a896cd68ecab5eb447e11ead40a462389a46ce3824",
+            "parentHash": "0xaf8ca5f085be825af02d312ab04bf40baa348ad44c0993bb45ebe6e5e4a37ee4",
+            "stateRoot": "0x4899765761010fde50496ee6250c2c5c59ff19f12e38a460199202deed5b03c6",
+            "transactionsRoot": "0xa504545cbefe1d8aba67f8dbade54410988d201d5d459763b216c4bb8d405e98"
+          },
+          "latencyMs": 390,
+          "status": "ok",
+          "lagBlocks": 0,
+          "kind": null,
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        },
+        {
+          "providerId": "flashbots",
+          "balance": null,
+          "block": {
+            "hash": "0xa3faca36a99ec3c2dc0a06a896cd68ecab5eb447e11ead40a462389a46ce3824",
+            "parentHash": "0xaf8ca5f085be825af02d312ab04bf40baa348ad44c0993bb45ebe6e5e4a37ee4",
+            "stateRoot": "0x4899765761010fde50496ee6250c2c5c59ff19f12e38a460199202deed5b03c6",
+            "transactionsRoot": "0xa504545cbefe1d8aba67f8dbade54410988d201d5d459763b216c4bb8d405e98"
+          },
+          "latencyMs": 3003,
+          "status": "timeout",
+          "lagBlocks": 0,
+          "kind": "DOWN",
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        },
+        {
+          "providerId": "mevblocker",
+          "balance": "0x5c10c75d8a22e326",
+          "block": {
+            "hash": "0xa3faca36a99ec3c2dc0a06a896cd68ecab5eb447e11ead40a462389a46ce3824",
+            "parentHash": "0xaf8ca5f085be825af02d312ab04bf40baa348ad44c0993bb45ebe6e5e4a37ee4",
+            "stateRoot": "0x4899765761010fde50496ee6250c2c5c59ff19f12e38a460199202deed5b03c6",
+            "transactionsRoot": "0xa504545cbefe1d8aba67f8dbade54410988d201d5d459763b216c4bb8d405e98"
+          },
+          "latencyMs": 176,
+          "status": "ok",
+          "lagBlocks": 0,
+          "kind": null,
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        }
+      ],
+      "pinned_block_hex": "0x1884e82",
+      "consensus_hash": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "merkle_root": null,
+      "status": "ok"
+    },
+    {
+      "id": "ee6734ac-64ac-403a-a0a0-820817e37d2a",
+      "t": "2026-08-08T12:26:29.767Z",
+      "battery": [
+        {
+          "providerId": "cloudflare",
+          "balance": null,
+          "block": null,
+          "latencyMs": 45,
+          "status": "ok",
+          "lagBlocks": 999,
+          "kind": "STALE",
+          "isOutlier": true,
+          "balanceOutlier": true,
+          "blockOutlier": true,
+          "deviationCheck": "block"
+        },
+        {
+          "providerId": "llama",
+          "balance": null,
+          "block": null,
+          "latencyMs": 367,
+          "status": "error",
+          "lagBlocks": 999,
+          "kind": "DOWN",
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        },
+        {
+          "providerId": "publicnode",
+          "balance": "0x5c10c75d8a22e326",
+          "block": {
+            "hash": "0x765ed448fdc9523a2e714c530458b0e734785c4a01c0d88b946b821123d8f070",
+            "parentHash": "0x9bad2f1725b7a31426214405a060451aa756d1866ba09fa10a41963d406ee684",
+            "stateRoot": "0xa57fbf9407e27e9aa1c05e0fa3939cb4f546f67d6af0204a7a8ff41e2d2a55d4",
+            "transactionsRoot": "0xfee5178929daadc1ea61ab618c9018733a19ad33a772c09c138e83045e4d9c55"
+          },
+          "latencyMs": 206,
+          "status": "ok",
+          "lagBlocks": 0,
+          "kind": null,
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        },
+        {
+          "providerId": "drpc",
+          "balance": "0x5c10c75d8a22e326",
+          "block": {
+            "hash": "0x765ed448fdc9523a2e714c530458b0e734785c4a01c0d88b946b821123d8f070",
+            "parentHash": "0x9bad2f1725b7a31426214405a060451aa756d1866ba09fa10a41963d406ee684",
+            "stateRoot": "0xa57fbf9407e27e9aa1c05e0fa3939cb4f546f67d6af0204a7a8ff41e2d2a55d4",
+            "transactionsRoot": "0xfee5178929daadc1ea61ab618c9018733a19ad33a772c09c138e83045e4d9c55"
+          },
+          "latencyMs": 299,
+          "status": "ok",
+          "lagBlocks": 0,
+          "kind": null,
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        },
+        {
+          "providerId": "1rpc",
+          "balance": "0x5c10c75d8a22e326",
+          "block": {
+            "hash": "0x765ed448fdc9523a2e714c530458b0e734785c4a01c0d88b946b821123d8f070",
+            "parentHash": "0x9bad2f1725b7a31426214405a060451aa756d1866ba09fa10a41963d406ee684",
+            "stateRoot": "0xa57fbf9407e27e9aa1c05e0fa3939cb4f546f67d6af0204a7a8ff41e2d2a55d4",
+            "transactionsRoot": "0xfee5178929daadc1ea61ab618c9018733a19ad33a772c09c138e83045e4d9c55"
+          },
+          "latencyMs": 487,
+          "status": "ok",
+          "lagBlocks": 0,
+          "kind": null,
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        },
+        {
+          "providerId": "blast",
+          "balance": null,
+          "block": null,
+          "latencyMs": 275,
+          "status": "ok",
+          "lagBlocks": 0,
+          "kind": "DEVIANT",
+          "isOutlier": true,
+          "balanceOutlier": true,
+          "blockOutlier": true,
+          "deviationCheck": "block"
+        },
+        {
+          "providerId": "tenderly",
+          "balance": "0x5c10c75d8a22e326",
+          "block": {
+            "hash": "0x765ed448fdc9523a2e714c530458b0e734785c4a01c0d88b946b821123d8f070",
+            "parentHash": "0x9bad2f1725b7a31426214405a060451aa756d1866ba09fa10a41963d406ee684",
+            "stateRoot": "0xa57fbf9407e27e9aa1c05e0fa3939cb4f546f67d6af0204a7a8ff41e2d2a55d4",
+            "transactionsRoot": "0xfee5178929daadc1ea61ab618c9018733a19ad33a772c09c138e83045e4d9c55"
+          },
+          "latencyMs": 316,
+          "status": "ok",
+          "lagBlocks": 0,
+          "kind": null,
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        },
+        {
+          "providerId": "onfinality",
+          "balance": "0x5c10c75d8a22e326",
+          "block": {
+            "hash": "0x765ed448fdc9523a2e714c530458b0e734785c4a01c0d88b946b821123d8f070",
+            "parentHash": "0x9bad2f1725b7a31426214405a060451aa756d1866ba09fa10a41963d406ee684",
+            "stateRoot": "0xa57fbf9407e27e9aa1c05e0fa3939cb4f546f67d6af0204a7a8ff41e2d2a55d4",
+            "transactionsRoot": "0xfee5178929daadc1ea61ab618c9018733a19ad33a772c09c138e83045e4d9c55"
+          },
+          "latencyMs": 420,
+          "status": "ok",
+          "lagBlocks": 0,
+          "kind": null,
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        },
+        {
+          "providerId": "flashbots",
+          "balance": null,
+          "block": {
+            "hash": "0x765ed448fdc9523a2e714c530458b0e734785c4a01c0d88b946b821123d8f070",
+            "parentHash": "0x9bad2f1725b7a31426214405a060451aa756d1866ba09fa10a41963d406ee684",
+            "stateRoot": "0xa57fbf9407e27e9aa1c05e0fa3939cb4f546f67d6af0204a7a8ff41e2d2a55d4",
+            "transactionsRoot": "0xfee5178929daadc1ea61ab618c9018733a19ad33a772c09c138e83045e4d9c55"
+          },
+          "latencyMs": 3003,
+          "status": "timeout",
+          "lagBlocks": 0,
+          "kind": "DOWN",
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        },
+        {
+          "providerId": "mevblocker",
+          "balance": "0x5c10c75d8a22e326",
+          "block": {
+            "hash": "0x765ed448fdc9523a2e714c530458b0e734785c4a01c0d88b946b821123d8f070",
+            "parentHash": "0x9bad2f1725b7a31426214405a060451aa756d1866ba09fa10a41963d406ee684",
+            "stateRoot": "0xa57fbf9407e27e9aa1c05e0fa3939cb4f546f67d6af0204a7a8ff41e2d2a55d4",
+            "transactionsRoot": "0xfee5178929daadc1ea61ab618c9018733a19ad33a772c09c138e83045e4d9c55"
+          },
+          "latencyMs": 175,
+          "status": "ok",
+          "lagBlocks": 0,
+          "kind": null,
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        }
+      ],
+      "pinned_block_hex": "0x1884e8d",
+      "consensus_hash": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "merkle_root": null,
+      "status": "ok"
+    },
+    {
+      "id": "8ae36401-1fec-438a-b372-8d0471c360ea",
+      "t": "2026-08-08T12:26:47.569Z",
+      "battery": [
+        {
+          "providerId": "cloudflare",
+          "balance": null,
+          "block": null,
+          "latencyMs": 37,
+          "status": "ok",
+          "lagBlocks": 999,
+          "kind": "STALE",
+          "isOutlier": true,
+          "balanceOutlier": true,
+          "blockOutlier": true,
+          "deviationCheck": "block"
+        },
+        {
+          "providerId": "llama",
+          "balance": null,
+          "block": null,
+          "latencyMs": 273,
+          "status": "error",
+          "lagBlocks": 999,
+          "kind": "DOWN",
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        },
+        {
+          "providerId": "publicnode",
+          "balance": "0x5c10c75d8a22e326",
+          "block": {
+            "hash": "0x8c709f92b386c0ab3f94732701d4d3e1da8ddf12d2e8df5b728f5451b6a18467",
+            "parentHash": "0x0d370b202d1453a085a3b954b57e64298a8c9b6769fe0add6302fea93e746182",
+            "stateRoot": "0x349e6f99b4643da3526c8a8f7448d0f1076b48d49d982fe15d65c981a410c169",
+            "transactionsRoot": "0xe4c075f1a5789a419675e1bc5d6776a603da3b1adce5d922349d33a8ed74c214"
+          },
+          "latencyMs": 254,
+          "status": "ok",
+          "lagBlocks": 0,
+          "kind": null,
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        },
+        {
+          "providerId": "drpc",
+          "balance": "0x5c10c75d8a22e326",
+          "block": {
+            "hash": "0x8c709f92b386c0ab3f94732701d4d3e1da8ddf12d2e8df5b728f5451b6a18467",
+            "parentHash": "0x0d370b202d1453a085a3b954b57e64298a8c9b6769fe0add6302fea93e746182",
+            "stateRoot": "0x349e6f99b4643da3526c8a8f7448d0f1076b48d49d982fe15d65c981a410c169",
+            "transactionsRoot": "0xe4c075f1a5789a419675e1bc5d6776a603da3b1adce5d922349d33a8ed74c214"
+          },
+          "latencyMs": 282,
+          "status": "ok",
+          "lagBlocks": 0,
+          "kind": null,
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        },
+        {
+          "providerId": "1rpc",
+          "balance": "0x5c10c75d8a22e326",
+          "block": null,
+          "latencyMs": 1136,
+          "status": "ok",
+          "lagBlocks": 1,
+          "kind": "DEVIANT",
+          "isOutlier": true,
+          "balanceOutlier": false,
+          "blockOutlier": true,
+          "deviationCheck": "block"
+        },
+        {
+          "providerId": "blast",
+          "balance": null,
+          "block": null,
+          "latencyMs": 263,
+          "status": "ok",
+          "lagBlocks": 0,
+          "kind": "DEVIANT",
+          "isOutlier": true,
+          "balanceOutlier": true,
+          "blockOutlier": true,
+          "deviationCheck": "block"
+        },
+        {
+          "providerId": "tenderly",
+          "balance": "0x5c10c75d8a22e326",
+          "block": {
+            "hash": "0x8c709f92b386c0ab3f94732701d4d3e1da8ddf12d2e8df5b728f5451b6a18467",
+            "parentHash": "0x0d370b202d1453a085a3b954b57e64298a8c9b6769fe0add6302fea93e746182",
+            "stateRoot": "0x349e6f99b4643da3526c8a8f7448d0f1076b48d49d982fe15d65c981a410c169",
+            "transactionsRoot": "0xe4c075f1a5789a419675e1bc5d6776a603da3b1adce5d922349d33a8ed74c214"
+          },
+          "latencyMs": 305,
+          "status": "ok",
+          "lagBlocks": 0,
+          "kind": null,
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        },
+        {
+          "providerId": "onfinality",
+          "balance": "0x5c10c75d8a22e326",
+          "block": {
+            "hash": "0x8c709f92b386c0ab3f94732701d4d3e1da8ddf12d2e8df5b728f5451b6a18467",
+            "parentHash": "0x0d370b202d1453a085a3b954b57e64298a8c9b6769fe0add6302fea93e746182",
+            "stateRoot": "0x349e6f99b4643da3526c8a8f7448d0f1076b48d49d982fe15d65c981a410c169",
+            "transactionsRoot": "0xe4c075f1a5789a419675e1bc5d6776a603da3b1adce5d922349d33a8ed74c214"
+          },
+          "latencyMs": 382,
+          "status": "ok",
+          "lagBlocks": 0,
+          "kind": null,
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        },
+        {
+          "providerId": "flashbots",
+          "balance": null,
+          "block": {
+            "hash": "0x8c709f92b386c0ab3f94732701d4d3e1da8ddf12d2e8df5b728f5451b6a18467",
+            "parentHash": "0x0d370b202d1453a085a3b954b57e64298a8c9b6769fe0add6302fea93e746182",
+            "stateRoot": "0x349e6f99b4643da3526c8a8f7448d0f1076b48d49d982fe15d65c981a410c169",
+            "transactionsRoot": "0xe4c075f1a5789a419675e1bc5d6776a603da3b1adce5d922349d33a8ed74c214"
+          },
+          "latencyMs": 3002,
+          "status": "timeout",
+          "lagBlocks": 0,
+          "kind": "DOWN",
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        },
+        {
+          "providerId": "mevblocker",
+          "balance": "0x5c10c75d8a22e326",
+          "block": {
+            "hash": "0x8c709f92b386c0ab3f94732701d4d3e1da8ddf12d2e8df5b728f5451b6a18467",
+            "parentHash": "0x0d370b202d1453a085a3b954b57e64298a8c9b6769fe0add6302fea93e746182",
+            "stateRoot": "0x349e6f99b4643da3526c8a8f7448d0f1076b48d49d982fe15d65c981a410c169",
+            "transactionsRoot": "0xe4c075f1a5789a419675e1bc5d6776a603da3b1adce5d922349d33a8ed74c214"
+          },
+          "latencyMs": 179,
+          "status": "ok",
+          "lagBlocks": 0,
+          "kind": null,
+          "isOutlier": false,
+          "balanceOutlier": false,
+          "blockOutlier": false,
+          "deviationCheck": null
+        }
+      ],
+      "pinned_block_hex": "0x1884e8f",
+      "consensus_hash": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "merkle_root": null,
+      "status": "ok"
     }
   ],
   "incidents": [
@@ -861,6 +1386,526 @@
       "got": "0x5c10c75d8a22e326",
       "receipts": {
         "txHash": "0x36a8536abcb46a8e0844f252fb74dc260e63b2c6cf0cb21e1e84be133ff53ec1",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "4f9d1fc5-554f-49d6-be2a-0db0fed3499d",
+      "t": "2026-08-08T12:24:12.112Z",
+      "provider_id": "cloudflare",
+      "kind": "STALE",
+      "poll_id": "7c00fb43-dcac-46ec-b385-3f89cd199bd5",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884e82",
+          false
+        ]
+      },
+      "expected": "a7c3196d625cd065b41f8ad76934ff711fe095811618c65a6fb5d40e5e35b86c",
+      "got": "null",
+      "receipts": {
+        "txHash": "0xfc36e3fc74e682fa064fbaafb467b8273abfdf2bf9fa411968416685b78ba603",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "f1cf5002-c194-4912-b643-8224fd50c4a6",
+      "t": "2026-08-08T12:24:13.841Z",
+      "provider_id": "llama",
+      "kind": "DOWN",
+      "poll_id": "7c00fb43-dcac-46ec-b385-3f89cd199bd5",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884e82"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0xe1b5993fad55a30fec56cf49f67b3e9e2d5b64b8cde4bbd709dbfb8e95092ffd",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "61687b61-e9c8-45a3-9f8e-3351bf508f81",
+      "t": "2026-08-08T12:24:17.475Z",
+      "provider_id": "flashbots",
+      "kind": "DOWN",
+      "poll_id": "7c00fb43-dcac-46ec-b385-3f89cd199bd5",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884e82"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x4851a5a409694908a2fc3b82d7a81613952b807204361e53d0f58bd33619ffdb",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "1f5a2834-0539-4560-b179-a46985458d5b",
+      "t": "2026-08-08T12:26:31.100Z",
+      "provider_id": "cloudflare",
+      "kind": "STALE",
+      "poll_id": "3307584a-af67-41f6-9848-0f842f85292a",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884e8d",
+          false
+        ]
+      },
+      "expected": "48a0f5cd2ebfe358517d2ad0061d6b36b52a8959f2a35cedca833e39355eca63",
+      "got": "null",
+      "receipts": {
+        "txHash": "0xb282c9d4883179f4420a24453065ced63f56dd440924fb59a8f033d0d2d75d0b",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "3187ea79-8576-41f5-8a20-98a13384b05b",
+      "t": "2026-08-08T12:26:32.478Z",
+      "provider_id": "llama",
+      "kind": "DOWN",
+      "poll_id": "3307584a-af67-41f6-9848-0f842f85292a",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884e8d"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x17facf0f546629b8f92e1d34451a433bad981a2fe11b6a993afd5e943e7a5cab",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "ed943d94-48bb-4411-b465-d039cbcf81b9",
+      "t": "2026-08-08T12:26:34.262Z",
+      "provider_id": "flashbots",
+      "kind": "DOWN",
+      "poll_id": "3307584a-af67-41f6-9848-0f842f85292a",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884e8d"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x1b35ac3ef8b5a24658473539daad34f16f8ef12890483f31d3e84b601a75a58b",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "bff84df1-96f6-4c56-9a4d-474a3c343748",
+      "t": "2026-08-08T12:26:49.258Z",
+      "provider_id": "cloudflare",
+      "kind": "STALE",
+      "poll_id": "15644744-c6c6-4540-990b-4a19ea724be2",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884e8f",
+          false
+        ]
+      },
+      "expected": "084bc255f42eb644b019b01809959039be6d9f79cd0929807690f391844aa3c1",
+      "got": "null",
+      "receipts": {
+        "txHash": "0xead02f4784c21bfe34e16d8c9ece2ec707d1e81b590e7b4736fe5ef45559980b",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "53bb973c-fde2-45a4-8e9a-1f91ead956b4",
+      "t": "2026-08-08T12:26:50.817Z",
+      "provider_id": "llama",
+      "kind": "DOWN",
+      "poll_id": "15644744-c6c6-4540-990b-4a19ea724be2",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884e8f"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x49299a3301ec4e5a65a1fce93abc5dd13dc7d5da7008063d54cfccda91f0587d",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "99ba56e0-4928-4a02-9bb8-e825ac5ef77f",
+      "t": "2026-08-08T12:26:53.690Z",
+      "provider_id": "flashbots",
+      "kind": "DOWN",
+      "poll_id": "15644744-c6c6-4540-990b-4a19ea724be2",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884e8f"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x649d9b8e145061fe84122487ea6d92c5436126e3b268b820626b32f9f2db9a9c",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "173cf394-6424-4146-9ad0-20e8b418d6dd",
+      "t": "2026-08-08T12:32:55.262Z",
+      "provider_id": "cloudflare",
+      "kind": "STALE",
+      "poll_id": "75fa3a71-293b-434d-958e-b889ea0acc32",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884ead",
+          false
+        ]
+      },
+      "expected": "b0c7f87f800a7a6c7e1495862191bf9600152e82bd3b7a487cecf4e44076d3af",
+      "got": "null",
+      "receipts": {
+        "txHash": "0x53dfbac9933e467596775ef03784c954",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "6e108e6f-3537-4db4-92f9-385380869ea4",
+      "t": "2026-08-08T12:32:55.474Z",
+      "provider_id": "llama",
+      "kind": "DOWN",
+      "poll_id": "75fa3a71-293b-434d-958e-b889ea0acc32",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884ead"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0xac6fbf8400e54060984d0793c6543d19",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "45fe1843-eab9-41c7-8d8d-201018f3c2eb",
+      "t": "2026-08-08T12:32:55.673Z",
+      "provider_id": "onfinality",
+      "kind": "DEVIANT",
+      "poll_id": "75fa3a71-293b-434d-958e-b889ea0acc32",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884ead",
+          false
+        ]
+      },
+      "expected": "b0c7f87f800a7a6c7e1495862191bf9600152e82bd3b7a487cecf4e44076d3af",
+      "got": "null",
+      "receipts": {
+        "txHash": "0x67e4366a203e40edb250e4e8abcaa036",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "773e5d35-72cd-4769-9bde-719c500dd242",
+      "t": "2026-08-08T12:32:55.869Z",
+      "provider_id": "flashbots",
+      "kind": "DOWN",
+      "poll_id": "75fa3a71-293b-434d-958e-b889ea0acc32",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884ead"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0xbfec4cb0024f4c488b669e8c3f537907",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "3a3eb8d5-6a08-4af7-99c4-e63ce7c848a6",
+      "t": "2026-08-08T12:33:02.811Z",
+      "provider_id": "cloudflare",
+      "kind": "STALE",
+      "poll_id": "be6623ff-1392-423f-a882-ad0b7701c752",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eae",
+          false
+        ]
+      },
+      "expected": "2597142ecba7d3ba8a092519f5f140a4dc067aa722264d77b39e8c85555d75fc",
+      "got": "null",
+      "receipts": {
+        "txHash": "0x2613230e91714aa9adf32e7ac9beadfb",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "43323dff-a06e-4a31-9801-5e32e53bd4c3",
+      "t": "2026-08-08T12:33:03.014Z",
+      "provider_id": "llama",
+      "kind": "DOWN",
+      "poll_id": "be6623ff-1392-423f-a882-ad0b7701c752",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eae"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x6dd4735111b247aca8b8dbd23a83757c",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "bd9d74a1-39b6-40f3-add7-fc17401dadb3",
+      "t": "2026-08-08T12:33:03.206Z",
+      "provider_id": "onfinality",
+      "kind": "DEVIANT",
+      "poll_id": "be6623ff-1392-423f-a882-ad0b7701c752",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eae",
+          false
+        ]
+      },
+      "expected": "2597142ecba7d3ba8a092519f5f140a4dc067aa722264d77b39e8c85555d75fc",
+      "got": "null",
+      "receipts": {
+        "txHash": "0x367a4b0593b6473d907b890465bcf2b6",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "6054c42b-8086-4de0-b71b-f6083908cf8c",
+      "t": "2026-08-08T12:33:03.396Z",
+      "provider_id": "flashbots",
+      "kind": "DOWN",
+      "poll_id": "be6623ff-1392-423f-a882-ad0b7701c752",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eae"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0xb31cf908b14a4df98e8c03546f75e78d",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "2e7015c8-b6f2-4717-911f-7e9f2b61103f",
+      "t": "2026-08-08T12:33:12.302Z",
+      "provider_id": "cloudflare",
+      "kind": "STALE",
+      "poll_id": "6198df8d-16c1-4a14-b6ca-994d527e070f",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eaf",
+          false
+        ]
+      },
+      "expected": "8fc311329cf9f74edfaea73eb21b5db9e774c9c943975f142e3878ec0df95d1c",
+      "got": "null",
+      "receipts": {
+        "txHash": "0x97b8a9aa606646108a20a68df4a7e7e5",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "8b135292-9291-47b0-af68-f59b81ef11d6",
+      "t": "2026-08-08T12:33:12.495Z",
+      "provider_id": "llama",
+      "kind": "DOWN",
+      "poll_id": "6198df8d-16c1-4a14-b6ca-994d527e070f",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eaf"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0xb5a905b544a3473f91757b0a09e334b9",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "94162366-e470-4771-bf72-7c9f2be15f6f",
+      "t": "2026-08-08T12:33:12.688Z",
+      "provider_id": "onfinality",
+      "kind": "DEVIANT",
+      "poll_id": "6198df8d-16c1-4a14-b6ca-994d527e070f",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eaf",
+          false
+        ]
+      },
+      "expected": "8fc311329cf9f74edfaea73eb21b5db9e774c9c943975f142e3878ec0df95d1c",
+      "got": "null",
+      "receipts": {
+        "txHash": "0x2053541ad25a46bf99f5b497f2a86d55",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "c2731b6e-0de8-4da0-93b4-0189e1b922bb",
+      "t": "2026-08-08T12:33:12.875Z",
+      "provider_id": "flashbots",
+      "kind": "DOWN",
+      "poll_id": "6198df8d-16c1-4a14-b6ca-994d527e070f",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eaf"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0xe63257a9c60742bfb6c76ea1316cb709",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "8d13852d-d0a4-401e-ab25-b99309198dde",
+      "t": "2026-08-08T12:33:20.230Z",
+      "provider_id": "cloudflare",
+      "kind": "STALE",
+      "poll_id": "1a2900dd-562f-4fc7-81e5-e06692cac700",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eaf",
+          false
+        ]
+      },
+      "expected": "8fc311329cf9f74edfaea73eb21b5db9e774c9c943975f142e3878ec0df95d1c",
+      "got": "null",
+      "receipts": {
+        "txHash": "0x116a205601344300a40867ef9621f9bc",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "3fa32669-e808-45fc-ba20-5d9e951569d1",
+      "t": "2026-08-08T12:33:20.423Z",
+      "provider_id": "llama",
+      "kind": "DOWN",
+      "poll_id": "1a2900dd-562f-4fc7-81e5-e06692cac700",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eaf"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x9345f67f1db448dca43c3e4845a3a221",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "f6ff124e-0b47-4050-aa7d-5fa3f09ebea3",
+      "t": "2026-08-08T12:33:20.636Z",
+      "provider_id": "onfinality",
+      "kind": "DEVIANT",
+      "poll_id": "1a2900dd-562f-4fc7-81e5-e06692cac700",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eaf",
+          false
+        ]
+      },
+      "expected": "8fc311329cf9f74edfaea73eb21b5db9e774c9c943975f142e3878ec0df95d1c",
+      "got": "null",
+      "receipts": {
+        "txHash": "0xfda0cd768c29420dbc9f58161946b579",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "ef6406a5-0d47-4353-b6d9-216dc3f139bf",
+      "t": "2026-08-08T12:33:20.829Z",
+      "provider_id": "flashbots",
+      "kind": "DOWN",
+      "poll_id": "1a2900dd-562f-4fc7-81e5-e06692cac700",
+      "request": {
+        "method": "eth_getBalance",
+        "params": [
+          "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+          "0x1884eaf"
+        ]
+      },
+      "expected": "d897f72068ed1aa6311c0d7278e91113d936f8458476541c6c42cbe756226d8b",
+      "got": null,
+      "receipts": {
+        "txHash": "0x6cbdc711e9994a0dbc93e89eac62a8d3",
+        "network": "sepolia"
+      }
+    },
+    {
+      "id": "0872faa4-e15d-4d30-ad10-12d9899f0cf9",
+      "t": "2026-08-08T12:33:29.182Z",
+      "provider_id": "cloudflare",
+      "kind": "STALE",
+      "poll_id": "2d2e58cc-3290-4883-80f6-5e4d271ed798",
+      "request": {
+        "method": "eth_getBlockByNumber",
+        "params": [
+          "0x1884eb0",
+          false
+        ]
+      },
+      "expected": "46a2ece55ab181d218cf096d925d2a6c40ea5eccf006cb8a80f07f93fca56d5c",
+      "got": "null",
+      "receipts": {
+        "txHash": "0x0612bff86c0048d28b888e0331c59dab",
         "network": "sepolia"
       }
     }
@@ -11754,6 +12799,886 @@
       "uptime": 1,
       "latency_avg": 58.915200000000006,
       "freshness_score": 0.98,
+      "trend": "STABLE"
+    },
+    {
+      "id": "73fa245e-dad7-48a1-844b-836514a68d3b",
+      "t": "2026-08-08T12:24:17.977Z",
+      "provider_id": "cloudflare",
+      "score": 67,
+      "accuracy": 0.5,
+      "uptime": 1,
+      "latency_avg": 42.6034,
+      "freshness_score": 0.5,
+      "trend": "STABLE"
+    },
+    {
+      "id": "8c2bee92-6229-45b2-b935-73cb3b70e174",
+      "t": "2026-08-08T12:24:18.349Z",
+      "provider_id": "llama",
+      "score": 56,
+      "accuracy": 0.5,
+      "uptime": 0.5,
+      "latency_avg": 176.1958,
+      "freshness_score": 0.5,
+      "trend": "STABLE"
+    },
+    {
+      "id": "985895ce-6a4e-4bb7-9ed6-88d94b9adda7",
+      "t": "2026-08-08T12:24:18.744Z",
+      "provider_id": "publicnode",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 165.8324,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "d28db848-f7d8-4a16-a90b-80c5e55af146",
+      "t": "2026-08-08T12:24:19.127Z",
+      "provider_id": "drpc",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 200.6176,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "b96b84c4-7923-47c4-b4e1-3ad6a465af74",
+      "t": "2026-08-08T12:24:19.737Z",
+      "provider_id": "1rpc",
+      "score": 69,
+      "accuracy": 0.5,
+      "uptime": 1,
+      "latency_avg": 644.083,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "75a60ce2-a477-43ce-b962-76333b8efe6c",
+      "t": "2026-08-08T12:24:20.104Z",
+      "provider_id": "blast",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 192.678,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "6b93b5fc-8d25-4bd3-9b95-b6b95e539d50",
+      "t": "2026-08-08T12:24:20.492Z",
+      "provider_id": "tenderly",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 202.489,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "52fc21be-d012-40ea-a482-d497e753262d",
+      "t": "2026-08-08T12:24:20.860Z",
+      "provider_id": "onfinality",
+      "score": 97,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 264.2138,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "0924215a-a626-40c6-9a43-8ee47df05ba3",
+      "t": "2026-08-08T12:24:21.222Z",
+      "provider_id": "flashbots",
+      "score": 50,
+      "accuracy": 0.5,
+      "uptime": 0.5,
+      "latency_avg": 1555.067,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "28677b19-f3f2-4d48-ac31-ebabfbffb8db",
+      "t": "2026-08-08T12:24:21.595Z",
+      "provider_id": "mevblocker",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 117.4576,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "2191a8ab-e91f-4389-9445-a821e9670b2d",
+      "t": "2026-08-08T12:26:34.812Z",
+      "provider_id": "cloudflare",
+      "score": 56,
+      "accuracy": 0.3333333333333333,
+      "uptime": 1,
+      "latency_avg": 42.936733333333336,
+      "freshness_score": 0.3333333333333333,
+      "trend": "STABLE"
+    },
+    {
+      "id": "d97e18a0-8f07-4d2d-826d-955811916d3f",
+      "t": "2026-08-08T12:26:35.172Z",
+      "provider_id": "llama",
+      "score": 41,
+      "accuracy": 0.3333333333333333,
+      "uptime": 0.3333333333333333,
+      "latency_avg": 204.86246666666668,
+      "freshness_score": 0.3333333333333333,
+      "trend": "STABLE"
+    },
+    {
+      "id": "ae6b450d-040c-4826-8f53-2f970ddc00bb",
+      "t": "2026-08-08T12:26:35.543Z",
+      "provider_id": "publicnode",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 152.16573333333335,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "e30adbeb-5125-4454-8b28-b8d7ac0fd6f3",
+      "t": "2026-08-08T12:26:35.920Z",
+      "provider_id": "drpc",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 203.28426666666667,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "fd096f92-dba1-4406-9058-af7efe2a75f7",
+      "t": "2026-08-08T12:26:36.587Z",
+      "provider_id": "1rpc",
+      "score": 79,
+      "accuracy": 0.6666666666666666,
+      "uptime": 1,
+      "latency_avg": 404.083,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "391198a6-203b-4483-9972-73fdf4225db5",
+      "t": "2026-08-08T12:26:36.971Z",
+      "provider_id": "blast",
+      "score": 81,
+      "accuracy": 0.6666666666666666,
+      "uptime": 1,
+      "latency_avg": 198.01133333333334,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "6856dbfd-2bfe-4778-a558-64e592ad5acd",
+      "t": "2026-08-08T12:26:37.350Z",
+      "provider_id": "tenderly",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 203.82233333333332,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "919d70d0-5f37-499d-94e3-52ef5f98ea59",
+      "t": "2026-08-08T12:26:37.704Z",
+      "provider_id": "onfinality",
+      "score": 97,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 274.2138,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "f41f4666-9d02-465b-a7d7-e685be3474cd",
+      "t": "2026-08-08T12:26:38.084Z",
+      "provider_id": "flashbots",
+      "score": 38,
+      "accuracy": 0.3333333333333333,
+      "uptime": 0.3333333333333333,
+      "latency_avg": 1555.067,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "bee13b81-b900-4131-a139-531bfe7eecb4",
+      "t": "2026-08-08T12:26:38.458Z",
+      "provider_id": "mevblocker",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 117.12426666666666,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "39792bae-44d6-412f-bd5f-2c92d3df5877",
+      "t": "2026-08-08T12:26:54.144Z",
+      "provider_id": "cloudflare",
+      "score": 51,
+      "accuracy": 0.25,
+      "uptime": 1,
+      "latency_avg": 40.93673333333333,
+      "freshness_score": 0.25,
+      "trend": "STABLE"
+    },
+    {
+      "id": "44e73a60-e4a6-46c6-9f95-f4cf2fadd90e",
+      "t": "2026-08-08T12:26:54.524Z",
+      "provider_id": "llama",
+      "score": 34,
+      "accuracy": 0.25,
+      "uptime": 0.25,
+      "latency_avg": 181.36246666666676,
+      "freshness_score": 0.25,
+      "trend": "STABLE"
+    },
+    {
+      "id": "8149c509-d48c-4300-a842-d97092fa39f3",
+      "t": "2026-08-08T12:26:54.913Z",
+      "provider_id": "publicnode",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 164.16573333333326,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "84a9eb60-3f1f-49a4-8ae5-bb4cc1a9b206",
+      "t": "2026-08-08T12:26:55.299Z",
+      "provider_id": "drpc",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 199.03426666666675,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "b62524e2-2973-4fcf-93be-90473b5ca165",
+      "t": "2026-08-08T12:26:55.681Z",
+      "provider_id": "1rpc",
+      "score": 69,
+      "accuracy": 0.5,
+      "uptime": 1,
+      "latency_avg": 566.3330000000001,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "94f6dd96-fe65-42ea-a29b-b61af5abeb6c",
+      "t": "2026-08-08T12:26:56.063Z",
+      "provider_id": "blast",
+      "score": 86,
+      "accuracy": 0.75,
+      "uptime": 1,
+      "latency_avg": 195.01133333333325,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "653a6535-a4f5-4936-8232-2b9553b68a9c",
+      "t": "2026-08-08T12:26:56.456Z",
+      "provider_id": "tenderly",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 201.07233333333323,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "1d18bd26-4f45-4b6c-b492-44e44e38814b",
+      "t": "2026-08-08T12:26:56.839Z",
+      "provider_id": "onfinality",
+      "score": 97,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 264.7138,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "c784af14-a74c-4e43-987a-5261c20c58be",
+      "t": "2026-08-08T12:26:57.245Z",
+      "provider_id": "flashbots",
+      "score": 32,
+      "accuracy": 0.25,
+      "uptime": 0.25,
+      "latency_avg": 1554.817,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "f466fa80-7a96-416f-b423-00a122eabe80",
+      "t": "2026-08-08T12:26:57.633Z",
+      "provider_id": "mevblocker",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 118.12426666666674,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "fc97c4ce-b4f1-402d-b722-0e7e7de1652a",
+      "t": "2026-08-08T12:32:52.299Z",
+      "provider_id": "cloudflare",
+      "score": 98,
+      "accuracy": 0.975609756097561,
+      "uptime": 1,
+      "latency_avg": 42.10439259479514,
+      "freshness_score": 0.975609756097561,
+      "trend": "STABLE"
+    },
+    {
+      "id": "0129ece2-d945-4895-b923-a9d7762cfcf7",
+      "t": "2026-08-08T12:32:53.424Z",
+      "provider_id": "llama",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.975609756097561,
+      "latency_avg": 73.96352758320236,
+      "freshness_score": 0.975609756097561,
+      "trend": "STABLE"
+    },
+    {
+      "id": "3946fd1e-0423-4449-a3c7-bfb10393cccb",
+      "t": "2026-08-08T12:32:53.712Z",
+      "provider_id": "publicnode",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 82.56896034622262,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "4f201e7c-ab11-4605-b789-338511c20302",
+      "t": "2026-08-08T12:32:53.928Z",
+      "provider_id": "drpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 111.80462593759286,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "30fed2ad-a87a-488e-805f-451c2a9b4792",
+      "t": "2026-08-08T12:32:54.114Z",
+      "provider_id": "1rpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 113.68256178729861,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "090be912-258c-4a95-8a01-2e05cc592999",
+      "t": "2026-08-08T12:32:54.312Z",
+      "provider_id": "blast",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 128.26547019802018,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "9169be58-e332-42b9-9232-c45094b4e73b",
+      "t": "2026-08-08T12:32:54.498Z",
+      "provider_id": "tenderly",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 95.935975534319,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "025e40b3-8536-469c-a4a6-e9a9c34a1667",
+      "t": "2026-08-08T12:32:54.692Z",
+      "provider_id": "onfinality",
+      "score": 97,
+      "accuracy": 0.975609756097561,
+      "uptime": 1,
+      "latency_avg": 148.38050672843445,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "cb3eadf2-0e51-422e-8071-14e95fc99b16",
+      "t": "2026-08-08T12:32:54.881Z",
+      "provider_id": "flashbots",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.975609756097561,
+      "latency_avg": 186.018206858818,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "29853f34-ddf5-4fee-989b-a88efdd02ce0",
+      "t": "2026-08-08T12:32:55.076Z",
+      "provider_id": "mevblocker",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 57.66468255058773,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "fcc22662-b837-49ba-9758-e8dcc327ac13",
+      "t": "2026-08-08T12:33:00.126Z",
+      "provider_id": "cloudflare",
+      "score": 98,
+      "accuracy": 0.9761904761904762,
+      "uptime": 1,
+      "latency_avg": 42.05677354717609,
+      "freshness_score": 0.9761904761904762,
+      "trend": "STABLE"
+    },
+    {
+      "id": "24cc8927-412e-42bd-9e96-9c3bddb0a434",
+      "t": "2026-08-08T12:33:00.371Z",
+      "provider_id": "llama",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.9761904761904762,
+      "latency_avg": 73.8920990117738,
+      "freshness_score": 0.9761904761904762,
+      "trend": "STABLE"
+    },
+    {
+      "id": "9faac663-e069-458a-9048-799d9685cbee",
+      "t": "2026-08-08T12:33:01.115Z",
+      "provider_id": "publicnode",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 82.73562701288928,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "02bda9d3-e0e9-41b1-812a-5e1336119919",
+      "t": "2026-08-08T12:33:01.485Z",
+      "provider_id": "drpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 111.97129260425953,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "ceb5892d-26e3-4693-b7e1-8e86d7fcc7fd",
+      "t": "2026-08-08T12:33:01.672Z",
+      "provider_id": "1rpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 122.7777998825367,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "a81494d9-abfd-4312-9169-0a574f826ab7",
+      "t": "2026-08-08T12:33:01.865Z",
+      "provider_id": "blast",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 127.90832734087732,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "8fbf0863-6aab-457d-8411-4613fcf1da7c",
+      "t": "2026-08-08T12:33:02.045Z",
+      "provider_id": "tenderly",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 96.48359458193805,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "0c2cd31b-adeb-4292-a7b4-7d97511eb67f",
+      "t": "2026-08-08T12:33:02.241Z",
+      "provider_id": "onfinality",
+      "score": 97,
+      "accuracy": 0.9761904761904762,
+      "uptime": 1,
+      "latency_avg": 148.7138400617678,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "1fd63012-08f3-4ca0-af68-96d36423054e",
+      "t": "2026-08-08T12:33:02.429Z",
+      "provider_id": "flashbots",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.9761904761904762,
+      "latency_avg": 183.2563020969132,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "ab14902d-aaab-4405-b61d-2ce44a3ca21c",
+      "t": "2026-08-08T12:33:02.617Z",
+      "provider_id": "mevblocker",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 57.75992064582582,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "85d2bff6-ed2d-4374-ad6d-1b2a7d8933e9",
+      "t": "2026-08-08T12:33:10.137Z",
+      "provider_id": "cloudflare",
+      "score": 98,
+      "accuracy": 0.9767441860465116,
+      "uptime": 1,
+      "latency_avg": 42.47537819833888,
+      "freshness_score": 0.9767441860465116,
+      "trend": "STABLE"
+    },
+    {
+      "id": "5f5ec6fc-6d12-4e59-becf-3251c862056d",
+      "t": "2026-08-08T12:33:10.386Z",
+      "provider_id": "llama",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.9767441860465116,
+      "latency_avg": 74.21768040712263,
+      "freshness_score": 0.9767441860465116,
+      "trend": "STABLE"
+    },
+    {
+      "id": "9b318b20-a8f9-4947-83fe-13699e69b4f3",
+      "t": "2026-08-08T12:33:10.638Z",
+      "provider_id": "publicnode",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 84.8984177105637,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "86c51497-1b50-49ac-aae8-457688fb9c34",
+      "t": "2026-08-08T12:33:10.831Z",
+      "provider_id": "drpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 112.08757167402698,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "0101af73-0418-4688-87c3-82d09841c340",
+      "t": "2026-08-08T12:33:11.042Z",
+      "provider_id": "1rpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 111.75454406858321,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "bfc0bfe8-fed1-4ace-ac2d-b22338ce62c0",
+      "t": "2026-08-08T12:33:11.308Z",
+      "provider_id": "blast",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 128.559490131575,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "315b0b98-6a4e-4a8d-9815-9a2337cc19a9",
+      "t": "2026-08-08T12:33:11.518Z",
+      "provider_id": "tenderly",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 96.34405969821714,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "9a590764-20cb-4ff9-b4f2-3073a2fc5895",
+      "t": "2026-08-08T12:33:11.707Z",
+      "provider_id": "onfinality",
+      "score": 97,
+      "accuracy": 0.9767441860465116,
+      "uptime": 1,
+      "latency_avg": 150.03942145711662,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "a3ba81b9-87d9-40c2-b94d-e2789e89bbe5",
+      "t": "2026-08-08T12:33:11.909Z",
+      "provider_id": "flashbots",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.9767441860465116,
+      "latency_avg": 172.11676721319228,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "52359884-6015-45bc-8489-e8da6b782df8",
+      "t": "2026-08-08T12:33:12.099Z",
+      "provider_id": "mevblocker",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 57.69015320396535,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "e6229450-7285-418b-ab79-9b4c9cb1ca55",
+      "t": "2026-08-08T12:33:18.145Z",
+      "provider_id": "cloudflare",
+      "score": 98,
+      "accuracy": 0.9772727272727273,
+      "uptime": 1,
+      "latency_avg": 42.20265092561161,
+      "freshness_score": 0.9772727272727273,
+      "trend": "STABLE"
+    },
+    {
+      "id": "4cb7ebd5-3eb0-42a5-9f9d-e54723456a4e",
+      "t": "2026-08-08T12:33:18.395Z",
+      "provider_id": "llama",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.9772727272727273,
+      "latency_avg": 73.99040767984991,
+      "freshness_score": 0.9772727272727273,
+      "trend": "STABLE"
+    },
+    {
+      "id": "9ac67f69-a2ff-47a9-8631-832eef931a0f",
+      "t": "2026-08-08T12:33:18.621Z",
+      "provider_id": "publicnode",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 82.55750861965461,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "06b24f7e-66db-4377-bf98-a327ae396b6e",
+      "t": "2026-08-08T12:33:18.823Z",
+      "provider_id": "drpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 111.9739353103906,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "ec2ebb96-cabc-42e8-b7c9-fcd391d2b0fd",
+      "t": "2026-08-08T12:33:19.033Z",
+      "provider_id": "1rpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 110.91363497767412,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "6ff4b2f6-93c0-46e5-bcea-00e6ffaedd9a",
+      "t": "2026-08-08T12:33:19.226Z",
+      "provider_id": "blast",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 128.19585376793864,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "c13beb78-4cbe-4b71-9ef1-109f377e38da",
+      "t": "2026-08-08T12:33:19.405Z",
+      "provider_id": "tenderly",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 95.86678697094439,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "d86b2b7b-d667-4b90-afea-4734ef645138",
+      "t": "2026-08-08T12:33:19.650Z",
+      "provider_id": "onfinality",
+      "score": 97,
+      "accuracy": 0.9772727272727273,
+      "uptime": 1,
+      "latency_avg": 148.5621487298439,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "44a274d7-67f3-477a-9eb6-1fc7c41f4abf",
+      "t": "2026-08-08T12:33:19.842Z",
+      "provider_id": "flashbots",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.9772727272727273,
+      "latency_avg": 186.41222175864684,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "a8007322-f04c-4a93-87c0-78e09b3e5b56",
+      "t": "2026-08-08T12:33:20.032Z",
+      "provider_id": "mevblocker",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 57.50833502214718,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "e35f6f8b-f905-459e-b7e1-6a2464f7126a",
+      "t": "2026-08-08T12:33:27.136Z",
+      "provider_id": "cloudflare",
+      "score": 98,
+      "accuracy": 0.9777777777777777,
+      "uptime": 1,
+      "latency_avg": 42.20265092561161,
+      "freshness_score": 0.9777777777777777,
+      "trend": "STABLE"
+    },
+    {
+      "id": "a3bc285b-5d8c-42e2-81c3-711b452b07a2",
+      "t": "2026-08-08T12:33:27.377Z",
+      "provider_id": "llama",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.9777777777777777,
+      "latency_avg": 73.96818545762768,
+      "freshness_score": 0.9777777777777777,
+      "trend": "STABLE"
+    },
+    {
+      "id": "39db5e74-4a20-4066-a6e2-fc32723111fa",
+      "t": "2026-08-08T12:33:27.626Z",
+      "provider_id": "publicnode",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 83.17973084187683,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "db75ccaf-4830-40b2-9c28-54761f2ab434",
+      "t": "2026-08-08T12:33:27.822Z",
+      "provider_id": "drpc",
+      "score": 98,
+      "accuracy": 0.9777777777777777,
+      "uptime": 1,
+      "latency_avg": 111.88504642150171,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "b13185d0-a5c8-480d-ac4f-0f1f9c3acca6",
+      "t": "2026-08-08T12:33:28.012Z",
+      "provider_id": "1rpc",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 128.26919053322968,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "ef982279-4d43-4817-b3e1-4dd95bab16e3",
+      "t": "2026-08-08T12:33:28.218Z",
+      "provider_id": "blast",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 128.79585376793864,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "d11c8e52-b351-4a10-aae8-d0c2cbcf9007",
+      "t": "2026-08-08T12:33:28.404Z",
+      "provider_id": "tenderly",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 96.11123141538883,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "4dd5ab82-7a85-49b8-b941-cead19fa97f7",
+      "t": "2026-08-08T12:33:28.596Z",
+      "provider_id": "onfinality",
+      "score": 97,
+      "accuracy": 0.9777777777777777,
+      "uptime": 1,
+      "latency_avg": 148.60659317428835,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "7fef00eb-a9ee-4e84-af77-12a0f2799024",
+      "t": "2026-08-08T12:33:28.802Z",
+      "provider_id": "flashbots",
+      "score": 98,
+      "accuracy": 1,
+      "uptime": 0.9777777777777777,
+      "latency_avg": 185.85666620309127,
+      "freshness_score": 1,
+      "trend": "STABLE"
+    },
+    {
+      "id": "a0a74b93-8ccd-4c16-87f1-094986b3200f",
+      "t": "2026-08-08T12:33:28.999Z",
+      "provider_id": "mevblocker",
+      "score": 99,
+      "accuracy": 1,
+      "uptime": 1,
+      "latency_avg": 57.708335022147175,
+      "freshness_score": 1,
       "trend": "STABLE"
     }
   ]

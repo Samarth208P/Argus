@@ -184,11 +184,12 @@ export async function POST(req: NextRequest) {
       const balRes = balanceResults.find((r) => r.id === p.id)!;
       const blkRes = blockDataResults.find((r) => r.id === p.id)!;
       const blockTuple = normalizeBlockResult(blkRes.result);
-      const lagBlocks = blkRes.result
-        ? checkFreshness(
-            BigInt((blkRes.result as Record<string, string>)?.number ?? "0x0"),
-            poolMax
-          )
+      const latestBlockRes = blockResults.find((r) => r.id === p.id);
+      const latestBlockNum = latestBlockRes?.status === "ok" && latestBlockRes.result
+        ? BigInt(latestBlockRes.result as string)
+        : 0n;
+      const lagBlocks = latestBlockNum > 0n
+        ? checkFreshness(latestBlockNum, poolMax)
         : 999;
 
       const balanceOutlier =

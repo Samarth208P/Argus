@@ -26,7 +26,17 @@ export async function POST(req: Request) {
         });
         if (!res.ok) continue;
         const text = await res.text();
-        return new Response(text, {
+        let payload = text;
+        try {
+          const json = JSON.parse(text);
+          if (json && typeof json === "object" && !Array.isArray(json)) {
+            json.argus_routed_to = c.provider_id;
+            json.argus_route_status = status.toLowerCase();
+            payload = JSON.stringify(json);
+          }
+        } catch {}
+
+        return new Response(payload, {
           headers: {
             "content-type": "application/json",
             "access-control-allow-origin": "*",

@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/poll-daemon.js & next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "node scripts/poll-daemon.js & next start",
     "lint": "next lint",
     "ping-poll": "node scripts/poll-heartbeat.js"
   },

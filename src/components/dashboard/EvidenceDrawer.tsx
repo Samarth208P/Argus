@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, ArrowUpRight, Copy, Check, ShieldCheck, Spinner } from "@phosphor-icons/react";
 import Link from "next/link";
+import type { DbIncident } from "@/lib/db/types";
 
 const CONTRACT_ADDRESS = (process.env.NEXT_PUBLIC_ARGUS_ATTEST_ADDRESS ?? "0xB62090c4a3cE28EBD12a71c92012b519a576F138") as `0x${string}`;
 
@@ -11,9 +12,10 @@ interface EvidenceDrawerProps {
   incidentId: string | null;
   open: boolean;
   onClose: () => void;
+  incidents: DbIncident[];
 }
 
-export function EvidenceDrawer({ incidentId, open, onClose }: EvidenceDrawerProps) {
+export function EvidenceDrawer({ incidentId, open, onClose, incidents }: EvidenceDrawerProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +32,7 @@ export function EvidenceDrawer({ incidentId, open, onClose }: EvidenceDrawerProp
     return () => window.removeEventListener("keydown", handler);
   }, [onClose]);
 
-  // Fetch evidence when drawer opens
+  // Load evidence from props list
   useEffect(() => {
     if (!open || !incidentId) {
       setData(null);
@@ -38,23 +40,26 @@ export function EvidenceDrawer({ incidentId, open, onClose }: EvidenceDrawerProp
       return;
     }
 
-    async function fetchEvidence() {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await fetch(`/api/evidence?id=${incidentId}`);
-        if (!res.ok) throw new Error("Failed to load evidence bundle");
-        const json = await res.json();
-        setData(json);
-      } catch (err: any) {
-        setError(err.message || "An error occurred");
-      } finally {
-        setLoading(false);
-      }
-    }
+    setLoading(true);
+    setError(null);
+    try {
+      const incident = incidents.find((i) => i.id === incidentId);
+      if (!incident) throw new Error("Incident not found in client logs");
+      
+      const params = (incident.request as any)?.params || [];
+      const pinnedBlockHex = params[1] || params[0] || "0x0";
+      const mockPoll = {
+        pinned_block_hex: pinnedBlockHex,
+        status: "ok"
+      };
 
-    fetchEvidence();
-  }, [open, incidentId]);
+      setData({ incident, poll: mockPoll });
+    } catch (err: any) {
+      setError(err.message || "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  }, [open, incidentId, incidents]);
 
   const copyToClipboard = (text: string, setter: (val: boolean) => void) => {
     navigator.clipboard.writeText(text);

@@ -438,12 +438,12 @@ export async function getProvidersWithRecentIncidents(): Promise<Set<string>> {
       .from("incidents")
       .select("provider_id")
       .gte("t", thirtyMinAgo)
-      .in("kind", ["CENSORING", "DEVIANT", "STALE"]);
+      .in("kind", ["CENSORING", "DEVIANT", "STALE", "DOWN"]);
     if (error) throw error;
     if (!data || data.length === 0) {
       const local = readLocalDb();
       const ids = local.incidents
-        .filter((i) => i.t >= thirtyMinAgo && ["CENSORING", "DEVIANT", "STALE"].includes(i.kind))
+        .filter((i) => i.t >= thirtyMinAgo && ["CENSORING", "DEVIANT", "STALE", "DOWN"].includes(i.kind))
         .map((i) => i.provider_id);
       return new Set<string>(ids);
     }
@@ -451,7 +451,7 @@ export async function getProvidersWithRecentIncidents(): Promise<Set<string>> {
   } catch (err) {
     const local = readLocalDb();
     const ids = local.incidents
-      .filter((i) => i.t >= thirtyMinAgo && ["CENSORING", "DEVIANT", "STALE"].includes(i.kind))
+      .filter((i) => i.t >= thirtyMinAgo && ["CENSORING", "DEVIANT", "STALE", "DOWN"].includes(i.kind))
       .map((i) => i.provider_id);
     return new Set<string>(ids);
   }

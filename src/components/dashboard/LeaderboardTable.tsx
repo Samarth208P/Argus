@@ -18,8 +18,9 @@ interface LeaderboardRow extends DbScore {
 }
 
 interface LeaderboardTableProps {
-  initialScores: LeaderboardRow[];
+  scores: (DbScore & { rankChange?: number })[];
   providers: DbProvider[];
+  isRefreshing?: boolean;
 }
 
 type SortKey = "score" | "accuracy" | "latency_avg" | "uptime";
@@ -37,48 +38,22 @@ const TREND_CLASS = {
   STABLE: "trend-stable",
 };
 
-export function LeaderboardTable({ initialScores, providers }: LeaderboardTableProps) {
-  const [scores, setScores] = useState<LeaderboardRow[]>(
-    initialScores.map((s) => ({
-      ...s,
-      provider: providers.find((p) => p.id === s.provider_id),
-    }))
-  );
+export function LeaderboardTable({ scores, providers, isRefreshing = false }: LeaderboardTableProps) {
   const [sortKey, setSortKey] = useState<SortKey>("score");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [selectedProvider, setSelectedProvider] = useState<LeaderboardRow | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Re-fetch scores every 30s
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      setIsRefreshing(true);
-      try {
-        const res = await fetch("/api/scores");
-        if (res.ok) {
-          const data = await res.json() as LeaderboardRow[];
-          setScores(
-            data.map((s) => ({
-              ...s,
-              provider: providers.find((p) => p.id === s.provider_id),
-            }))
-          );
-        }
-      } catch {
-        // Silent failure, data stays stale
-      } finally {
-        setIsRefreshing(false);
-      }
-    }, 30_000);
-    return () => clearInterval(interval);
-  }, [providers]);
+  const scoresWithProvider = scores.map((s) => ({
+    ...s,
+    provider: providers.find((p) => p.id === s.provider_id),
+  }));
 
   const handleSort = useCallback((key: SortKey) => {
     setSortDir((prev) => (sortKey === key ? (prev === "desc" ? "asc" : "desc") : "desc"));
     setSortKey(key);
   }, [sortKey]);
 
-  const sorted = [...scores].sort((a, b) => {
+  const sorted = [...scoresWithProvider].sort((a, b) => {
     const mult = sortDir === "desc" ? -1 : 1;
     return mult * (Number(a[sortKey]) - Number(b[sortKey]));
   });
@@ -169,12 +144,23 @@ export function LeaderboardTable({ initialScores, providers }: LeaderboardTableP
                     </span>
                   </div>
                   <div className="min-w-0">
-                    <p
-                      className="text-[14px] font-medium text-white truncate"
-                      style={{ fontFamily: "var(--font-outfit)", letterSpacing: "0.5px" }}
-                    >
-                      {row.provider?.label ?? row.provider_id}
-                    </p>
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <p
+                        className="text-[14px] font-medium text-white truncate"
+                        style={{ fontFamily: "var(--font-outfit)", letterSpacing: "0.5px" }}
+                      >
+                        {row.provider?.label ?? row.provider_id}
+                      </p>
+                      {row.rankChange !== undefined && row.rankChange !== 0 && (
+                        <span className={`inline-flex items-center gap-0.5 text-[9px] font-bold px-1 py-0.5 rounded shrink-0 ${
+                          row.rankChange > 0 
+                            ? "text-[#4dffb0] bg-[#4dffb0]/10" 
+                            : "text-[#ff6b6b] bg-[#ff6b6b]/10"
+                        }`}>
+                          {row.rankChange > 0 ? `▲ +${row.rankChange}` : `▼ ${row.rankChange}`}
+                        </span>
+                      )}
+                    </div>
                     <p
                       className="text-[11px] text-[#454545] truncate"
                       style={{ fontFamily: "var(--font-jetbrains-mono)" }}
