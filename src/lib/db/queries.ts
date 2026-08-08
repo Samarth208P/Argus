@@ -1,82 +1,164 @@
 // ============================================================
-// Typed Query Functions for Supabase (with fallback mock data)
+// Typed Query Functions for Local JSON Database (Fallback Core)
+// & Supabase Production Database
 // ============================================================
 
-import { supabaseServer } from "./supabase";
-import type { DbIncident, DbProvider, DbScore } from "./types";
+import type { DbIncident, DbProvider, DbScore, DbPoll } from "./types";
 import { MAINNET_PROVIDERS } from "@/lib/engine/registry";
+import { isSupabaseConfigured, supabaseAdmin } from "./supabase";
+import * as fs from "fs";
+import * as path from "path";
+import crypto from "crypto";
 
-// ── Built-in Fallbacks for Hackathon Demo ──────────────────
-const MOCK_PROVIDERS: DbProvider[] = MAINNET_PROVIDERS.map((p) => ({
+const LOCAL_DB_PATH = path.join(process.cwd(), "cache", "local_db.json");
+
+interface LocalDb {
+  providers: DbProvider[];
+  polls: DbPoll[];
+  incidents: DbIncident[];
+  scores: DbScore[];
+}
+
+function generateUUID(): string {
+  return crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2) + Date.now().toString(36);
+}
+
+function readLocalDb(): LocalDb {
+  try {
+    const dir = path.dirname(LOCAL_DB_PATH);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    if (!fs.existsSync(LOCAL_DB_PATH)) {
+      const initial = { providers: [], polls: [], incidents: [], scores: [] };
+      fs.writeFileSync(LOCAL_DB_PATH, JSON.stringify(initial, null, 2), "utf8");
+      return initial;
+    }
+    const content = fs.readFileSync(LOCAL_DB_PATH, "utf8");
+    const db = JSON.parse(content);
+    
+    // Seed initial scores if the DB is freshly initialized or empty
+    if (!db.scores || db.scores.length === 0) {
+      seedLocalDbIfEmpty(db);
+    }
+    return db;
+  } catch (err) {
+    console.error("Failed to read local DB file:", err);
+    return { providers: [], polls: [], incidents: [], scores: [] };
+  }
+}
+
+function writeLocalDb(db: LocalDb) {
+  try {
+    const dir = path.dirname(LOCAL_DB_PATH);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(LOCAL_DB_PATH, JSON.stringify(db, null, 2), "utf8");
+  } catch (err) {
+    console.error("Failed to write local DB file:", err);
+  }
+}
+
+function seedLocalDbIfEmpty(db: LocalDb) {
+  const now = new Date();
+  db.providers = BUILT_IN_PROVIDERS;
+
+  const initialMetrics: Record<string, { score: number; accuracy: number; uptime: number; latency_avg: number; freshness_score: number }> = {
+    cloudflare: { score: 98, accuracy: 1.0, uptime: 1.0, latency_avg: 42, freshness_score: 1.0 },
+    llama: { score: 95, accuracy: 1.0, uptime: 1.0, latency_avg: 65, freshness_score: 1.0 },
+    publicnode: { score: 94, accuracy: 1.0, uptime: 0.99, latency_avg: 78, freshness_score: 1.0 },
+    drpc: { score: 92, accuracy: 1.0, uptime: 0.99, latency_avg: 105, freshness_score: 0.98 },
+    "1rpc": { score: 96, accuracy: 1.0, uptime: 1.0, latency_avg: 72, freshness_score: 1.0 },
+    blast: { score: 89, accuracy: 0.99, uptime: 0.98, latency_avg: 122, freshness_score: 0.96 },
+    tenderly: { score: 91, accuracy: 1.0, uptime: 0.99, latency_avg: 88, freshness_score: 0.98 },
+    onfinality: { score: 88, accuracy: 0.99, uptime: 0.98, latency_avg: 135, freshness_score: 0.95 },
+    flashbots: { score: 97, accuracy: 1.0, uptime: 1.0, latency_avg: 48, freshness_score: 1.0 },
+    mevblocker: { score: 96, accuracy: 1.0, uptime: 1.0, latency_avg: 54, freshness_score: 1.0 },
+  };
+
+  for (const p of BUILT_IN_PROVIDERS) {
+    const metric = initialMetrics[p.id] || { score: 90, accuracy: 1.0, uptime: 1.0, latency_avg: 100, freshness_score: 1.0 };
+    // Generate 24 hours of history in 15-minute intervals
+    for (let i = 96; i >= 0; i--) {
+      const time = new Date(now.getTime() - i * 15 * 60 * 1000);
+      db.scores.push({
+        id: `${p.id}-score-${i}-${time.getTime()}`,
+        t: time.toISOString(),
+        provider_id: p.id,
+        score: Math.max(10, Math.min(100, metric.score + Math.floor(Math.random() * 5) - 2)),
+        accuracy: metric.accuracy,
+        uptime: metric.uptime,
+        latency_avg: Math.max(10, metric.latency_avg + Math.floor(Math.random() * 20) - 10),
+        freshness_score: metric.freshness_score,
+        trend: "STABLE"
+      });
+    }
+  }
+}
+
+const BUILT_IN_PROVIDERS: DbProvider[] = MAINNET_PROVIDERS.map((p) => ({
   id: p.id,
   url: p.url,
   label: p.label,
   operator: p.operator,
-  type: p.type,
+  type: p.type as any,
   is_sim: false,
-  network: p.network,
+  network: p.network as any,
   created_at: new Date(Date.now() - 3600_000 * 24).toISOString(),
 }));
 
-const MOCK_SCORES: DbScore[] = [
-  { id: "s1", t: new Date().toISOString(), provider_id: "cloudflare", score: 98, accuracy: 0.99, uptime: 1.0, latency_avg: 45, freshness_score: 0.99, trend: "STABLE" },
-  { id: "s2", t: new Date().toISOString(), provider_id: "llama", score: 95, accuracy: 0.97, uptime: 0.99, latency_avg: 120, freshness_score: 0.96, trend: "STABLE" },
-  { id: "s3", t: new Date().toISOString(), provider_id: "publicnode", score: 92, accuracy: 0.95, uptime: 0.98, latency_avg: 195, freshness_score: 0.94, trend: "IMPROVING" },
-  { id: "s4", t: new Date().toISOString(), provider_id: "drpc", score: 89, accuracy: 0.94, uptime: 0.99, latency_avg: 88, freshness_score: 0.92, trend: "STABLE" },
-  { id: "s5", t: new Date().toISOString(), provider_id: "1rpc", score: 86, accuracy: 0.92, uptime: 0.97, latency_avg: 240, freshness_score: 0.91, trend: "DEGRADING" },
-  { id: "s6", t: new Date().toISOString(), provider_id: "blast", score: 84, accuracy: 0.90, uptime: 0.96, latency_avg: 155, freshness_score: 0.90, trend: "STABLE" },
-  { id: "s7", t: new Date().toISOString(), provider_id: "tenderly", score: 94, accuracy: 0.96, uptime: 0.99, latency_avg: 62, freshness_score: 0.95, trend: "STABLE" },
-  { id: "s8", t: new Date().toISOString(), provider_id: "onfinality", score: 81, accuracy: 0.88, uptime: 0.95, latency_avg: 310, freshness_score: 0.88, trend: "STABLE" },
-  { id: "s9", t: new Date().toISOString(), provider_id: "flashbots", score: 99, accuracy: 1.0, uptime: 1.0, latency_avg: 55, freshness_score: 1.0, trend: "STABLE" },
-  { id: "s10", t: new Date().toISOString(), provider_id: "mevblocker", score: 97, accuracy: 0.98, uptime: 0.99, latency_avg: 70, freshness_score: 0.98, trend: "STABLE" },
-];
-
-const MOCK_INCIDENTS: DbIncident[] = [
-  {
-    id: "a09886b0-7b24-4f51-876a-939e1bf07b22",
-    t: new Date(Date.now() - 600_000).toISOString(),
-    provider_id: "onfinality",
-    kind: "STALE",
-    poll_id: "00000000-0000-0000-0000-000000000000",
-    request: { method: "eth_getBalance", params: ["0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045", "0x12b519a"] },
-    expected: "0x3bc141d668c2d1b",
-    got: "0x3bc140a322c342a",
-    receipts: { txHash: "0xb12393b5c0e1350524afb49d5a2101ed7b2b9a2031f02216bf69580585d71ba2", network: "sepolia" }
-  },
-  {
-    id: "f833a6b5-0aa9-4c8a-bc3e-bf6e7293a11b",
-    t: new Date(Date.now() - 1800_000).toISOString(),
-    provider_id: "1rpc",
-    kind: "DEVIANT",
-    poll_id: "00000000-0000-0000-0000-000000000000",
-    request: { method: "eth_getBalance", params: ["0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045", "0x12b519a"] },
-    expected: "0x3bc141d668c2d1b",
-    got: "0x3bc140a322c342a",
-    receipts: null
-  },
-];
-
 // ── Providers ─────────────────────────────────────────────
 export async function getProviders(): Promise<DbProvider[]> {
-  try {
-    const { data, error } = await supabaseServer
-      .from("providers")
-      .select("*")
-      .order("created_at", { ascending: true });
-    if (error || !data || data.length === 0) return MOCK_PROVIDERS;
-    return data as DbProvider[];
-  } catch {
-    return MOCK_PROVIDERS;
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin.from("providers").select("*");
+      if (error) throw error;
+      if (data && data.length > 0) return data as DbProvider[];
+    } catch (err) {
+      console.error("Supabase getProviders error, falling back to local:", err);
+    }
   }
+
+  const local = readLocalDb();
+  if (local.providers.length > 0) return local.providers;
+  return BUILT_IN_PROVIDERS;
 }
 
 export async function upsertProvider(
   provider: Omit<DbProvider, "created_at">
 ): Promise<void> {
-  const { error } = await supabaseServer
-    .from("providers")
-    .upsert(provider as any, { onConflict: "id" });
-  if (error) throw error;
+  if (isSupabaseConfigured) {
+    try {
+      const { error } = await supabaseAdmin.from("providers").upsert({
+        id: provider.id,
+        url: provider.url,
+        label: provider.label,
+        operator: provider.operator,
+        type: provider.type,
+        is_sim: provider.is_sim,
+        network: provider.network,
+      });
+      if (error) throw error;
+      return;
+    } catch (err) {
+      console.error("Supabase upsertProvider error, falling back to local:", err);
+    }
+  }
+
+  const local = readLocalDb();
+  const idx = local.providers.findIndex((p) => p.id === provider.id);
+  const updatedProvider: DbProvider = {
+    ...provider,
+    created_at: idx >= 0 ? local.providers[idx].created_at : new Date().toISOString(),
+  } as DbProvider;
+
+  if (idx >= 0) {
+    local.providers[idx] = updatedProvider;
+  } else {
+    local.providers.push(updatedProvider);
+  }
+  writeLocalDb(local);
 }
 
 // ── Polls ─────────────────────────────────────────────────
@@ -87,122 +169,277 @@ export async function insertPoll(poll: {
   merkle_root: string | null;
   status: string;
 }): Promise<string> {
-  const { data, error } = await supabaseServer
-    .from("polls")
-    .insert(poll as any)
-    .select("id")
-    .single();
-  if (error) throw error;
-  return (data as any).id as string;
-}
-
-export async function getPollById(id: string) {
-  try {
-    const { data, error } = await supabaseServer
-      .from("polls")
-      .select("*")
-      .eq("id", id)
-      .single();
-    if (error) return { id, battery: [], pinned_block_hex: "0x0", consensus_hash: null, merkle_root: null, status: "ok" };
-    return data as any;
-  } catch {
-    return { id, battery: [], pinned_block_hex: "0x0", consensus_hash: null, merkle_root: null, status: "ok" };
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("polls")
+        .insert({
+          battery: poll.battery,
+          pinned_block_hex: poll.pinned_block_hex,
+          consensus_hash: poll.consensus_hash,
+          merkle_root: poll.merkle_root,
+          status: poll.status,
+        })
+        .select("id")
+        .single();
+      if (error) throw error;
+      if (data) return data.id;
+    } catch (err) {
+      console.error("Supabase insertPoll error, falling back to local:", err);
+    }
   }
+
+  const pollId = generateUUID();
+  const newPoll: DbPoll = {
+    id: pollId,
+    t: new Date().toISOString(),
+    ...poll,
+  };
+
+  const local = readLocalDb();
+  local.polls.push(newPoll);
+  writeLocalDb(local);
+  return pollId;
 }
 
-export async function getPollsByHour(hour: Date) {
+export async function getPollById(id: string): Promise<DbPoll | null> {
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("polls")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+      if (error) throw error;
+      if (data) return data as DbPoll;
+    } catch (err) {
+      console.error("Supabase getPollById error, falling back to local:", err);
+    }
+  }
+
+  const local = readLocalDb();
+  const found = local.polls.find((p) => p.id === id);
+  return found || null;
+}
+
+export async function getPollsByHour(hour: Date): Promise<DbPoll[]> {
   const start = new Date(hour);
   start.setMinutes(0, 0, 0);
   const end = new Date(start);
   end.setHours(end.getHours() + 1);
 
-  try {
-    const { data, error } = await supabaseServer
-      .from("polls")
-      .select("id, consensus_hash")
-      .gte("t", start.toISOString())
-      .lt("t", end.toISOString());
-    if (error) return [];
-    return (data ?? []) as Array<{ id: string; consensus_hash: string | null }>;
-  } catch {
-    return [];
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("polls")
+        .select("*")
+        .gte("t", start.toISOString())
+        .lt("t", end.toISOString());
+      if (error) throw error;
+      if (data) return data as DbPoll[];
+    } catch (err) {
+      console.error("Supabase getPollsByHour error, falling back to local:", err);
+    }
   }
+
+  const local = readLocalDb();
+  return local.polls.filter((p) => {
+    const t = new Date(p.t).getTime();
+    return t >= start.getTime() && t < end.getTime();
+  });
+}
+
+export async function getPollsWithoutMerkleRoot(beforeTime: string): Promise<DbPoll[]> {
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("polls")
+        .select("*")
+        .is("merkle_root", null)
+        .lt("t", beforeTime)
+        .order("t", { ascending: true });
+      if (error) throw error;
+      if (data) return data as DbPoll[];
+    } catch (err) {
+      console.error("Supabase getPollsWithoutMerkleRoot error, falling back to local:", err);
+    }
+  }
+
+  const local = readLocalDb();
+  return local.polls
+    .filter((p) => p.merkle_root === null && p.t < beforeTime)
+    .sort((a, b) => new Date(a.t).getTime() - new Date(b.t).getTime());
+}
+
+export async function updatePollsMerkleRoot(ids: string[], root: string): Promise<void> {
+  if (isSupabaseConfigured) {
+    try {
+      const { error } = await supabaseAdmin
+        .from("polls")
+        .update({ merkle_root: root })
+        .in("id", ids);
+      if (error) throw error;
+      return;
+    } catch (err) {
+      console.error("Supabase updatePollsMerkleRoot error, falling back to local:", err);
+    }
+  }
+
+  const local = readLocalDb();
+  local.polls.forEach((p) => {
+    if (ids.includes(p.id)) {
+      p.merkle_root = root;
+    }
+  });
+  writeLocalDb(local);
 }
 
 // ── Incidents ─────────────────────────────────────────────
 export async function insertIncident(
   incident: Omit<DbIncident, "id" | "t">
 ): Promise<string> {
-  const { data, error } = await supabaseServer
-    .from("incidents")
-    .insert(incident as any)
-    .select("id")
-    .single();
-  if (error) throw error;
-  return (data as any).id as string;
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("incidents")
+        .insert({
+          provider_id: incident.provider_id,
+          kind: incident.kind,
+          poll_id: incident.poll_id,
+          request: incident.request,
+          expected: incident.expected,
+          got: incident.got,
+          receipts: incident.receipts,
+        })
+        .select("id")
+        .single();
+      if (error) throw error;
+      if (data) return data.id;
+    } catch (err) {
+      console.error("Supabase insertIncident error, falling back to local:", err);
+    }
+  }
+
+  const incidentId = generateUUID();
+  const newIncident: DbIncident = {
+    id: incidentId,
+    t: new Date().toISOString(),
+    ...incident,
+  } as DbIncident;
+
+  const local = readLocalDb();
+  local.incidents.push(newIncident);
+  writeLocalDb(local);
+  return incidentId;
 }
 
 export async function getRecentIncidents(limit = 50): Promise<DbIncident[]> {
-  try {
-    const { data, error } = await supabaseServer
-      .from("incidents")
-      .select("*")
-      .order("t", { ascending: false })
-      .limit(limit);
-    if (error || !data || data.length === 0) return MOCK_INCIDENTS;
-    return data as DbIncident[];
-  } catch {
-    return MOCK_INCIDENTS;
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("incidents")
+        .select("*")
+        .order("t", { ascending: false })
+        .limit(limit);
+      if (error) throw error;
+      if (data) return data as DbIncident[];
+    } catch (err) {
+      console.error("Supabase getRecentIncidents error, falling back to local:", err);
+    }
   }
+
+  const local = readLocalDb();
+  return local.incidents
+    .sort((a, b) => new Date(b.t).getTime() - new Date(a.t).getTime())
+    .slice(0, limit);
 }
 
 export async function getIncidentById(id: string): Promise<DbIncident | null> {
-  try {
-    const { data, error } = await supabaseServer
-      .from("incidents")
-      .select("*")
-      .eq("id", id)
-      .single();
-    if (error || !data) {
-      return MOCK_INCIDENTS.find((i) => i.id === id) ?? null;
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("incidents")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+      if (error) throw error;
+      if (data) return data as DbIncident;
+    } catch (err) {
+      console.error("Supabase getIncidentById error, falling back to local:", err);
     }
-    return data as DbIncident;
-  } catch {
-    return MOCK_INCIDENTS.find((i) => i.id === id) ?? null;
   }
+
+  const local = readLocalDb();
+  const found = local.incidents.find((i) => i.id === id);
+  return found || null;
 }
 
 // ── Scores ────────────────────────────────────────────────
 export async function upsertScore(
   score: Omit<DbScore, "id" | "t">
 ): Promise<void> {
-  const { error } = await supabaseServer
-    .from("scores")
-    .insert(score as any);
-  if (error) throw error;
+  if (isSupabaseConfigured) {
+    try {
+      const { error } = await supabaseAdmin.from("scores").insert({
+        provider_id: score.provider_id,
+        score: score.score,
+        accuracy: score.accuracy,
+        uptime: score.uptime,
+        latency_avg: score.latency_avg,
+        freshness_score: score.freshness_score,
+        trend: score.trend,
+      });
+      if (error) throw error;
+      return;
+    } catch (err) {
+      console.error("Supabase upsertScore error, falling back to local:", err);
+    }
+  }
+
+  const scoreId = generateUUID();
+  const newScore: DbScore = {
+    id: scoreId,
+    t: new Date().toISOString(),
+    ...score,
+  };
+
+  const local = readLocalDb();
+  local.scores.push(newScore);
+  writeLocalDb(local);
 }
 
 export async function getLatestScores(): Promise<DbScore[]> {
-  try {
-    const { data, error } = await supabaseServer
-      .from("scores")
-      .select("*")
-      .order("t", { ascending: false })
-      .limit(200);
-    if (error || !data || data.length === 0) return MOCK_SCORES;
-
-    const seen = new Set<string>();
-    const latest: DbScore[] = [];
-    for (const row of (data ?? []) as DbScore[]) {
-      if (!seen.has(row.provider_id)) {
-        seen.add(row.provider_id);
-        latest.push(row);
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("scores")
+        .select("*")
+        .order("t", { ascending: false })
+        .limit(200);
+      if (error) throw error;
+      if (data) {
+        const latest = new Map<string, DbScore>();
+        for (const row of data) {
+          if (!latest.has(row.provider_id)) {
+            latest.set(row.provider_id, row as DbScore);
+          }
+        }
+        return [...latest.values()].sort((a, b) => b.score - a.score);
       }
+    } catch (err) {
+      console.error("Supabase getLatestScores error, falling back to local:", err);
     }
-    return latest;
-  } catch {
-    return MOCK_SCORES;
   }
+
+  const latest = new Map<string, DbScore>();
+  const local = readLocalDb();
+  const sortedLocal = [...local.scores].sort((a, b) => new Date(b.t).getTime() - new Date(a.t).getTime());
+  for (const row of sortedLocal) {
+    if (!latest.has(row.provider_id)) {
+      latest.set(row.provider_id, row);
+    }
+  }
+  return [...latest.values()].sort((a, b) => b.score - a.score);
 }
 
 /**
@@ -229,18 +466,71 @@ export async function getScoreHistory(
   providerId: string,
   limit = 50
 ): Promise<DbScore[]> {
-  try {
-    const { data, error } = await supabaseServer
-      .from("scores")
-      .select("*")
-      .eq("provider_id", providerId)
-      .order("t", { ascending: false })
-      .limit(limit);
-    if (error || !data || data.length === 0) {
-      return MOCK_SCORES.filter((s) => s.provider_id === providerId);
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("scores")
+        .select("*")
+        .eq("provider_id", providerId)
+        .order("t", { ascending: false })
+        .limit(limit);
+      if (error) throw error;
+      if (data) return (data as DbScore[]).reverse();
+    } catch (err) {
+      console.error("Supabase getScoreHistory error, falling back to local:", err);
     }
-    return ((data ?? []) as DbScore[]).reverse();
-  } catch {
-    return MOCK_SCORES.filter((s) => s.provider_id === providerId);
   }
+
+  const local = readLocalDb();
+  const filtered = local.scores
+    .filter((s) => s.provider_id === providerId)
+    .sort((a, b) => new Date(b.t).getTime() - new Date(a.t).getTime())
+    .slice(0, limit);
+  return filtered.reverse();
 }
+
+export async function getProvidersWithRecentIncidents(): Promise<Set<string>> {
+  const thirtyMinAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+  const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("incidents")
+        .select("provider_id, kind, t")
+        .gte("t", thirtyMinAgo);
+      if (error) throw error;
+      if (data) {
+        const ids = data
+          .filter((i) => {
+            if (["CENSORING", "DEVIANT"].includes(i.kind)) {
+              return i.t >= thirtyMinAgo;
+            }
+            if (["STALE", "DOWN"].includes(i.kind)) {
+              return i.t >= fiveMinAgo;
+            }
+            return false;
+          })
+          .map((i) => i.provider_id);
+        return new Set<string>(ids);
+      }
+    } catch (err) {
+      console.error("Supabase getProvidersWithRecentIncidents error, falling back to local:", err);
+    }
+  }
+
+  const local = readLocalDb();
+  const ids = local.incidents
+    .filter((i) => {
+      if (["CENSORING", "DEVIANT"].includes(i.kind)) {
+        return i.t >= thirtyMinAgo;
+      }
+      if (["STALE", "DOWN"].includes(i.kind)) {
+        return i.t >= fiveMinAgo;
+      }
+      return false;
+    })
+    .map((i) => i.provider_id);
+  return new Set<string>(ids);
+}
+

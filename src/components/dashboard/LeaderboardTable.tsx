@@ -18,8 +18,9 @@ interface LeaderboardRow extends DbScore {
 }
 
 interface LeaderboardTableProps {
-  initialScores: LeaderboardRow[];
+  scores: (DbScore & { rankChange?: number })[];
   providers: DbProvider[];
+  isRefreshing?: boolean;
 }
 
 type SortKey = "score" | "accuracy" | "latency_avg" | "uptime";
@@ -37,48 +38,22 @@ const TREND_CLASS = {
   STABLE: "trend-stable",
 };
 
-export function LeaderboardTable({ initialScores, providers }: LeaderboardTableProps) {
-  const [scores, setScores] = useState<LeaderboardRow[]>(
-    initialScores.map((s) => ({
-      ...s,
-      provider: providers.find((p) => p.id === s.provider_id),
-    }))
-  );
+export function LeaderboardTable({ scores, providers, isRefreshing = false }: LeaderboardTableProps) {
   const [sortKey, setSortKey] = useState<SortKey>("score");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [selectedProvider, setSelectedProvider] = useState<LeaderboardRow | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Re-fetch scores every 30s
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      setIsRefreshing(true);
-      try {
-        const res = await fetch("/api/scores");
-        if (res.ok) {
-          const data = await res.json() as LeaderboardRow[];
-          setScores(
-            data.map((s) => ({
-              ...s,
-              provider: providers.find((p) => p.id === s.provider_id),
-            }))
-          );
-        }
-      } catch {
-        // Silent failure, data stays stale
-      } finally {
-        setIsRefreshing(false);
-      }
-    }, 30_000);
-    return () => clearInterval(interval);
-  }, [providers]);
+  const scoresWithProvider = scores.map((s) => ({
+    ...s,
+    provider: providers.find((p) => p.id === s.provider_id),
+  }));
 
   const handleSort = useCallback((key: SortKey) => {
     setSortDir((prev) => (sortKey === key ? (prev === "desc" ? "asc" : "desc") : "desc"));
     setSortKey(key);
   }, [sortKey]);
 
-  const sorted = [...scores].sort((a, b) => {
+  const sorted = [...scoresWithProvider].sort((a, b) => {
     const mult = sortDir === "desc" ? -1 : 1;
     return mult * (Number(a[sortKey]) - Number(b[sortKey]));
   });

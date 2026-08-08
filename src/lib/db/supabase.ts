@@ -1,29 +1,20 @@
-// ============================================================
-// Supabase Client — Server + Browser variants
-// Server: uses service role key (in API routes / RSC)
-// Browser: uses anon key (in client components for Realtime)
-// ============================================================
-
 import { createClient } from "@supabase/supabase-js";
-import type { Database } from "./types";
+import { Database } from "./types";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://placeholder.supabase.co";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "placeholder";
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
-// ── Browser client (anon key, safe to expose) ─────────────
-// Used in Client Components for Supabase Realtime subscriptions
-export const supabaseBrowser = createClient<Database>(
+export const isSupabaseConfigured = !!(supabaseUrl && (supabaseAnonKey || supabaseServiceKey));
+
+// Public client
+export const supabase = createClient(
   supabaseUrl,
-  supabaseAnonKey
+  supabaseAnonKey || supabaseServiceKey
 );
 
-// ── Server client (service key if available, anon fallback) ─
-// Used in API routes and Server Components for writes
-export const supabaseServer = createClient<Database>(
+// Admin client for server-side writes that bypass RLS
+export const supabaseAdmin = createClient(
   supabaseUrl,
-  supabaseServiceKey ?? supabaseAnonKey,
-  {
-    auth: { persistSession: false },
-  }
+  supabaseServiceKey || supabaseAnonKey
 );

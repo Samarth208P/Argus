@@ -15,7 +15,7 @@ import {
   GitBranch,
 } from "@phosphor-icons/react";
 import Link from "next/link";
-import { CommandTrigger, OPEN_COMMAND_EVENT } from "@/components/command/CommandPalette";
+import { CommandTrigger } from "@/components/command/CommandPalette";
 
 function ArgusLogo() {
   return (

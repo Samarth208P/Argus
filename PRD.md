@@ -102,6 +102,10 @@ Receipts provided:
 ### F-10 Live Event Feed & F-11 Auto Router
 - Timestamped stream of polls and incidents.
 - Router logic suggests the highest-scoring live provider (displayed in UI as a recommendation engine).
+- **Auto Router Safety & Fallback Policies:**
+  - A provider is only marked `healthy` if: score $\ge$ 50, score has been updated in the last 5 minutes, it is not a simulated provider (`is_sim = false`), and it has no `CENSORING`, `DEVIANT`, or `STALE` incident recorded in the last 30 minutes.
+  - If no providers meet the health criteria, the router falls back to a `status: DEGRADED` state and returns the least-bad active chain to avoid app deadlock (never returns empty or silently routes to bad nodes without warning).
+  - The transparent proxy endpoint `/api/rpc` routes JSON-RPC requests, fails over automatically to the next best candidate on upstream error/timeout, and exposes `x-argus-routed-to` and `x-argus-route-status` headers.
 
 ### F-12 On-chain Attestation & Merkle Roots
 - Contract `ArgusAttest` (Sepolia): Logs incident digests.

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, ArrowUpRight } from "@phosphor-icons/react";
 import {
@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { COLORS, CHART_COLORS, scoreColor } from "@/lib/design-tokens";
+import type { DbScore } from "@/lib/db/types";
 
 interface ProviderDrawerProps {
   row: {
@@ -33,18 +34,10 @@ interface ProviderDrawerProps {
   onClose: () => void;
 }
 
-// Placeholder history data — replaced by real data once DB is connected
-function generatePlaceholderHistory(score: number) {
-  return Array.from({ length: 20 }, (_, i) => ({
-    i,
-    score: Math.max(0, Math.min(100, score + (Math.random() - 0.5) * 12)),
-    latency: Math.round(200 + Math.random() * 400),
-  }));
-}
-
 export function ProviderDrawer({ row, open, onClose }: ProviderDrawerProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
-  const history = generatePlaceholderHistory(row.score);
+  const [history, setHistory] = useState<Array<{ i: number; score: number; latency: number }>>([]);
+  const [historyError, setHistoryError] = useState<string | null>(null);
   const sc = scoreColor(row.score);
 
   // Close on Escape
@@ -55,6 +48,40 @@ export function ProviderDrawer({ row, open, onClose }: ProviderDrawerProps) {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [onClose]);
+
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+
+    async function loadHistory() {
+      setHistoryError(null);
+      try {
+        const res = await fetch(
+          `/api/scores/history?provider=${encodeURIComponent(row.provider_id)}&limit=50`
+        );
+        if (!res.ok) throw new Error("Score history unavailable");
+        const data = (await res.json()) as DbScore[];
+        if (cancelled) return;
+        setHistory(
+          data.map((item, i) => ({
+            i,
+            score: item.score,
+            latency: item.latency_avg,
+          }))
+        );
+      } catch (err) {
+        if (!cancelled) {
+          setHistory([]);
+          setHistoryError(String(err));
+        }
+      }
+    }
+
+    void loadHistory();
+    return () => {
+      cancelled = true;
+    };
+  }, [open, row.provider_id]);
 
   return (
     <AnimatePresence>
@@ -155,32 +182,43 @@ export function ProviderDrawer({ row, open, onClose }: ProviderDrawerProps) {
               <div>
                 <p className="eyebrow mb-3">SCORE HISTORY (W=50)</p>
                 <div className="h-[100px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={history} margin={{ top: 4, right: 4, bottom: 4, left: 0 }}>
-                      <XAxis dataKey="i" hide />
-                      <YAxis domain={[0, 100]} hide />
-                      <Tooltip
-                        contentStyle={{
-                          background: COLORS.iron,
-                          border: `1px solid ${COLORS.slateEdge}`,
-                          borderRadius: 8,
-                          fontSize: 12,
-                          fontFamily: "var(--font-jetbrains-mono)",
-                          color: COLORS.bone,
-                        }}
-                        formatter={(v: unknown) => [`${Math.round(Number(v ?? 0))}`, "score"]}
-                        labelFormatter={() => ""}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="score"
-                        stroke={CHART_COLORS.series1}
-                        strokeWidth={1.5}
-                        dot={false}
-                        activeDot={{ r: 3, fill: CHART_COLORS.series1 }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
+                  {history.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={history} margin={{ top: 4, right: 4, bottom: 4, left: 0 }}>
+                        <XAxis dataKey="i" hide />
+                        <YAxis domain={[0, 100]} hide />
+                        <Tooltip
+                          contentStyle={{
+                            background: COLORS.iron,
+                            border: `1px solid ${COLORS.slateEdge}`,
+                            borderRadius: 8,
+                            fontSize: 12,
+                            fontFamily: "var(--font-jetbrains-mono)",
+                            color: COLORS.bone,
+                          }}
+                          formatter={(v: unknown) => [`${Math.round(Number(v ?? 0))}`, "score"]}
+                          labelFormatter={() => ""}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="score"
+                          stroke={CHART_COLORS.series1}
+                          strokeWidth={1.5}
+                          dot={false}
+                          activeDot={{ r: 3, fill: CHART_COLORS.series1 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="flex h-full items-center justify-center rounded-[8px] border border-[#1e1e1e] bg-[#0a0a0a]">
+                      <p
+                        className="text-[11px] text-[#454545]"
+                        style={{ fontFamily: "var(--font-jetbrains-mono)" }}
+                      >
+                        {historyError ? "NO HISTORY AVAILABLE" : "AWAITING SCORE HISTORY"}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 

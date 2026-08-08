@@ -28,10 +28,13 @@ export function AnimatedCounter({
   const [display, setDisplay] = useState(0);
   const started = useRef(false);
 
-  useEffect(() => {
+useEffect(() => {
+    // If props change, allow the counter to run again for the new value.
+    started.current = false;
+    setDisplay(0);
+
     const el = ref.current;
     if (!el) return;
-
     const reduce =
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;

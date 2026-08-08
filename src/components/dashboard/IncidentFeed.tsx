@@ -2,16 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { supabaseBrowser } from "@/lib/db/supabase";
 import type { DbIncident, DbScore } from "@/lib/db/types";
 import { ArrowRight, Circle, Warning, Clock, ShieldSlash } from "@phosphor-icons/react";
 import { COLORS, scoreColor } from "@/lib/design-tokens";
 
-// ── Incident Feed ─────────────────────────────────────────
-interface IncidentFeedProps {
-  initialIncidents: DbIncident[];
-  scores: Record<string, number>; // providerId → score
-}
+
 
 const KIND_ICONS = {
   DEVIANT: Warning,
@@ -34,38 +29,13 @@ function timeAgo(isoString: string): string {
   return `${Math.floor(diff / 3600)}h ago`;
 }
 
-export function IncidentFeed({ initialIncidents, scores }: IncidentFeedProps) {
-  const [incidents, setIncidents] = useState<DbIncident[]>(initialIncidents);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+interface IncidentFeedProps {
+  incidents: DbIncident[];
+  scores: Record<string, number>; // providerId → score
+  onSelectIncident?: (id: string) => void;
+}
 
-  // ── Supabase Realtime subscription ───────────────────────
-  useEffect(() => {
-    let channel: any = null;
-    try {
-      channel = supabaseBrowser
-        .channel("public:incidents")
-        .on(
-          "postgres_changes",
-          { event: "INSERT", schema: "public", table: "incidents" },
-          (payload) => {
-            setIncidents((prev) => [payload.new as DbIncident, ...prev].slice(0, 100));
-          }
-        )
-        .subscribe();
-    } catch (err) {
-      console.warn("Failed to subscribe to realtime updates:", err);
-    }
-
-    return () => {
-      if (channel) {
-        try {
-          supabaseBrowser.removeChannel(channel);
-        } catch (err) {
-          console.warn("Failed to remove channel:", err);
-        }
-      }
-    };
-  }, []);
+export function IncidentFeed({ incidents, scores, onSelectIncident }: IncidentFeedProps) {
 
   if (incidents.length === 0) {
     return (
@@ -96,9 +66,8 @@ export function IncidentFeed({ initialIncidents, scores }: IncidentFeedProps) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.35, ease: "easeOut", delay: i === 0 ? 0 : 0 }}
-              onClick={() => setSelectedId(selectedId === incident.id ? null : incident.id)}
+              onClick={() => onSelectIncident?.(incident.id)}
               className="w-full rounded-[8px] bg-[#141414] border border-[#1e1e1e] px-5 py-3.5 flex items-center gap-4 text-left hover:border-[#313131] hover:bg-[#1e1e1e]/50 transition-all duration-200 ease-out"
-              aria-expanded={selectedId === incident.id}
               id={`incident-row-${incident.id}`}
             >
               <Icon

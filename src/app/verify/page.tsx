@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   CheckCircle,
@@ -9,7 +9,10 @@ import {
   Spinner,
   Link as LinkIcon,
 } from "@phosphor-icons/react";
-import { determineConsensus } from "@/lib/engine/consensus";
+import { canonicalize, determineConsensus } from "@/lib/engine/consensus";
+import { sha256 } from "@/lib/engine/hash";
+import { createPublicClient, http } from "viem";
+import { sepolia } from "viem/chains";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 
@@ -42,25 +45,54 @@ const ENTRY = {
   transition: { ease: "easeOut" as const, duration: 0.55 },
 };
 
+// Contract details
+const CONTRACT_ADDRESS = (process.env.NEXT_PUBLIC_ARGUS_ATTEST_ADDRESS ?? "0xB62090c4a3cE28EBD12a71c92012b519a576F138") as `0x${string}`;
+
+// Merkle verification helper
+async function verifyProofInBrowser(
+  leaf: string,
+  proof: string[],
+  root: string,
+  index: number
+): Promise<boolean> {
+  let current = leaf;
+  let currIndex = index;
+  for (const sibling of proof) {
+    const isRight = currIndex % 2 === 1;
+    const combined = isRight ? sibling + current : current + sibling;
+    current = await sha256(combined);
+    currIndex = Math.floor(currIndex / 2);
+  }
+  return current === root;
+}
+
 export default function VerifyPage() {
   const [incidentId, setIncidentId] = useState("");
   const [evidence, setEvidence] = useState<EvidenceBundle | null>(null);
+  
+  // Proof states
+  const [proof, setProof] = useState<string[]>([]);
+  const [leafIndex, setLeafIndex] = useState<number>(-1);
+  const [leafObject, setLeafObject] = useState<any>(null);
+
   const [checks, setChecks] = useState<VerifyCheck[]>([
     { label: "Browser consensus matches server verdict", detail: "", state: "idle" },
-    { label: "Server hash matches on-chain Merkle root", detail: "", state: "idle" },
-    { label: "Pinned block verified on Etherscan", detail: "", state: "idle" },
+    { label: "Merkle proof validates leaf against on-chain root", detail: "", state: "idle" },
+    { label: "Consensus hash matches public RPC state at pinned block", detail: "", state: "idle" },
   ]);
   const [phase, setPhase] = useState<"input" | "evidence" | "computing" | "done">("input");
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const didAutoload = useRef(false);
 
   // ── Step 1: Fetch evidence from /api/evidence ─────────
-  const loadEvidence = useCallback(async () => {
-    if (!incidentId.trim()) return;
+  const loadEvidence = useCallback(async (idOverride?: string) => {
+    const targetId = (idOverride ?? incidentId).trim();
+    if (!targetId) return;
     setFetchError(null);
     setPhase("evidence");
 
     try {
-      const res = await fetch(`/api/evidence?id=${incidentId.trim()}`);
+      const res = await fetch(`/api/evidence?id=${encodeURIComponent(targetId)}&proof=true`);
       if (!res.ok) {
         const err = await res.json();
         setFetchError(err.error ?? "Failed to fetch evidence");
@@ -69,11 +101,23 @@ export default function VerifyPage() {
       }
       const data = await res.json();
       setEvidence(data.evidence);
+      setProof(data.proof ?? []);
+      setLeafIndex(data.leafIndex ?? -1);
+      setLeafObject(data.leafObject ?? null);
     } catch {
       setFetchError("Network error — could not reach the evidence API");
       setPhase("input");
     }
   }, [incidentId]);
+
+  useEffect(() => {
+    if (didAutoload.current) return;
+    const id = new URLSearchParams(window.location.search).get("id");
+    if (!id) return;
+    didAutoload.current = true;
+    setIncidentId(id);
+    void loadEvidence(id);
+  }, [loadEvidence]);
 
   // ── Step 2: Run browser consensus + chain verification ─
   const runVerify = useCallback(async () => {
@@ -91,6 +135,17 @@ export default function VerifyPage() {
     // Set all to loading
     setChecks((prev) => prev.map((c) => ({ ...c, state: "loading" })));
 
+    // Fetch active providers for weights
+    let allProviders: any[] = [];
+    try {
+      const provRes = await fetch("/api/providers");
+      if (provRes.ok) {
+        allProviders = await provRes.json();
+      }
+    } catch (err) {
+      console.warn("Could not fetch provider registry, falling back to equal weights", err);
+    }
+
     // ── Check 1: Browser consensus math ──────────────────
     try {
       if (evidence.battery && Array.isArray(evidence.battery)) {
@@ -106,9 +161,19 @@ export default function VerifyPage() {
           status: b.status,
         }));
 
-        // Equal weights for browser recomputation (simplified)
+        // Build independence weights based on operator groups in registry
         const weights: Record<string, number> = {};
-        responses.forEach((r) => { weights[r.providerId] = 1; });
+        responses.forEach((r) => {
+          const provider = allProviders.find((p) => p.id === r.providerId);
+          if (provider && provider.operator) {
+            const sameOperatorCount = allProviders.filter(
+              (p) => p.operator === provider.operator
+            ).length;
+            weights[r.providerId] = 1 / (sameOperatorCount || 1);
+          } else {
+            weights[r.providerId] = 1; // equal weight fallback
+          }
+        });
 
         const browserResult = await determineConsensus(responses, weights);
         const serverHash = evidence.consensusHash;
@@ -118,7 +183,7 @@ export default function VerifyPage() {
           0,
           match ? "pass" : "fail",
           match
-            ? `Hash match: ${browserResult.truthHash?.slice(0, 16)}...`
+            ? `Browser consensus matches Server hash: ${browserResult.truthHash?.slice(0, 16)}...`
             : `Mismatch. Browser: ${browserResult.truthHash?.slice(0, 12)}... Server: ${serverHash?.slice(0, 12)}...`
         );
       } else {
@@ -128,34 +193,90 @@ export default function VerifyPage() {
       update(0, "fail", `Computation error: ${String(e)}`);
     }
 
-    // ── Check 2: On-chain Merkle root (simplified) ────────
-    // In production: use viem to call ArgusAttest.getMerkleRoot(hour)
-    await new Promise((r) => setTimeout(r, 800)); // Simulate chain query
-    if (evidence.merkleRoot) {
-      update(
-        1,
-        "pass",
-        `Merkle root on-chain: ${evidence.merkleRoot.slice(0, 16)}...`
-      );
-    } else {
-      update(1, "fail", "No Merkle root committed yet for this poll hour");
+    // ── Check 2: Merkle proof & On-chain root ─────────────
+    try {
+      if (evidence.merkleRoot && leafObject && leafIndex !== -1 && proof.length > 0) {
+        // Re-hash leaf object in browser
+        const calculatedLeaf = await canonicalize(leafObject);
+        const proofValid = await verifyProofInBrowser(calculatedLeaf, proof, evidence.merkleRoot, leafIndex);
+
+        if (!proofValid) {
+          update(1, "fail", "Merkle proof does not hash up to the server's committed root");
+        } else {
+          // Connect to Sepolia to verify root is on-chain
+          const publicClient = createPublicClient({
+            chain: sepolia,
+            transport: http("https://ethereum-sepolia-rpc.publicnode.com"),
+          });
+
+          const logs = await publicClient.getLogs({
+            address: CONTRACT_ADDRESS,
+            event: {
+              type: "event",
+              name: "MerkleRootCommitted",
+              inputs: [
+                { name: "root", type: "bytes32", indexed: true },
+                { name: "hour", type: "uint256" }
+              ],
+            },
+            args: {
+              root: `0x${evidence.merkleRoot}` as `0x${string}`,
+            },
+            fromBlock: 6000000n, // Sepolia start
+          });
+
+          if (logs.length > 0) {
+            update(1, "pass", `Validated on Sepolia (tx ${logs[0].transactionHash?.slice(0, 12)}...)`);
+          } else {
+            update(1, "fail", `Merkle root valid, but not committed on-chain at ${CONTRACT_ADDRESS.slice(0, 10)}...`);
+          }
+        }
+      } else {
+        update(1, "fail", "Missing Merkle root, proof, or leaf object in bundle");
+      }
+    } catch (e) {
+      update(1, "fail", `Merkle / Chain error: ${String(e)}`);
     }
 
-    // ── Check 3: Block verification ───────────────────────
-    await new Promise((r) => setTimeout(r, 600));
-    if (evidence.pinnedBlockHex) {
-      // In production: fetch the block header directly and compare
-      update(
-        2,
-        "pass",
-        `Pinned block ${evidence.pinnedBlockHex} verifiable on Etherscan`
-      );
-    } else {
-      update(2, "fail", "No pinned block hex available");
+    // ── Check 3: Public RPC Block Verification ────────────
+    try {
+      if (evidence.pinnedBlockHex) {
+        // Re-query block state directly from a public endpoint to verify capture honesty
+        const rpcRes = await fetch("https://cloudflare-eth.com", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jsonrpc: "2.0",
+            id: 1,
+            method: "eth_getBalance",
+            params: ["0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045", evidence.pinnedBlockHex],
+          }),
+        });
+
+        if (!rpcRes.ok) throw new Error("Public RPC query failed");
+        const rpcJson = await rpcRes.json();
+
+        if (rpcJson.error) {
+          throw new Error("RPC error: " + String(rpcJson.error.message || rpcJson.error));
+        }
+
+        const balanceVal = rpcJson.result;
+        const balanceHash = await canonicalize(balanceVal);
+
+        if (balanceHash === evidence.consensusHash) {
+          update(2, "pass", `Cloudflare balance verification matched stored consensus hash: ${balanceHash.slice(0, 16)}...`);
+        } else {
+          update(2, "fail", `RPC capture mismatch. Cloudflare: ${balanceHash.slice(0, 12)}... Stored: ${evidence.consensusHash?.slice(0, 12)}...`);
+        }
+      } else {
+        update(2, "fail", "No pinned block hex available for re-query");
+      }
+    } catch (e) {
+      update(2, "fail", `RPC verification error: ${String(e)}`);
     }
 
     setPhase("done");
-  }, [evidence]);
+  }, [evidence, proof, leafIndex, leafObject]);
 
   const allPassed = checks.every((c) => c.state === "pass");
   const anyFailed = checks.some((c) => c.state === "fail");
@@ -217,7 +338,7 @@ export default function VerifyPage() {
                 aria-describedby={fetchError ? "fetch-error-msg" : undefined}
               />
               <button
-                onClick={loadEvidence}
+                onClick={() => loadEvidence()}
                 disabled={phase !== "input" || !incidentId.trim()}
                 className="btn-primary disabled:opacity-40 disabled:cursor-not-allowed"
                 id="load-evidence-btn"
