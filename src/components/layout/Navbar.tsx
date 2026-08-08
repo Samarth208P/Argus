@@ -119,7 +119,7 @@ export function Navbar() {
           >
             Sign in
           </Link>
-          <Link href="/verify" className="btn-primary btn-sm">
+<Link href="/#leaderboard" className="btn-primary btn-sm">
             Open Terminal
           </Link>
         </div>
