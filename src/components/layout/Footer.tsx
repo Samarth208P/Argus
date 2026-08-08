@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
-
 function ArgusMark() {
   return (
     <svg viewBox="0 0 24 24" className="h-5 w-5 text-[#6798ff]" fill="currentColor" aria-hidden>

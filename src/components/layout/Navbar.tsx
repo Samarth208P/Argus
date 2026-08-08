@@ -6,6 +6,7 @@ import {
   List,
   X,
   CaretDown,
+  Terminal,
   Gauge,
   Trophy,
   Broadcast,
@@ -15,6 +16,7 @@ import {
   GitBranch,
 } from "@phosphor-icons/react";
 import Link from "next/link";
+import { CommandTrigger } from "@/components/command/CommandPalette";
 
 function ArgusLogo() {
   return (
@@ -43,9 +45,10 @@ type NavItem = {
 };
 
 const PLATFORM_ITEMS: NavItem[] = [
-  { label: "Live Monitor", desc: "Real-time integrity dashboard", href: "/terminal", icon: Gauge },
-  { label: "Integrity Leaderboard", desc: "Rank every RPC by honesty", href: "/terminal#leaderboard", icon: Trophy },
-  { label: "Incident Feed", desc: "Detections as they happen", href: "/terminal#live-feed", icon: Broadcast },
+  { label: "Overview", desc: "Best RPC & live comparison", href: "/", icon: Gauge },
+  { label: "Terminal Dashboard", desc: "Live provider integrity board", href: "/demo", icon: Terminal },
+  { label: "RPC Leaderboard", desc: "Rank every RPC by integrity", href: "/rpcs", icon: Trophy },
+  { label: "Incident Feed", desc: "Detections as they happen", href: "/rpcs", icon: Broadcast },
   { label: "Verify Evidence", desc: "Recompute any claim in your browser", href: "/verify", icon: ShieldCheck },
 ];
 
@@ -111,8 +114,15 @@ export function Navbar() {
 
         {/* Right actions */}
         <div className="hidden md:flex items-center gap-2">
-          <Link href="/terminal" className="btn-primary btn-sm">
-            Open Terminal
+          <CommandTrigger className="flex h-9 items-center gap-2 rounded-[9px] border border-white/10 bg-white/[0.03] px-3 text-[13px] text-[#a5a5ac] transition-colors hover:border-white/18 hover:text-white focus-ring" />
+          <Link
+            href="/verify"
+            className="flex h-9 items-center rounded-[9px] px-3 text-[14px] font-medium text-[#a5a5ac] transition-colors hover:text-white focus-ring"
+          >
+            Verify
+          </Link>
+          <Link href="/rpcs" className="btn-primary btn-sm">
+            Explore RPCs
           </Link>
         </div>
 
@@ -222,11 +232,11 @@ export function Navbar() {
             </nav>
             <div className="border-t border-white/8 p-5">
               <Link
-                href="/terminal"
+                href="/rpcs"
                 className="btn-primary w-full"
                 onClick={() => setMobileOpen(false)}
               >
-                Open Terminal
+                Explore RPCs
               </Link>
             </div>
           </motion.div>
