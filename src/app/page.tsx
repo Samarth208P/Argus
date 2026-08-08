@@ -1,21 +1,28 @@
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/marketing/HeroSection";
+import { TrustBar } from "@/components/marketing/TrustBar";
+import { FeatureStory } from "@/components/marketing/FeatureStory";
+import { MetricsSection } from "@/components/marketing/MetricsSection";
+import { EvidenceSection } from "@/components/marketing/EvidenceSection";
+import { IntegrationsSection } from "@/components/marketing/IntegrationsSection";
+import { SecuritySection } from "@/components/marketing/SecuritySection";
+import { UseCasesSection } from "@/components/marketing/UseCasesSection";
+import { FinalCTA } from "@/components/marketing/FinalCTA";
 import { LeaderboardTable } from "@/components/dashboard/LeaderboardTable";
 import { IncidentFeed } from "@/components/dashboard/IncidentFeed";
 import { AdversaryPanel } from "@/components/dashboard/AdversaryPanel";
 import { AddProviderForm } from "@/components/dashboard/AddProviderForm";
-import StrokeText from "@/components/ui/StrokeText";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { Reveal } from "@/components/ui/Reveal";
+import { Path } from "@phosphor-icons/react/dist/ssr";
 
 import { getLatestScores, getRecentIncidents, getProviders } from "@/lib/db/queries";
-
 
 // Revalidate every 30s (ISR)
 export const revalidate = 30;
 
 export default async function HomePage() {
-  // Fetch initial data server-side (RSC)
-  // These fall back gracefully if Supabase isn't connected yet
   let scores: Awaited<ReturnType<typeof getLatestScores>> = [];
   let incidents: Awaited<ReturnType<typeof getRecentIncidents>> = [];
   let providers: Awaited<ReturnType<typeof getProviders>> = [];
@@ -31,150 +38,100 @@ export default async function HomePage() {
   }
 
   const scoreMap = Object.fromEntries(scores.map((s) => [s.provider_id, s.score]));
+  const best = scores[0];
+  const bestUrl = best ? providers.find((p) => p.id === best.provider_id)?.url ?? best.provider_id : null;
 
   return (
     <>
       <Navbar />
       <main role="main">
-        {/* ── Hero + Proof Summary ───────────────────────── */}
+        {/* ── Marketing narrative ─────────────────────────── */}
         <HeroSection />
+        <TrustBar />
+        <FeatureStory />
+        <MetricsSection />
+        <EvidenceSection />
 
-        {/* ── Live Dashboard ────────────────────────────── */}
-        <div className="mx-auto max-w-[1200px] px-6 py-16 flex flex-col gap-16">
-
-          {/* Leaderboard */}
-          <section id="leaderboard" aria-label="Provider leaderboard" className="animate-fade-in-up">
-            <div className="mb-6 flex items-baseline justify-between">
-              <div>
-                <p className="eyebrow mb-2">LEADERBOARD</p>
-                <div className="mt-2 mb-2 w-full max-w-[400px]">
-                  <StrokeText
-                    text="Provider Integrity Scores"
-                    strokeColor="#00f0ff"
-                    fillColor="#ffffff"
-                    strokeWidth={1.2}
-                    fontSize={32}
-                    fontWeight={600}
-                    trigger="scroll"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <span
-                  className="h-1.5 w-1.5 rounded-full bg-[#6798ff] animate-pulse"
-                  aria-hidden="true"
-                />
-                <span
-                  className="text-[12px] text-[#454545]"
-                  style={{ fontFamily: "var(--font-jetbrains-mono)" }}
-                >
+        {/* ── The live terminal (real data) ───────────────── */}
+        <section id="leaderboard" aria-label="Live terminal" className="section border-t border-white/8">
+          <div className="container-page">
+            <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+              <SectionHeading
+                eyebrow="The live terminal"
+                title="Provider integrity, right now."
+                description="Real cross-examination running against live endpoints. Sort by any metric, open a provider to inspect its evidence trail, or verify a claim yourself."
+                className="max-w-[640px]"
+              />
+              <Reveal delay={2} className="flex items-center gap-2 self-start rounded-full border border-white/8 bg-white/[0.02] px-3 py-1.5 md:self-auto">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#6798ff] live-dot" />
+                <span className="text-[12px] text-[#7c7c82]" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
                   Refreshes every 30s
                 </span>
-              </div>
-            </div>
-            <LeaderboardTable initialScores={scores as any} providers={providers} />
-          </section>
-
-          {/* Single-column stacked layout: incident feed + router widget + adversary panel */}
-          <section
-            id="live-feed"
-            aria-label="Live incident feed"
-            className="flex flex-col gap-12"
-          >
-            {/* Incident Feed */}
-            <div className="animate-fade-in-up delay-100">
-              <div className="mb-5">
-                <p className="eyebrow mb-2">LIVE FEED</p>
-                <h2
-                  className="text-[20px] font-medium text-white"
-                  style={{
-                    fontFamily: "var(--font-outfit)",
-                    letterSpacing: "-0.42px",
-                  }}
-                >
-                  Incidents
-                </h2>
-              </div>
-              <IncidentFeed initialIncidents={incidents} scores={scoreMap} />
+              </Reveal>
             </div>
 
-            {/* Best RPC widget */}
-            <div className="animate-fade-in-up delay-200">
+            <Reveal>
+              <LeaderboardTable initialScores={scores as never} providers={providers} />
+            </Reveal>
+
+            {/* Live feed + auto router */}
+            <div id="live-feed" className="mt-16 grid grid-cols-1 gap-12 lg:grid-cols-[1.5fr_1fr]">
               <div>
-                <div className="mb-5">
-                  <p className="eyebrow mb-2">AUTO ROUTER</p>
-                  <h2
-                    className="text-[20px] font-medium text-white"
-                    style={{
-                      fontFamily: "var(--font-outfit)",
-                      letterSpacing: "-0.42px",
-                    }}
-                  >
-                    Best RPC Now
-                  </h2>
-                </div>
-                {scores.length > 0 ? (
-                  <div className="card flex flex-col gap-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-[4px] border border-[#313131] bg-[#1e1e1e] flex items-center justify-center">
-                        <span
-                          className="text-[10px] font-medium text-[#6798ff]"
-                          style={{ fontFamily: "var(--font-jetbrains-mono)" }}
-                        >
-                          {scores[0].provider_id.slice(0, 2).toUpperCase()}
-                        </span>
+                <p className="eyebrow mb-4">Live feed · incidents</p>
+                <IncidentFeed initialIncidents={incidents} scores={scoreMap} />
+              </div>
+
+              <div className="flex flex-col gap-6">
+                <div>
+                  <p className="eyebrow mb-4">Auto router · best RPC now</p>
+                  {best ? (
+                    <div className="card flex flex-col gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-[8px] border border-white/8 bg-white/[0.03]">
+                          <Path size={18} className="text-[#6798ff]" weight="bold" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-[15px] font-medium text-white" style={{ fontFamily: "var(--font-inter)", letterSpacing: "-0.25px" }}>
+                            {best.provider_id}
+                          </p>
+                          <p className="text-[12px] text-[#6798ff]" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
+                            Integrity {best.score}/100
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p
-                          className="text-[15px] font-medium text-white"
-                          style={{ fontFamily: "var(--font-inter)", letterSpacing: "-0.25px" }}
-                        >
-                          {scores[0].provider_id}
-                        </p>
-                        <p
-                          className="text-[12px] text-[#6798ff]"
-                          style={{ fontFamily: "var(--font-jetbrains-mono)" }}
-                        >
-                          Score {scores[0].score}/100
-                        </p>
-                      </div>
+                      <p className="text-[13.5px] leading-[1.6] text-[#a5a5ac]" style={{ fontFamily: "var(--font-inter)" }}>
+                        Integrity-first routing: censoring providers are fast but dishonest. Argus prioritizes verified-honest endpoints.
+                      </p>
+                      <code className="mono-code block break-all text-[11px]" title="Recommended RPC endpoint">
+                        {bestUrl}
+                      </code>
                     </div>
-                    <p
-                      className="text-[13px] text-[#7c7c7c] leading-[1.5]"
-                      style={{ fontFamily: "var(--font-inter)" }}
-                    >
-                      Integrity-first routing: censoring providers are fast but dishonest.
-                      Argus prioritizes verified honest endpoints.
-                    </p>
-                    <code
-                      className="mono-code text-[11px] break-all"
-                      title="Recommended RPC endpoint"
-                    >
-                      {providers.find((p) => p.id === scores[0].provider_id)?.url ?? scores[0].provider_id}
-                    </code>
-                  </div>
-                ) : (
-                  <div className="card flex items-center justify-center py-8">
-                    <p className="text-[14px] text-[#454545]" style={{ fontFamily: "var(--font-inter)" }}>
-                      Collecting data...
-                    </p>
-                  </div>
-                )}
+                  ) : (
+                    <div className="card flex items-center justify-center py-10">
+                      <p className="text-[14px] text-[#54545a]" style={{ fontFamily: "var(--font-inter)" }}>Collecting data…</p>
+                    </div>
+                  )}
+                </div>
               </div>
+            </div>
 
-              </div>
-
-              {/* Adversary Simulator */}
-              <div className="animate-fade-in-up delay-300">
+            {/* Adversary + registry */}
+            <div className="mt-16 grid grid-cols-1 gap-6 lg:grid-cols-2">
+              <div id="adversary">
                 <AdversaryPanel providers={providers} />
               </div>
-
-              {/* Add Provider Form */}
-              <div className="animate-fade-in-up delay-400">
+              <div id="registry">
                 <AddProviderForm />
               </div>
-          </section>
-        </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Closing narrative ───────────────────────────── */}
+        <UseCasesSection />
+        <IntegrationsSection />
+        <SecuritySection />
+        <FinalCTA />
       </main>
       <Footer />
     </>

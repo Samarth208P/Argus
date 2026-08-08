@@ -352,7 +352,7 @@ export default function VerifyPage() {
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
                           >
-                            <CheckCircle size={20} color="#4dffb0" weight="fill" />
+                            <CheckCircle size={20} color="#57d9a3" weight="fill" />
                           </motion.div>
                         )}
                         {check.state === "fail" && (
@@ -392,10 +392,10 @@ export default function VerifyPage() {
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.4, ease: [0.23, 1, 0.32, 1], duration: 0.45 }}
-                      className={`mt-8 rounded-[8px] border p-5 ${
+                      className={`mt-8 rounded-[12px] border p-5 ${
                         allPassed
-                          ? "border-[#1a4030] bg-[#0f2a1f]"
-                          : "border-[#5a2020] bg-[#3a1c1c]"
+                          ? "border-[#57d9a3]/25 bg-[#57d9a3]/[0.06]"
+                          : "border-[#ff6b6b]/25 bg-[#ff6b6b]/[0.06]"
                       }`}
                     >
                       <p
@@ -403,7 +403,7 @@ export default function VerifyPage() {
                         style={{
                           fontFamily: "var(--font-inter)",
                           letterSpacing: "-0.25px",
-                          color: allPassed ? "#4dffb0" : "#ff6b6b",
+                          color: allPassed ? "#57d9a3" : "#ff6b6b",
                         }}
                       >
                         {allPassed

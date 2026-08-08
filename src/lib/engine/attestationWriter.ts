@@ -30,8 +30,18 @@ const ABI = [
   }
 ] as const;
 
-// ── Viem Clients ──────────────────────────────────────────
-const account = PRIVATE_KEY ? privateKeyToAccount(PRIVATE_KEY) : null;
+function getAccount() {
+  if (!PRIVATE_KEY || typeof PRIVATE_KEY !== "string" || !PRIVATE_KEY.startsWith("0x") || PRIVATE_KEY.length !== 66) {
+    return null;
+  }
+  try {
+    return privateKeyToAccount(PRIVATE_KEY as `0x${string}`);
+  } catch {
+    return null;
+  }
+}
+
+const account = getAccount();
 
 const rpcUrl = "https://ethereum-sepolia-rpc.publicnode.com";
 

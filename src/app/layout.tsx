@@ -1,18 +1,12 @@
 import type { Metadata } from "next";
-import { Cinzel, Outfit, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { CommandPalette } from "@/components/command/CommandPalette";
 
-const cinzel = Cinzel({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-cinzel",
-  display: "swap",
-});
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  variable: "--font-outfit",
+  weight: ["400", "500", "600"],
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -41,8 +35,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${cinzel.variable} ${outfit.variable} ${jetbrainsMono.variable}`}>
-      <body className="bg-[#000000] text-white antialiased">{children}</body>
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+      <body className="bg-carbon text-bone antialiased">
+        {children}
+        <CommandPalette />
+      </body>
     </html>
   );
 }
