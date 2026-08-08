@@ -44,6 +44,7 @@ const best = scores.reduce<(typeof scores)[number] | undefined>(
   );
   const bestUrl = best ? providers.find((p) => p.id === best.provider_id)?.url ?? best.provider_id : null;
 
+export default function HomePage() {
   return (
     <>
       <Navbar />

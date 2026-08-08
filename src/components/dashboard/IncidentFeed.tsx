@@ -2,17 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { supabaseBrowser } from "@/lib/db/supabase";
 import type { DbIncident, DbScore } from "@/lib/db/types";
 import { ArrowRight, Circle, Warning, Clock, ShieldSlash } from "@phosphor-icons/react";
 import { COLORS, scoreColor } from "@/lib/design-tokens";
 
-// ── Incident Feed ─────────────────────────────────────────
-interface IncidentFeedProps {
-  initialIncidents: DbIncident[];
-  scores: Record<string, number>; // providerId → score
-  onSelectIncident?: (id: string) => void;
-}
+
 
 const KIND_ICONS = {
   DEVIANT: Warning,
@@ -35,37 +29,13 @@ function timeAgo(isoString: string): string {
   return `${Math.floor(diff / 3600)}h ago`;
 }
 
-export function IncidentFeed({ initialIncidents, scores, onSelectIncident }: IncidentFeedProps) {
-  const [incidents, setIncidents] = useState<DbIncident[]>(initialIncidents);
+interface IncidentFeedProps {
+  incidents: DbIncident[];
+  scores: Record<string, number>; // providerId → score
+  onSelectIncident?: (id: string) => void;
+}
 
-  // ── Supabase Realtime subscription ───────────────────────
-  useEffect(() => {
-    let channel: any = null;
-    try {
-      channel = supabaseBrowser
-        .channel("public:incidents")
-        .on(
-          "postgres_changes",
-          { event: "INSERT", schema: "public", table: "incidents" },
-          (payload) => {
-            setIncidents((prev) => [payload.new as DbIncident, ...prev].slice(0, 100));
-          }
-        )
-        .subscribe();
-    } catch (err) {
-      console.warn("Failed to subscribe to realtime updates:", err);
-    }
-
-    return () => {
-      if (channel) {
-        try {
-          supabaseBrowser.removeChannel(channel);
-        } catch (err) {
-          console.warn("Failed to remove channel:", err);
-        }
-      }
-    };
-  }, []);
+export function IncidentFeed({ incidents, scores, onSelectIncident }: IncidentFeedProps) {
 
   if (incidents.length === 0) {
     return (

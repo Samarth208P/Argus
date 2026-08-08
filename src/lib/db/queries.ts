@@ -1,8 +1,7 @@
 // ============================================================
-// Typed Query Functions for Supabase with Local JSON Fallback
+// Typed Query Functions for Local JSON Database (Fallback Core)
 // ============================================================
 
-import { supabaseServer } from "./supabase";
 import type { DbIncident, DbProvider, DbScore, DbPoll } from "./types";
 import { MAINNET_PROVIDERS } from "@/lib/engine/registry";
 import * as fs from "fs";
@@ -101,32 +100,17 @@ const BUILT_IN_PROVIDERS: DbProvider[] = MAINNET_PROVIDERS.map((p) => ({
   url: p.url,
   label: p.label,
   operator: p.operator,
-  type: p.type,
+  type: p.type as any,
   is_sim: false,
-  network: p.network,
+  network: p.network as any,
   created_at: new Date(Date.now() - 3600_000 * 24).toISOString(),
 }));
 
 // ── Providers ─────────────────────────────────────────────
 export async function getProviders(): Promise<DbProvider[]> {
-  try {
-    const { data, error } = await supabaseServer
-      .from("providers")
-      .select("*")
-      .order("created_at", { ascending: true });
-    if (error) throw error;
-    if (!data || data.length === 0) {
-      const local = readLocalDb();
-      if (local.providers.length > 0) return local.providers;
-      return BUILT_IN_PROVIDERS;
-    }
-    return data as DbProvider[];
-  } catch (err) {
-    console.warn("getProviders from Supabase failed, using local DB fallback:", String(err));
-    const local = readLocalDb();
-    if (local.providers.length > 0) return local.providers;
-    return BUILT_IN_PROVIDERS;
-  }
+  const local = readLocalDb();
+  if (local.providers.length > 0) return local.providers;
+  return BUILT_IN_PROVIDERS;
 }
 
 export async function upsertProvider(
@@ -145,15 +129,6 @@ export async function upsertProvider(
     local.providers.push(updatedProvider);
   }
   writeLocalDb(local);
-
-  try {
-    const { error } = await supabaseServer
-      .from("providers")
-      .upsert(provider as any, { onConflict: "id" });
-    if (error) throw error;
-  } catch (err) {
-    console.warn("upsertProvider in Supabase failed, using local DB fallback:", String(err));
-  }
 }
 
 // ── Polls ─────────────────────────────────────────────────
@@ -174,35 +149,13 @@ export async function insertPoll(poll: {
   const local = readLocalDb();
   local.polls.push(newPoll);
   writeLocalDb(local);
-
-  try {
-    const { data, error } = await supabaseServer
-      .from("polls")
-      .insert(poll as any)
-      .select("id")
-      .single();
-    if (error) throw error;
-    return (data as any).id as string;
-  } catch (err) {
-    console.warn("insertPoll in Supabase failed, using local DB fallback:", String(err));
-    return pollId;
-  }
+  return pollId;
 }
 
 export async function getPollById(id: string) {
-  try {
-    const { data, error } = await supabaseServer
-      .from("polls")
-      .select("*")
-      .eq("id", id)
-      .single();
-    if (error || !data) throw new Error("Not found in Supabase");
-    return data as any;
-  } catch (err) {
-    const local = readLocalDb();
-    const found = local.polls.find((p) => p.id === id);
-    return found || null;
-  }
+  const local = readLocalDb();
+  const found = local.polls.find((p) => p.id === id);
+  return found || null;
 }
 
 export async function getPollsByHour(hour: Date) {
@@ -211,39 +164,18 @@ export async function getPollsByHour(hour: Date) {
   const end = new Date(start);
   end.setHours(end.getHours() + 1);
 
-  try {
-    const { data, error } = await supabaseServer
-      .from("polls")
-      .select("*")
-      .gte("t", start.toISOString())
-      .lt("t", end.toISOString());
-    if (error) throw error;
-    return (data ?? []) as any[];
-  } catch (err) {
-    const local = readLocalDb();
-    return local.polls.filter((p) => {
-      const t = new Date(p.t).getTime();
-      return t >= start.getTime() && t < end.getTime();
-    });
-  }
+  const local = readLocalDb();
+  return local.polls.filter((p) => {
+    const t = new Date(p.t).getTime();
+    return t >= start.getTime() && t < end.getTime();
+  });
 }
 
 export async function getPollsWithoutMerkleRoot(beforeTime: string): Promise<any[]> {
-  try {
-    const { data, error } = await supabaseServer
-      .from("polls")
-      .select("*")
-      .is("merkle_root", null)
-      .lt("t", beforeTime)
-      .order("t", { ascending: true });
-    if (error) throw error;
-    return data ?? [];
-  } catch (err) {
-    const local = readLocalDb();
-    return local.polls
-      .filter((p) => p.merkle_root === null && p.t < beforeTime)
-      .sort((a, b) => new Date(a.t).getTime() - new Date(b.t).getTime());
-  }
+  const local = readLocalDb();
+  return local.polls
+    .filter((p) => p.merkle_root === null && p.t < beforeTime)
+    .sort((a, b) => new Date(a.t).getTime() - new Date(b.t).getTime());
 }
 
 export async function updatePollsMerkleRoot(ids: string[], root: string): Promise<void> {
@@ -254,15 +186,6 @@ export async function updatePollsMerkleRoot(ids: string[], root: string): Promis
     }
   });
   writeLocalDb(local);
-
-  try {
-    const { error } = await (supabaseServer.from("polls") as any)
-      .update({ merkle_root: root })
-      .in("id", ids);
-    if (error) throw error;
-  } catch (err) {
-    console.warn("updatePollsMerkleRoot in Supabase failed, using local DB fallback:", String(err));
-  }
 }
 
 // ── Incidents ─────────────────────────────────────────────
@@ -279,58 +202,20 @@ export async function insertIncident(
   const local = readLocalDb();
   local.incidents.push(newIncident);
   writeLocalDb(local);
-
-  try {
-    const { data, error } = await supabaseServer
-      .from("incidents")
-      .insert(incident as any)
-      .select("id")
-      .single();
-    if (error) throw error;
-    return (data as any).id as string;
-  } catch (err) {
-    console.warn("insertIncident in Supabase failed, using local DB fallback:", String(err));
-    return incidentId;
-  }
+  return incidentId;
 }
 
 export async function getRecentIncidents(limit = 50): Promise<DbIncident[]> {
-  try {
-    const { data, error } = await supabaseServer
-      .from("incidents")
-      .select("*")
-      .order("t", { ascending: false })
-      .limit(limit);
-    if (error) throw error;
-    if (!data || data.length === 0) {
-      const local = readLocalDb();
-      return local.incidents
-        .sort((a, b) => new Date(b.t).getTime() - new Date(a.t).getTime())
-        .slice(0, limit);
-    }
-    return data as DbIncident[];
-  } catch (err) {
-    const local = readLocalDb();
-    return local.incidents
-      .sort((a, b) => new Date(b.t).getTime() - new Date(a.t).getTime())
-      .slice(0, limit);
-  }
+  const local = readLocalDb();
+  return local.incidents
+    .sort((a, b) => new Date(b.t).getTime() - new Date(a.t).getTime())
+    .slice(0, limit);
 }
 
 export async function getIncidentById(id: string): Promise<DbIncident | null> {
-  try {
-    const { data, error } = await supabaseServer
-      .from("incidents")
-      .select("*")
-      .eq("id", id)
-      .single();
-    if (error || !data) throw new Error("Not found in Supabase");
-    return data as DbIncident;
-  } catch (err) {
-    const local = readLocalDb();
-    const found = local.incidents.find((i) => i.id === id);
-    return found || null;
-  }
+  const local = readLocalDb();
+  const found = local.incidents.find((i) => i.id === id);
+  return found || null;
 }
 
 // ── Scores ────────────────────────────────────────────────
@@ -347,112 +232,37 @@ export async function upsertScore(
   const local = readLocalDb();
   local.scores.push(newScore);
   writeLocalDb(local);
-
-  try {
-    const { error } = await supabaseServer
-      .from("scores")
-      .insert(score as any);
-    if (error) throw error;
-  } catch (err) {
-    console.warn("upsertScore in Supabase failed, using local DB fallback:", String(err));
-  }
 }
 
 export async function getLatestScores(): Promise<DbScore[]> {
-  try {
-    const { data, error } = await supabaseServer
-      .from("scores")
-      .select("*")
-      .order("t", { ascending: false })
-      .limit(500);
-    if (error) throw error;
-    
-    const latest = new Map<string, DbScore>();
-    const scoresList = (data ?? []) as DbScore[];
-    
-    if (scoresList.length === 0) {
-      const local = readLocalDb();
-      const sortedLocal = [...local.scores].sort((a, b) => new Date(b.t).getTime() - new Date(a.t).getTime());
-      for (const row of sortedLocal) {
-        if (!latest.has(row.provider_id)) {
-          latest.set(row.provider_id, row);
-        }
-      }
-    } else {
-      for (const row of scoresList) {
-        if (!latest.has(row.provider_id)) {
-          latest.set(row.provider_id, row);
-        }
-      }
+  const latest = new Map<string, DbScore>();
+  const local = readLocalDb();
+  const sortedLocal = [...local.scores].sort((a, b) => new Date(b.t).getTime() - new Date(a.t).getTime());
+  for (const row of sortedLocal) {
+    if (!latest.has(row.provider_id)) {
+      latest.set(row.provider_id, row);
     }
-    
-    return [...latest.values()].sort((a, b) => b.score - a.score);
-  } catch (err) {
-    const latest = new Map<string, DbScore>();
-    const local = readLocalDb();
-    const sortedLocal = [...local.scores].sort((a, b) => new Date(b.t).getTime() - new Date(a.t).getTime());
-    for (const row of sortedLocal) {
-      if (!latest.has(row.provider_id)) {
-        latest.set(row.provider_id, row);
-      }
-    }
-    return [...latest.values()].sort((a, b) => b.score - a.score);
   }
+  return [...latest.values()].sort((a, b) => b.score - a.score);
 }
 
 export async function getScoreHistory(
   providerId: string,
   limit = 50
 ): Promise<DbScore[]> {
-  try {
-    const { data, error } = await supabaseServer
-      .from("scores")
-      .select("*")
-      .eq("provider_id", providerId)
-      .order("t", { ascending: false })
-      .limit(limit);
-    if (error) throw error;
-    if (!data || data.length === 0) {
-      const local = readLocalDb();
-      const filtered = local.scores
-        .filter((s) => s.provider_id === providerId)
-        .sort((a, b) => new Date(b.t).getTime() - new Date(a.t).getTime())
-        .slice(0, limit);
-      return filtered.reverse();
-    }
-    return ((data ?? []) as DbScore[]).reverse();
-  } catch (err) {
-    const local = readLocalDb();
-    const filtered = local.scores
-      .filter((s) => s.provider_id === providerId)
-      .sort((a, b) => new Date(b.t).getTime() - new Date(a.t).getTime())
-      .slice(0, limit);
-    return filtered.reverse();
-  }
+  const local = readLocalDb();
+  const filtered = local.scores
+    .filter((s) => s.provider_id === providerId)
+    .sort((a, b) => new Date(b.t).getTime() - new Date(a.t).getTime())
+    .slice(0, limit);
+  return filtered.reverse();
 }
 
 export async function getProvidersWithRecentIncidents(): Promise<Set<string>> {
   const thirtyMinAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
-  try {
-    const { data, error } = await supabaseServer
-      .from("incidents")
-      .select("provider_id")
-      .gte("t", thirtyMinAgo)
-      .in("kind", ["CENSORING", "DEVIANT", "STALE"]);
-    if (error) throw error;
-    if (!data || data.length === 0) {
-      const local = readLocalDb();
-      const ids = local.incidents
-        .filter((i) => i.t >= thirtyMinAgo && ["CENSORING", "DEVIANT", "STALE"].includes(i.kind))
-        .map((i) => i.provider_id);
-      return new Set<string>(ids);
-    }
-    return new Set<string>(data.map((row: any) => row.provider_id));
-  } catch (err) {
-    const local = readLocalDb();
-    const ids = local.incidents
-      .filter((i) => i.t >= thirtyMinAgo && ["CENSORING", "DEVIANT", "STALE"].includes(i.kind))
-      .map((i) => i.provider_id);
-    return new Set<string>(ids);
-  }
+  const local = readLocalDb();
+  const ids = local.incidents
+    .filter((i) => i.t >= thirtyMinAgo && ["CENSORING", "DEVIANT", "STALE", "DOWN"].includes(i.kind))
+    .map((i) => i.provider_id);
+  return new Set<string>(ids);
 }

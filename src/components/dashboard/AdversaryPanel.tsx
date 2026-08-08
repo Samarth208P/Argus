@@ -4,60 +4,32 @@ import { useState, useEffect } from "react";
 import { Warning, Clock, ShieldSlash, XCircle, Spinner } from "@phosphor-icons/react";
 import type { DbProvider } from "@/lib/db/types";
 
-interface AdversaryPanelProps {
-  providers: DbProvider[];
-}
-
 type Mode = "stale" | "mutate" | "censor";
 
-export function AdversaryPanel({ providers }: AdversaryPanelProps) {
+interface AdversaryPanelProps {
+  providers: DbProvider[];
+  activeAdversary: {
+    targetId: string | null;
+    mode: Mode | null;
+    expiresAt: number | null;
+  };
+  onToggle: (targetId: string | null, mode: Mode | null, durationSeconds: number) => Promise<void>;
+}
+
+export function AdversaryPanel({ providers, activeAdversary, onToggle }: AdversaryPanelProps) {
   const [targetId, setTargetId] = useState("");
   const [mode, setMode] = useState<Mode>("mutate");
   const [duration, setDuration] = useState(120); // seconds
   const [loading, setLoading] = useState(false);
-  const [activeAdversary, setActiveAdversary] = useState<{
-    targetId: string | null;
-    mode: Mode | null;
-    expiresAt: number | null;
-  }>({ targetId: null, mode: null, expiresAt: null });
-
-  // ── Fetch active state on load ──────────────────────────
-  useEffect(() => {
-    async function checkState() {
-      try {
-        const res = await fetch("/api/adversary");
-        if (res.ok) {
-          const data = await res.json();
-          setActiveAdversary(data);
-          if (data.targetId) setTargetId(data.targetId);
-          if (data.mode) setMode(data.mode);
-        }
-      } catch (err) {
-        console.warn("Failed to fetch adversary state:", err);
-      }
-    }
-    checkState();
-    const interval = setInterval(checkState, 15_000);
-    return () => clearInterval(interval);
-  }, []);
 
   const handleToggle = async () => {
     setLoading(true);
     try {
       const isDeactivating = activeAdversary.targetId !== null;
-      const res = await fetch("/api/adversary", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(
-          isDeactivating
-            ? { targetId: null, mode: null }
-            : { targetId, mode, durationSeconds: duration }
-        ),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setActiveAdversary(data);
+      if (isDeactivating) {
+        await onToggle(null, null, 0);
+      } else {
+        await onToggle(targetId, mode, duration);
       }
     } catch (err) {
       console.warn("Failed to update adversary:", err);
