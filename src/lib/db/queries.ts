@@ -296,13 +296,18 @@ export async function updatePollsMerkleRoot(ids: string[], root: string): Promis
 
 // ── Incidents ─────────────────────────────────────────────
 export async function insertIncident(
-  incident: Omit<DbIncident, "id" | "t">
+  incident: Omit<DbIncident, "id" | "t"> & { id?: string; t?: string }
 ): Promise<string> {
+  const incidentId = incident.id || generateUUID();
+  const timestamp = incident.t || new Date().toISOString();
+
   if (isSupabaseConfigured) {
     try {
       const { data, error } = await supabaseAdmin
         .from("incidents")
         .insert({
+          id: incidentId,
+          t: timestamp,
           provider_id: incident.provider_id,
           kind: incident.kind,
           poll_id: incident.poll_id,
@@ -320,12 +325,17 @@ export async function insertIncident(
     }
   }
 
-  const incidentId = generateUUID();
   const newIncident: DbIncident = {
     id: incidentId,
-    t: new Date().toISOString(),
-    ...incident,
-  } as DbIncident;
+    t: timestamp,
+    provider_id: incident.provider_id,
+    kind: incident.kind,
+    poll_id: incident.poll_id,
+    request: incident.request,
+    expected: incident.expected,
+    got: incident.got,
+    receipts: incident.receipts,
+  };
 
   const local = readLocalDb();
   local.incidents.push(newIncident);
@@ -376,11 +386,16 @@ export async function getIncidentById(id: string): Promise<DbIncident | null> {
 
 // ── Scores ────────────────────────────────────────────────
 export async function upsertScore(
-  score: Omit<DbScore, "id" | "t">
+  score: Omit<DbScore, "id" | "t"> & { id?: string; t?: string }
 ): Promise<void> {
+  const scoreId = score.id || generateUUID();
+  const timestamp = score.t || new Date().toISOString();
+
   if (isSupabaseConfigured) {
     try {
       const { error } = await supabaseAdmin.from("scores").insert({
+        id: scoreId,
+        t: timestamp,
         provider_id: score.provider_id,
         score: score.score,
         accuracy: score.accuracy,
@@ -396,11 +411,16 @@ export async function upsertScore(
     }
   }
 
-  const scoreId = generateUUID();
   const newScore: DbScore = {
     id: scoreId,
-    t: new Date().toISOString(),
-    ...score,
+    t: timestamp,
+    provider_id: score.provider_id,
+    score: score.score,
+    accuracy: score.accuracy,
+    uptime: score.uptime,
+    latency_avg: score.latency_avg,
+    freshness_score: score.freshness_score,
+    trend: score.trend,
   };
 
   const local = readLocalDb();
