@@ -6,6 +6,7 @@ import {
   List,
   X,
   CaretDown,
+  Terminal,
   Gauge,
   Trophy,
   Broadcast,
@@ -44,9 +45,10 @@ type NavItem = {
 };
 
 const PLATFORM_ITEMS: NavItem[] = [
-  { label: "Live Monitor", desc: "Real-time integrity dashboard", href: "/", icon: Gauge },
-  { label: "Integrity Leaderboard", desc: "Rank every RPC by honesty", href: "/#leaderboard", icon: Trophy },
-  { label: "Incident Feed", desc: "Detections as they happen", href: "/#live-feed", icon: Broadcast },
+  { label: "Overview", desc: "Best RPC & live comparison", href: "/", icon: Gauge },
+  { label: "Terminal Dashboard", desc: "Live provider integrity board", href: "/demo", icon: Terminal },
+  { label: "RPC Leaderboard", desc: "Rank every RPC by integrity", href: "/rpcs", icon: Trophy },
+  { label: "Incident Feed", desc: "Detections as they happen", href: "/rpcs", icon: Broadcast },
   { label: "Verify Evidence", desc: "Recompute any claim in your browser", href: "/verify", icon: ShieldCheck },
 ];
 
@@ -114,13 +116,13 @@ export function Navbar() {
         <div className="hidden md:flex items-center gap-2">
           <CommandTrigger className="flex h-9 items-center gap-2 rounded-[9px] border border-white/10 bg-white/[0.03] px-3 text-[13px] text-[#a5a5ac] transition-colors hover:border-white/18 hover:text-white focus-ring" />
           <Link
-            href="/#leaderboard"
+            href="/verify"
             className="flex h-9 items-center rounded-[9px] px-3 text-[14px] font-medium text-[#a5a5ac] transition-colors hover:text-white focus-ring"
           >
-            Sign in
+            Verify
           </Link>
-<Link href="/#leaderboard" className="btn-primary btn-sm">
-            Open Terminal
+          <Link href="/rpcs" className="btn-primary btn-sm">
+            Explore RPCs
           </Link>
         </div>
 
@@ -230,11 +232,11 @@ export function Navbar() {
             </nav>
             <div className="border-t border-white/8 p-5">
               <Link
-                href="/verify"
+                href="/rpcs"
                 className="btn-primary w-full"
                 onClick={() => setMobileOpen(false)}
               >
-                Open Terminal
+                Explore RPCs
               </Link>
             </div>
           </motion.div>
