@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { supabaseBrowser } from "@/lib/db/supabase";
 import type { DbIncident, DbScore } from "@/lib/db/types";
 import { ArrowRight, Circle, Warning, Clock, ShieldSlash } from "@phosphor-icons/react";
 import { COLORS, scoreColor } from "@/lib/design-tokens";

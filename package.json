@@ -3,11 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node scripts/poll-daemon.js & next dev",
+    "dev": "next dev",
     "build": "next build",
-    "start": "node scripts/poll-daemon.js & next start",
-    "lint": "next lint",
-    "ping-poll": "node scripts/poll-heartbeat.js"
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
