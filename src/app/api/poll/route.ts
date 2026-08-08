@@ -16,6 +16,7 @@ import { getAdversaryState } from "@/lib/engine/adversaryState";
 import { fanOutRPC } from "@/lib/engine/poller";
 import { verifyBlockContinuity } from "@/lib/engine/continuityWatch";
 import { sendCensorshipProbe } from "@/lib/engine/censorshipProbe";
+import { processPendingMerkleRoots } from "@/lib/engine/merkle";
 
 
 export const dynamic = "force-dynamic";
@@ -229,6 +230,13 @@ export async function POST(req: NextRequest) {
           trend: score.trend,
         });
       } catch { /* DB not connected */ }
+    }
+
+    // ── Hourly Merkle Notarization ────────────────────────
+    try {
+      await processPendingMerkleRoots();
+    } catch (merkleErr) {
+      console.error("Failed to process hourly Merkle roots:", merkleErr);
     }
 
     return NextResponse.json({

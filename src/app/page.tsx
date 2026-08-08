@@ -8,7 +8,7 @@ import { AddProviderForm } from "@/components/dashboard/AddProviderForm";
 import StrokeText from "@/components/ui/StrokeText";
 
 import { getLatestScores, getRecentIncidents, getProviders } from "@/lib/db/queries";
-
+import { selectRoute } from "@/lib/engine/router";
 
 // Revalidate every 30s (ISR)
 export const revalidate = 30;
@@ -19,13 +19,25 @@ export default async function HomePage() {
   let scores: Awaited<ReturnType<typeof getLatestScores>> = [];
   let incidents: Awaited<ReturnType<typeof getRecentIncidents>> = [];
   let providers: Awaited<ReturnType<typeof getProviders>> = [];
+  let decision: Awaited<ReturnType<typeof selectRoute>> = {
+    status: "NO_CANDIDATES",
+    best: null,
+    candidates: [],
+    policy: { min_score: 50, max_age_ms: 300000 },
+    decided_at: new Date().toISOString(),
+  };
 
   try {
-    [scores, incidents, providers] = await Promise.all([
+    const [fetchedScores, fetchedIncidents, fetchedProviders, fetchedDecision] = await Promise.all([
       getLatestScores(),
       getRecentIncidents(50),
       getProviders(),
+      selectRoute(),
     ]);
+    scores = fetchedScores;
+    incidents = fetchedIncidents;
+    providers = fetchedProviders;
+    decision = fetchedDecision;
   } catch {
     // Supabase not yet configured — render with empty state
   }
@@ -113,7 +125,7 @@ export default async function HomePage() {
                     Best RPC Now
                   </h2>
                 </div>
-                {scores.length > 0 ? (
+                {decision.best ? (
                   <div className="card flex flex-col gap-4">
                     <div className="flex items-center gap-3">
                       <div className="h-8 w-8 rounded-[4px] border border-[#313131] bg-[#1e1e1e] flex items-center justify-center">
@@ -121,36 +133,55 @@ export default async function HomePage() {
                           className="text-[10px] font-medium text-[#6798ff]"
                           style={{ fontFamily: "var(--font-jetbrains-mono)" }}
                         >
-                          {scores[0].provider_id.slice(0, 2).toUpperCase()}
+                          {decision.best.provider_id.slice(0, 2).toUpperCase()}
                         </span>
                       </div>
-                      <div>
-                        <p
-                          className="text-[15px] font-medium text-white"
-                          style={{ fontFamily: "var(--font-inter)", letterSpacing: "-0.25px" }}
-                        >
-                          {scores[0].provider_id}
-                        </p>
-                        <p
-                          className="text-[12px] text-[#6798ff]"
-                          style={{ fontFamily: "var(--font-jetbrains-mono)" }}
-                        >
-                          Score {scores[0].score}/100
-                        </p>
+                      <div className="flex-1 flex items-center justify-between">
+                        <div>
+                          <p
+                            className="text-[15px] font-medium text-white"
+                            style={{ fontFamily: "var(--font-inter)", letterSpacing: "-0.25px" }}
+                          >
+                            {decision.best.provider_id}
+                          </p>
+                          <p
+                            className="text-[12px] text-[#6798ff]"
+                            style={{ fontFamily: "var(--font-jetbrains-mono)" }}
+                          >
+                            Score {decision.best.score}/100
+                          </p>
+                        </div>
+                        {decision.status === "DEGRADED" ? (
+                          <span
+                            className="badge text-[10px] uppercase border border-amber-500/30 text-amber-500 bg-amber-500/5 px-2 py-0.5 rounded-[4px]"
+                            style={{ fontFamily: "var(--font-jetbrains-mono)" }}
+                            title="All providers degraded — least-bad shown"
+                          >
+                            DEGRADED
+                          </span>
+                        ) : (
+                          <span
+                            className="badge text-[10px] uppercase border border-[#4dffb0]/30 text-[#4dffb0] bg-[#4dffb0]/5 px-2 py-0.5 rounded-[4px]"
+                            style={{ fontFamily: "var(--font-jetbrains-mono)" }}
+                          >
+                            HEALTHY
+                          </span>
+                        )}
                       </div>
                     </div>
                     <p
                       className="text-[13px] text-[#7c7c7c] leading-[1.5]"
                       style={{ fontFamily: "var(--font-inter)" }}
                     >
-                      Integrity-first routing: censoring providers are fast but dishonest.
-                      Argus prioritizes verified honest endpoints.
+                      {decision.status === "DEGRADED"
+                        ? "Warning: All available providers are currently degraded. Showing the least-bad option."
+                        : "Integrity-first routing: censoring providers are fast but dishonest. Argus prioritizes verified honest endpoints."}
                     </p>
                     <code
                       className="mono-code text-[11px] break-all"
                       title="Recommended RPC endpoint"
                     >
-                      {providers.find((p) => p.id === scores[0].provider_id)?.url ?? scores[0].provider_id}
+                      {decision.best.url}
                     </code>
                   </div>
                 ) : (
@@ -161,18 +192,39 @@ export default async function HomePage() {
                   </div>
                 )}
               </div>
+            </div>
 
-              </div>
-
-              {/* Adversary Simulator */}
-              <div className="animate-fade-in-up delay-300">
-                <AdversaryPanel providers={providers} />
-              </div>
-
-              {/* Add Provider Form */}
-              <div className="animate-fade-in-up delay-400">
-                <AddProviderForm />
-              </div>
+            {/* Collapsible Demo & Simulation Controls */}
+            <div className="animate-fade-in-up delay-300">
+              <details className="group border border-white/5 bg-[#141414]/30 rounded-[12px] overflow-hidden">
+                <summary className="flex items-center justify-between p-4 cursor-pointer select-none text-white hover:bg-white/5 transition-colors">
+                  <span
+                    className="text-[12px] font-medium uppercase tracking-[0.85px]"
+                    style={{ fontFamily: "var(--font-jetbrains-mono)" }}
+                  >
+                    Demo & Simulation Controls
+                  </span>
+                  <span className="transition-transform duration-200 group-open:rotate-90 text-[#a7a7a7]">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </span>
+                </summary>
+                <div className="p-6 border-t border-white/5 flex flex-col gap-10 bg-black/40 backdrop-blur-xl">
+                  <AdversaryPanel providers={providers} />
+                  <AddProviderForm />
+                </div>
+              </details>
+            </div>
           </section>
         </div>
       </main>

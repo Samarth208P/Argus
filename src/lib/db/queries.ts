@@ -119,14 +119,36 @@ export async function getPollsByHour(hour: Date) {
   try {
     const { data, error } = await supabaseServer
       .from("polls")
-      .select("id, consensus_hash")
+      .select("*")
       .gte("t", start.toISOString())
       .lt("t", end.toISOString());
     if (error) return [];
-    return (data ?? []) as Array<{ id: string; consensus_hash: string | null }>;
+    return (data ?? []) as any[];
   } catch {
     return [];
   }
+}
+
+export async function getPollsWithoutMerkleRoot(beforeTime: string): Promise<any[]> {
+  try {
+    const { data, error } = await supabaseServer
+      .from("polls")
+      .select("*")
+      .is("merkle_root", null)
+      .lt("t", beforeTime)
+      .order("t", { ascending: true });
+    if (error) return [];
+    return data ?? [];
+  } catch {
+    return [];
+  }
+}
+
+export async function updatePollsMerkleRoot(ids: string[], root: string): Promise<void> {
+  const { error } = await (supabaseServer.from("polls") as any)
+    .update({ merkle_root: root })
+    .in("id", ids);
+  if (error) throw error;
 }
 
 // ── Incidents ─────────────────────────────────────────────
@@ -188,20 +210,20 @@ export async function getLatestScores(): Promise<DbScore[]> {
       .from("scores")
       .select("*")
       .order("t", { ascending: false })
-      .limit(200);
-    if (error || !data || data.length === 0) return MOCK_SCORES;
+      .limit(500);
+    if (error || !data || data.length === 0) {
+      return [...MOCK_SCORES].sort((a, b) => b.score - a.score);
+    }
 
-    const seen = new Set<string>();
-    const latest: DbScore[] = [];
+    const latest = new Map<string, DbScore>();
     for (const row of (data ?? []) as DbScore[]) {
-      if (!seen.has(row.provider_id)) {
-        seen.add(row.provider_id);
-        latest.push(row);
+      if (!latest.has(row.provider_id)) {
+        latest.set(row.provider_id, row);
       }
     }
-    return latest;
+    return [...latest.values()].sort((a, b) => b.score - a.score);
   } catch {
-    return MOCK_SCORES;
+    return [...MOCK_SCORES].sort((a, b) => b.score - a.score);
   }
 }
 
@@ -222,5 +244,20 @@ export async function getScoreHistory(
     return ((data ?? []) as DbScore[]).reverse();
   } catch {
     return MOCK_SCORES.filter((s) => s.provider_id === providerId);
+  }
+}
+
+export async function getProvidersWithRecentIncidents(): Promise<Set<string>> {
+  const thirtyMinAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+  try {
+    const { data, error } = await supabaseServer
+      .from("incidents")
+      .select("provider_id")
+      .gte("t", thirtyMinAgo)
+      .in("kind", ["CENSORING", "DEVIANT", "STALE"]);
+    if (error || !data) return new Set<string>();
+    return new Set<string>(data.map((row: any) => row.provider_id));
+  } catch {
+    return new Set<string>();
   }
 }
