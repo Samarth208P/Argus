@@ -26,7 +26,7 @@ export function HeroSection({
         };
 
   return (
-    <section id="hero" aria-label="Argus hero" className="relative overflow-hidden pt-32 pb-16 sm:pt-40">
+    <section id="hero" aria-label="Argus hero" className="relative overflow-hidden pt-36 pb-16 sm:pt-44 lg:pt-48">
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute inset-0 grid-bg fade-mask opacity-70" />
         <div className="absolute inset-x-0 top-0 h-[520px] aurora" />

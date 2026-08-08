@@ -4,9 +4,7 @@ import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { RPCLeaderboard } from "@/components/rpc/RPCLeaderboard";
-import { IncidentFeed } from "@/components/dashboard/IncidentFeed";
-import { AdversaryPanel } from "@/components/dashboard/AdversaryPanel";
-import { AddProviderForm } from "@/components/dashboard/AddProviderForm";
+import { RPCMonitoringPanel } from "@/components/rpc/RPCMonitoringPanel";
 import { getLatestScores, getProviders, getRecentIncidents } from "@/lib/db/queries";
 
 export const revalidate = 30;
@@ -57,24 +55,7 @@ export default async function RpcsPage() {
             <RPCLeaderboard initialScores={scores} providers={providers} />
           </div>
 
-          {/* Monitoring tools (relocated from the homepage) */}
-          <section aria-label="Live monitoring" className="mt-24">
-            <h2 className="text-[24px] font-medium tracking-[-0.4px] text-white" style={{ fontFamily: "var(--font-inter)" }}>Live monitoring</h2>
-            <p className="mt-2 max-w-[56ch] text-[15px] text-[#a5a5ac]" style={{ fontFamily: "var(--font-inter)" }}>
-              Incidents as they happen, plus tools to stress-test detection and register your own endpoints.
-            </p>
-
-            <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-[1.4fr_1fr]">
-              <div>
-                <p className="eyebrow mb-4">Live feed · incidents</p>
-                <IncidentFeed initialIncidents={incidents} scores={scoreMap} />
-              </div>
-              <div className="flex flex-col gap-6">
-                <AdversaryPanel providers={providers} />
-                <AddProviderForm />
-              </div>
-            </div>
-          </section>
+          <RPCMonitoringPanel incidents={incidents} providers={providers} scoreMap={scoreMap} />
         </div>
       </main>
       <Footer />
