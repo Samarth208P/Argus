@@ -1,77 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
 
-## Getting Started
+<h1><img src="public/argus-logo.svg" alt="Argus logo" height="26" align="top" />&nbsp; Argus</h1>
 
-First, run the development server:
+### A lie detector for Ethereum RPCs
+
+Argus continuously cross-examines every RPC provider against live consensus,
+catches stale data, mutated state and censored transactions the moment they
+happen, and publishes cryptographic evidence anyone can verify.
+
+**🌐 Live demo → [tryargus.netlify.app](https://tryargus.netlify.app)**
+
+<sub>Built for the Censorship Resistance track · Road to Devcon 2026 · IIT Roorkee</sub>
+
+</div>
+
+---
+
+## What it does
+
+Not every RPC tells the truth. A provider can be fast *and* dishonest — serving
+a stale block, a mutated balance, or silently dropping a transaction. Argus is
+your independent second opinion:
+
+- **Monitor** — polls every registered RPC continuously and records exactly what each one claims.
+- **Detect** — isomorphic consensus math compares responses and flags any provider that deviates (`DEVIANT` / `STALE` / `CENSORING` / `DOWN`).
+- **Prove** — each detection ships a signed evidence bundle, Merkle-committed on Sepolia. Recompute it in your own browser and check it against the chain.
+- **Route** — an integrity-first router sends traffic to verified-honest endpoints, not merely fast ones.
+
+Providers are graded on an **integrity score** (0–100) derived from accuracy,
+uptime, latency and freshness — the single source of truth for every ranking.
+
+## Drop-in RPC endpoint
+
+Argus exposes one URL that routes every call to the current best-performing
+provider, with automatic failover:
+
+```
+https://tryargus.netlify.app/api/rpc
+```
+
+Point any wallet or app at it like a normal Ethereum JSON-RPC endpoint.
+
+## Pages & API
+
+| Route | What it is |
+| --- | --- |
+| `/` | Landing — current best RPC + live comparison graph |
+| `/rpcs` | Full leaderboard with live rank-change animations, filters and sorting |
+| `/rpcs/[id]` | Per-provider details: score / latency / rank history |
+| `/verify` | Paste an incident ID, recompute the consensus math, check it on-chain |
+| `/api/rpc` | Integrity-first routed JSON-RPC endpoint (`POST`) |
+| `/api/router/best` | Current routing decision |
+| `/api/scores` | Latest integrity score per provider |
+| `/api/evidence` | Raw signed evidence bundles |
+| `/api/poll/sync` | Persists a poll batch |
+
+## Tech stack
+
+- **Next.js 16** (App Router) · **React 19** · **TypeScript**
+- **Tailwind CSS v4** · **Motion** (Framer) · **Phosphor Icons** — hand-built SVG data-viz
+- **Supabase** (optional; falls back to a local JSON store) · **viem** · **mathjs**
+
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). The app runs out of the box
+with a seeded local data store — no external services required.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Environment variables (optional)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase (browser) — realtime + reads |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase (server) — writes |
+| `NEXT_PUBLIC_ARGUS_ATTEST_ADDRESS` | Deployed `ArgusAttest` contract (Sepolia) |
+| `CRON_SECRET` | Shared secret for an external monitoring scheduler |
 
-## Learn More
+Without Supabase, Argus persists to a local JSON store under `cache/` and stays
+fully functional for local development and demos.
 
-To learn more about Next.js, take a look at the following resources:
+## Continuous monitoring
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Live scores are measured in the browser and persisted via `/api/poll/sync`. For
+always-on **server-side** monitoring on serverless hosting (Netlify/Vercel),
+drive an external scheduler (e.g. [cron-job.org](https://cron-job.org),
+[EasyCron](https://www.easycron.com)) to hit the sync endpoint on a 20–30s
+interval, authenticated with `CRON_SECRET`. This keeps the rolling window full,
+captures transient failures, and feeds the hourly on-chain Merkle roots.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-## Run the Argus heartbeat cron
-
-Argus depends on an always-on heartbeat to keep `/api/poll` running. In serverless hosting (Netlify, Vercel, etc.), your app only executes when it receives a request. That means the heartbeat must come from an external scheduler, not from page visits.
-
-### Required environment variables
-
-- `CRON_SECRET` — a strong secret used by `/api/poll` for authentication.
-- `POLL_URL` — the full deployed URL for the poll endpoint, for example `https://your-domain.com/api/poll`.
-
-### Local helper script
-
-This repo includes a small helper for pings:
+## Scripts
 
 ```bash
-POLL_URL="https://your-domain.com/api/poll" CRON_SECRET="your-secret" npm run ping-poll
+npm run dev     # start the dev server
+npm run build   # production build
+npm run start   # serve the production build
+npm run lint    # lint
 ```
 
-### Scheduler requirements
+---
 
-- Method: `POST`
-- URL: `https://your-domain.com/api/poll`
-- Header: `x-cron-secret: your-secret`
-- Optional: `Authorization: Bearer your-secret` if your scheduler requires it
-- Frequency: every 20–30 seconds for continuous monitoring
-
-### Recommended scheduler options
-
-- External cron services like [cron-job.org](https://cron-job.org), [EasyCron](https://www.easycron.com), or [Healthchecks.io](https://healthchecks.io)
-- A small container/VM running a shell loop
-- Any hosted runner that can send HTTP requests on a 20–30 second interval
-
-### Why this matters
-
-The polling cron is mandatory because it:
-
-1. keeps your serverless backend alive,
-2. fills the 50-poll rolling window,
-3. captures transient provider failures, and
-4. creates the raw data used by hourly Merkle roots.
-
-Without it, Argus cannot operate as a true 24/7 monitor.
+<div align="center">
+<sub>Argus — because censorship resistance means nothing if you can't tell when you're being censored.</sub>
+</div>
