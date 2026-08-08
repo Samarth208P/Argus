@@ -19,7 +19,19 @@ export interface RouteDecision {
   decided_at: string;
 }
 
-export async function selectRoute(): Promise<RouteDecision> {
+let cachedDecision: RouteDecision | null = null;
+let lastDecidedAt = 0;
+const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutes
+
+export async function selectRoute(force = false): Promise<RouteDecision> {
+  const now = Date.now();
+  if (!force && cachedDecision && (now - lastDecidedAt < CACHE_DURATION_MS)) {
+    return {
+      ...cachedDecision,
+      decided_at: new Date(lastDecidedAt).toISOString(),
+    };
+  }
+
   const [providers, scores, badRecent] = await Promise.all([
     getProviders(),
     getLatestScores(),
@@ -60,11 +72,16 @@ export async function selectRoute(): Promise<RouteDecision> {
 
   const healthy = candidates.filter((c) => c.healthy);
   const chain = healthy.length ? healthy : candidates;              // fail-open, but FLAGGED
-  return {
+  
+  const decision: RouteDecision = {
     status: healthy.length ? "HEALTHY" : candidates.length ? "DEGRADED" : "NO_CANDIDATES",
     best: chain[0] ?? null,
     candidates: chain,
     policy: { min_score: ROUTER_MIN_SCORE, max_age_ms: SCORE_MAX_AGE_MS },
-    decided_at: new Date().toISOString(),
+    decided_at: new Date(now).toISOString(),
   };
+
+  cachedDecision = decision;
+  lastDecidedAt = now;
+  return decision;
 }
