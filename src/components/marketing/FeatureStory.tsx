@@ -154,7 +154,7 @@ const FEATURES = [
     title: "Watch every provider, continuously.",
     body: "Argus polls each registered RPC every 20 seconds against pinned blocks and identical requests — building a live, side-by-side record of exactly what each node claims is true.",
     cta: "See the live monitor",
-    href: "/#leaderboard",
+    href: "/terminal",
     Visual: MonitorVisual,
   },
   {
@@ -164,7 +164,7 @@ const FEATURES = [
     title: "Catch the lie the moment it happens.",
     body: "Isomorphic consensus math compares every response. When one node deviates from the weighted majority — stale data, mutated state, a censored transaction — it surfaces instantly, classified by fault type.",
     cta: "Read the incident feed",
-    href: "/#live-feed",
+    href: "/terminal#live-feed",
     Visual: DetectVisual,
   },
   {
@@ -184,7 +184,7 @@ const FEATURES = [
     title: "Always route to honest endpoints.",
     body: "Integrity scores feed a router that prefers verified-honest nodes over merely fast ones. Censoring providers are quick — and dishonest. Argus sends your traffic where the truth is.",
     cta: "Explore auto-routing",
-    href: "/#leaderboard",
+    href: "/terminal",
     Visual: RouteVisual,
   },
 ];

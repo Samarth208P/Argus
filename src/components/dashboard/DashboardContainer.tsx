@@ -1,7 +1,31 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Copy, Check, Terminal, Warning } from "@phosphor-icons/react";
+import {
+  Copy,
+  Check,
+  Terminal,
+  Warning,
+  ShieldCheck,
+  Hourglass,
+  Cpu,
+  Gauge,
+  Trophy,
+  ArrowUpRight,
+  Broadcast,
+  Eye,
+  EyeSlash,
+  Plus
+} from "@phosphor-icons/react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import { LeaderboardTable } from "./LeaderboardTable";
 import { IncidentFeed } from "./IncidentFeed";
 import { InterrogateConsole } from "./InterrogateConsole";
@@ -10,15 +34,29 @@ import { AddProviderForm } from "./AddProviderForm";
 import { EvidenceDrawer } from "./EvidenceDrawer";
 import type { DbProvider, DbScore, DbIncident } from "@/lib/db/types";
 import type { RouteDecision, Candidate } from "@/lib/engine/router";
+import { COLORS, scoreColor } from "@/lib/design-tokens";
 
 // Engine Imports (client-side safe)
 import { MAINNET_PROVIDERS, getIndependenceShare } from "@/lib/engine/registry";
-import { determineConsensus, extractBlockTuple, canonicalize } from "@/lib/engine/consensus";
+import { determineConsensus, extractBlockTuple } from "@/lib/engine/consensus";
 import { classifySingleResponse, checkFreshness } from "@/lib/engine/classifier";
 import { computeScore } from "@/lib/engine/scorer";
 import { fanOutRPC } from "@/lib/engine/poller";
 
 const TARGET_ADDRESS = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"; // vitalik.eth
+
+const PROVIDER_COLORS: Record<string, string> = {
+  cloudflare: "#6798ff", // softIndigo
+  llama: "#ff6b9d", // pink/rose
+  publicnode: "#00f0ff", // cyan
+  drpc: "#ffa64d", // amber
+  "1rpc": "#4dffb0", // emerald
+  blast: "#e0aaff", // purple
+  tenderly: "#ccff33", // lime
+  onfinality: "#ffc300", // yellow
+  flashbots: "#ff5733", // orange-red
+  mevblocker: "#9b5de5", // violet
+};
 
 function generateUUID(): string {
   if (typeof window !== "undefined" && window.crypto && window.crypto.randomUUID) {
@@ -43,7 +81,6 @@ const BUILT_IN_PROVIDERS: DbProvider[] = MAINNET_PROVIDERS.map((p) => ({
   created_at: new Date(Date.now() - 3600_000 * 24).toISOString(),
 }));
 
-// Generate seed scores so dashboard displays realistically on load
 const now = new Date();
 const SEEDED_SCORES: DbScore[] = [];
 
@@ -98,6 +135,15 @@ export function DashboardContainer() {
 
   const [isDemo, setIsDemo] = useState(false);
 
+  // Graph states
+  const [activeMetric, setActiveMetric] = useState<"score" | "latency">("score");
+  const [visibleProviders, setVisibleProviders] = useState<Record<string, boolean>>({});
+  const [mounted, setMounted] = useState(false);
+
+  // Rotation states
+  const [rotationCountdown, setRotationCountdown] = useState("5m 00s");
+  const [rotationProgress, setRotationProgress] = useState(100);
+
   // Load from localStorage on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -118,6 +164,18 @@ export function DashboardContainer() {
       }
     }
   }, []);
+
+  // Initialize visible providers on mount
+  useEffect(() => {
+    setMounted(true);
+    const initial: Record<string, boolean> = {};
+    for (const p of providers) {
+      if (!p.is_sim) {
+        initial[p.id] = true;
+      }
+    }
+    setVisibleProviders(initial);
+  }, [providers]);
 
   // Save to localStorage when states change
   useEffect(() => {
@@ -149,6 +207,25 @@ export function DashboardContainer() {
       }
     }
   }, [incidents]);
+
+  // 5-minute rotation timer
+  useEffect(() => {
+    const updateCountdown = () => {
+      const now = Date.now();
+      const ROTATION_INTERVAL_MS = 5 * 60 * 1000;
+      const msPassed = now % ROTATION_INTERVAL_MS;
+      const msRemaining = ROTATION_INTERVAL_MS - msPassed;
+      
+      const minutes = Math.floor(msRemaining / 60000);
+      const seconds = Math.floor((msRemaining % 60000) / 1000);
+      setRotationCountdown(`${minutes}m ${seconds.toString().padStart(2, "0")}s`);
+      setRotationProgress((msRemaining / ROTATION_INTERVAL_MS) * 100);
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const rpcUrl = `${origin}/api/rpc`;
 
@@ -203,6 +280,9 @@ export function DashboardContainer() {
       });
     }
     setScores((prev) => [...prev, ...newProviderScores]);
+
+    // Enable line on graph
+    setVisibleProviders((prev) => ({ ...prev, [newProvider.id]: true }));
   };
 
   // ── Core client-side poll loop ───────────────────────────
@@ -474,14 +554,54 @@ export function DashboardContainer() {
       });
     }
 
+    // Append fallback candidates for unmonitored ones to ensure failover
+    const candidateIds = new Set(candidates.map((c) => c.provider_id));
+    for (const p of providers) {
+      if (p.is_sim) continue;
+      if (!candidateIds.has(p.id)) {
+        candidates.push({
+          provider_id: p.id,
+          url: p.url,
+          score: 50,
+          trend: "STABLE",
+          healthy: !badRecentProviders.has(p.id),
+        });
+      }
+    }
+
     const healthy = candidates.filter((c) => c.healthy);
-    const chain = healthy.length ? healthy : candidates;
+    let rotatedChain = [...candidates];
+    let best: Candidate | null = null;
+    const now = Date.now();
+    const ROTATION_INTERVAL_MS = 5 * 60 * 1000;
+    const currentBucket = Math.floor(now / ROTATION_INTERVAL_MS);
+
+    if (healthy.length > 0) {
+      const rotateIndex = currentBucket % healthy.length;
+      best = healthy[rotateIndex];
+      const healthyCopy = [...healthy];
+      const rotatedHealthy = [
+        best,
+        ...healthyCopy.filter((c) => c.provider_id !== best!.provider_id),
+      ];
+      const unhealthy = candidates.filter((c) => !c.healthy);
+      rotatedChain = [...rotatedHealthy, ...unhealthy];
+    } else if (candidates.length > 0) {
+      const rotateIndex = currentBucket % candidates.length;
+      best = candidates[rotateIndex];
+      const candidatesCopy = [...candidates];
+      rotatedChain = [
+        best,
+        ...candidatesCopy.filter((c) => c.provider_id !== best!.provider_id),
+      ];
+    }
+
     return {
       status: healthy.length ? "HEALTHY" : candidates.length ? "DEGRADED" : "NO_CANDIDATES",
-      best: chain[0] ?? null,
-      candidates: chain,
+      best,
+      candidates: rotatedChain,
       policy: { min_score: 50, max_age_ms: 300000 },
-      decided_at: new Date().toISOString(),
+      decided_at: new Date(now).toISOString(),
     } as RouteDecision;
   }, [scores, providers, badRecentProviders]);
 
@@ -566,31 +686,68 @@ export function DashboardContainer() {
     return result.sort((a, b) => b.score - a.score);
   }, [scores]);
 
+  // Aligned chart scoring data
+  const chartData = useMemo(() => {
+    const timeMap = new Map<string, any>();
+    
+    // Group scores by rounded 15-second interval to align lines properly
+    for (const s of scores) {
+      const d = new Date(s.t);
+      const roundedMs = Math.round(d.getTime() / 15000) * 15000;
+      const roundedIso = new Date(roundedMs).toISOString();
+
+      if (!timeMap.has(roundedIso)) {
+        timeMap.set(roundedIso, { rawTime: roundedIso });
+      }
+      const obj = timeMap.get(roundedIso);
+      obj[s.provider_id] = s.score;
+      obj[`${s.provider_id}_latency`] = s.latency_avg;
+    }
+
+    return Array.from(timeMap.values())
+      .sort((a, b) => new Date(a.rawTime).getTime() - new Date(b.rawTime).getTime())
+      .map((item) => {
+        const d = new Date(item.rawTime);
+        return {
+          ...item,
+          time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        };
+      })
+      .slice(-15); // Keep last 15 ticks for super clean/compact graph
+  }, [scores]);
+
+  const toggleProviderVisibility = (id: string) => {
+    setVisibleProviders((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  const getProviderLabel = (id: string) => {
+    const found = providers.find((p) => p.id === id);
+    return found ? found.label : id;
+  };
+
   return (
-    <div className="mx-auto max-w-[1200px] px-6 py-8 flex flex-col gap-10">
-      {/* ── Top Strip Command Bar ─────────────────────────── */}
-      <div className="border border-white/5 bg-black/40 backdrop-blur-xl rounded-[12px] p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl animate-fade-in-up">
-        <div className="flex-1 flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#00f0ff] animate-pulse" />
-            <h1
-              className="text-[15px] font-semibold text-white tracking-wide uppercase"
-              style={{ fontFamily: "var(--font-jetbrains-mono)" }}
-            >
-              Argus Failover RPC Node
-            </h1>
-          </div>
-          <p
-            className="text-[13px] text-[#7c7c7c]"
-            style={{ fontFamily: "var(--font-inter)" }}
-          >
-            One URL for your wallet or dApp. Proved honest, latency-optimized, and censoring-free.
+    <div className="mx-auto max-w-[1200px] px-6 py-6 flex flex-col gap-6">
+      
+      {/* ── Unified Premium Header ────────────────────────── */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-white/5 animate-fade-in-up">
+        <div className="flex flex-col gap-1">
+          <span className="text-[10px] text-[#6798ff] font-mono tracking-widest uppercase">
+            Argus Telemetry
+          </span>
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white font-outfit" style={{ fontFamily: "var(--font-outfit)", letterSpacing: "-0.5px" }}>
+            Integrity Monitor
+          </h1>
+          <p className="text-[13px] text-[#7c7c7c] max-w-[500px]">
+            Rotated failover RPC. Verifiable consensus, latency-optimized, and censoring-free.
           </p>
         </div>
 
         {/* Copyable RPC Box */}
-        <div className="flex items-center gap-2 w-full md:w-auto max-w-full">
-          <div className="relative flex-1 md:flex-initial rounded-[8px] border border-white/10 bg-[#0a0a0a] px-3.5 py-2.5 flex items-center gap-3 w-full md:w-[360px] overflow-hidden">
+        <div className="flex items-center gap-3">
+          <div className="relative rounded-[8px] border border-white/10 bg-[#0a0a0a] px-3.5 py-2 flex items-center gap-3 w-full sm:w-[320px] overflow-hidden">
             <code
               className="text-[11px] text-[#00f0ff] truncate select-all flex-1"
               style={{ fontFamily: "var(--font-jetbrains-mono)" }}
@@ -599,142 +756,310 @@ export function DashboardContainer() {
             </code>
             <button
               onClick={copyEndpoint}
-              className="text-[#7c7c7c] hover:text-white transition-colors shrink-0"
+              className="text-[#7c7c7c] hover:text-white transition-colors shrink-0 p-1"
               title="Copy RPC Endpoint"
               id="copy-rpc-btn"
             >
-              {copied ? <Check size={14} className="text-[#4dffb0]" /> : <Copy size={14} />}
+              {copied ? <Check size={13} className="text-[#4dffb0]" /> : <Copy size={13} />}
             </button>
           </div>
-          <span
-            className="hidden lg:block text-[11px] text-[#454545]"
-            style={{ fontFamily: "var(--font-jetbrains-mono)" }}
-          >
-            paste into wallet, done.
-          </span>
+        </div>
+      </div>
+
+      {/* ── Telemetry Stats Grid (Minimal & Borderless) ───── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-2 border-b border-white/5 animate-fade-in-up">
+        {/* Rotation */}
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[9px] text-[#454545] uppercase tracking-wider font-semibold font-mono">Next Rotation</span>
+            <span className="text-[18px] font-bold text-white font-mono">{rotationCountdown}</span>
+          </div>
+          <div className="relative h-8 w-8 flex items-center justify-center shrink-0">
+            <svg className="absolute w-7 h-7 -rotate-90">
+              <circle cx="14" cy="14" r="12" className="stroke-white/5" strokeWidth="1.5" fill="transparent" />
+              <circle cx="14" cy="14" r="12" className="stroke-[#00f0ff] transition-all duration-1000" strokeWidth="1.5" fill="transparent" strokeDasharray={2*Math.PI*12} strokeDashoffset={2*Math.PI*12*(1 - rotationProgress/100)} />
+            </svg>
+            <Hourglass size={12} className="text-[#00f0ff]" />
+          </div>
+        </div>
+
+        {/* Active Node */}
+        <div className="flex items-center justify-between border-l border-white/5 pl-6">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[9px] text-[#454545] uppercase tracking-wider font-semibold font-mono">Best RPC Node</span>
+            <span className="text-[17px] font-bold text-white tracking-tight truncate max-w-[130px]">{decision.best ? getProviderLabel(decision.best.provider_id) : "..."}</span>
+          </div>
+          <Cpu size={16} className="text-[#4dffb0]" />
+        </div>
+
+        {/* Consensus */}
+        <div className="flex items-center justify-between border-l border-white/5 pl-6">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[9px] text-[#454545] uppercase tracking-wider font-semibold font-mono">Consensus State</span>
+            <span className="text-[17px] font-bold text-white tracking-tight">{decision.status === "HEALTHY" ? "Healthy" : "Degraded"}</span>
+          </div>
+          <ShieldCheck size={16} className="text-[#6798ff]" />
+        </div>
+
+        {/* Active Monitored */}
+        <div className="flex items-center justify-between border-l border-white/5 pl-6">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[9px] text-[#454545] uppercase tracking-wider font-semibold font-mono">Monitored Sets</span>
+            <span className="text-[17px] font-bold text-white tracking-tight">{providers.filter(p=>!p.is_sim).length} Nodes</span>
+          </div>
+          <Gauge size={16} className="text-[#ffa64d]" />
         </div>
       </div>
 
       {/* ── Tabs bar ──────────────────────────────────────── */}
-      <div className="flex border-b border-white/5 gap-2 shrink-0 animate-fade-in-up">
+      <div className="flex border-b border-white/5 gap-4 shrink-0 animate-fade-in-up">
         <button
           onClick={() => setActiveTab("dashboard")}
-          className={`flex items-center gap-2 px-4 py-3 text-[12px] uppercase tracking-wider font-semibold border-b-2 transition-all duration-200 ${
+          className={`flex items-center gap-2 pb-2 text-[11px] uppercase tracking-widest font-bold border-b-2 transition-all duration-200 ${
             activeTab === "dashboard"
               ? "border-[#00f0ff] text-white"
               : "border-transparent text-[#7c7c7c] hover:text-white"
           }`}
           style={{ fontFamily: "var(--font-jetbrains-mono)" }}
         >
-          <Terminal size={14} />
-          Terminal Dashboard
+          <Terminal size={12} />
+          Terminal
         </button>
         <button
           onClick={() => setActiveTab("interrogate")}
-          className={`flex items-center gap-2 px-4 py-3 text-[12px] uppercase tracking-wider font-semibold border-b-2 transition-all duration-200 ${
+          className={`flex items-center gap-2 pb-2 text-[11px] uppercase tracking-widest font-bold border-b-2 transition-all duration-200 ${
             activeTab === "interrogate"
               ? "border-[#00f0ff] text-white"
               : "border-transparent text-[#7c7c7c] hover:text-white"
           }`}
           style={{ fontFamily: "var(--font-jetbrains-mono)" }}
         >
-          <Warning size={14} />
-          Interrogate Console
+          <Warning size={12} />
+          Interrogate
         </button>
       </div>
 
       {/* ── Main display tab contents ─────────────────────── */}
       {activeTab === "dashboard" ? (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fade-in-up">
-          {/* Leaderboard Table (8 columns) */}
-          <div className="lg:col-span-8 flex flex-col gap-4">
-            <div className="px-2">
-              <p className="eyebrow text-[10px] mb-1">REPUTATION LEADERBOARD</p>
-              <h2
-                className="text-[18px] font-medium text-white"
-                style={{ fontFamily: "var(--font-outfit)", letterSpacing: "-0.25px" }}
-              >
-                Provider Integrity Scores
-              </h2>
+          {/* Left Panel: Analytics Graph & Leaderboard (col-span-8) */}
+          <div className="lg:col-span-8 flex flex-col gap-8">
+            
+            {/* Live Analytics Graph (Borderless & Sleek) */}
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                  <span className="text-[9px] text-[#7c7c7c] uppercase tracking-wider font-semibold font-mono">Performance Stream</span>
+                  <h2 className="text-[15px] font-bold text-white font-outfit" style={{ fontFamily: "var(--font-outfit)" }}>
+                    Telemetry Stream History
+                  </h2>
+                </div>
+                
+                {/* Metric Selector */}
+                <div className="flex items-center gap-1.5 bg-white/[0.03] border border-white/5 rounded-full p-0.5">
+                  <button
+                    onClick={() => setActiveMetric("score")}
+                    className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all ${
+                      activeMetric === "score"
+                        ? "bg-white/[0.08] text-white"
+                        : "text-[#7c7c7c] hover:text-white"
+                    }`}
+                    style={{ fontFamily: "var(--font-jetbrains-mono)" }}
+                  >
+                    Reputation
+                  </button>
+                  <button
+                    onClick={() => setActiveMetric("latency")}
+                    className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all ${
+                      activeMetric === "latency"
+                        ? "bg-white/[0.08] text-white"
+                        : "text-[#7c7c7c] hover:text-white"
+                    }`}
+                    style={{ fontFamily: "var(--font-jetbrains-mono)" }}
+                  >
+                    Latency
+                  </button>
+                </div>
+              </div>
+
+              {/* Chart Container */}
+              <div className="h-[200px] w-full relative">
+                {!mounted ? (
+                  <div className="h-full w-full bg-black/20 border border-white/5 rounded-[8px] flex items-center justify-center text-xs text-[#454545] animate-pulse">
+                    AWAITING TELEMETRY SYNC...
+                  </div>
+                ) : chartData.length === 0 ? (
+                  <div className="h-full w-full bg-black/20 border border-white/5 rounded-[8px] flex items-center justify-center text-xs text-[#454545]">
+                    NO SUFFICIENT SCORE HISTORY FOUND
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={chartData} margin={{ top: 12, right: 12, bottom: 0, left: -25 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
+                      <XAxis
+                        dataKey="time"
+                        stroke="#454545"
+                        fontSize={9}
+                        tickLine={false}
+                        axisLine={false}
+                        dy={8}
+                        style={{ fontFamily: "var(--font-jetbrains-mono)" }}
+                      />
+                      <YAxis
+                        domain={activeMetric === "score" ? [0, 100] : [0, "auto"]}
+                        stroke="#454545"
+                        fontSize={9}
+                        tickLine={false}
+                        axisLine={false}
+                        dx={-8}
+                        ticks={activeMetric === "score" ? [0, 25, 50, 75, 100] : undefined}
+                        style={{ fontFamily: "var(--font-jetbrains-mono)" }}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          background: "#0c0c0e",
+                          border: "1px solid rgba(255, 255, 255, 0.08)",
+                          borderRadius: 8,
+                          fontSize: 11,
+                          fontFamily: "var(--font-jetbrains-mono)",
+                          color: "#ffffff",
+                          boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.5)"
+                        }}
+                        labelFormatter={(label) => `Timestamp: ${label}`}
+                        formatter={(value: unknown, name: any) => {
+                          const pLabel = getProviderLabel(String(name));
+                          return [`${Math.round(Number(value ?? 0))}${activeMetric === "score" ? "" : " ms"}`, pLabel];
+                        }}
+                      />
+                      {providers
+                        .filter((p) => !p.is_sim && visibleProviders[p.id])
+                        .map((p) => {
+                          const color = PROVIDER_COLORS[p.id] || "#ffffff";
+                          return (
+                            <Line
+                              key={p.id}
+                              type="monotone"
+                              dataKey={activeMetric === "score" ? p.id : `${p.id}_latency`}
+                              stroke={color}
+                              strokeWidth={1.5}
+                              dot={false}
+                              activeDot={{ r: 4, strokeWidth: 0 }}
+                              name={p.id}
+                            />
+                          );
+                        })}
+                    </LineChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+
+              {/* Interactive Legends pills */}
+              <div className="flex flex-wrap gap-1.5 pt-2 border-t border-white/5">
+                {providers
+                  .filter((p) => !p.is_sim)
+                  .map((p) => {
+                    const active = visibleProviders[p.id];
+                    const color = PROVIDER_COLORS[p.id] || "#ffffff";
+                    return (
+                      <button
+                        key={p.id}
+                        onClick={() => toggleProviderVisibility(p.id)}
+                        className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${
+                          active
+                            ? "bg-white/[0.04] text-white border-white/10"
+                            : "bg-transparent text-[#454545] border-transparent hover:text-white/60"
+                        }`}
+                        style={{ fontFamily: "var(--font-jetbrains-mono)" }}
+                      >
+                        <span
+                          className="h-1.5 w-1.5 rounded-full shrink-0"
+                          style={{ backgroundColor: active ? color : "#454545" }}
+                        />
+                        {p.label}
+                        {active ? <Eye size={10} className="ml-0.5 text-[#7c7c7c]" /> : <EyeSlash size={10} className="ml-0.5" />}
+                      </button>
+                    );
+                  })}
+              </div>
             </div>
-            <LeaderboardTable scores={latestScoresList} providers={providers} isRefreshing={isRefreshing} />
+
+            {/* Reputation Leaderboard */}
+            <div className="flex flex-col gap-4">
+              <div>
+                <span className="text-[9px] text-[#7c7c7c] uppercase tracking-wider font-semibold font-mono">Consensus Rank</span>
+                <h2
+                  className="text-[15px] font-bold text-white font-outfit"
+                  style={{ fontFamily: "var(--font-outfit)" }}
+                >
+                  Provider Integrity Scores
+                </h2>
+              </div>
+              <LeaderboardTable scores={latestScoresList} providers={providers} isRefreshing={isRefreshing} />
+            </div>
+
           </div>
 
-          {/* Incidents & Best RPC (4 columns) */}
+          {/* Right Panel: Auto Router Info & Malfeasance Feed (col-span-4) */}
           <div className="lg:col-span-4 flex flex-col gap-8">
-            {/* Best RPC Widget */}
-            <div className="flex flex-col gap-3">
-              <div className="px-2">
-                <p className="eyebrow text-[10px] mb-1">AUTO ROUTER</p>
+            
+            {/* Auto Router Panel */}
+            <div className="flex flex-col gap-4">
+              <div>
+                <span className="text-[9px] text-[#7c7c7c] uppercase tracking-wider font-semibold font-mono">Auto Router</span>
                 <h3
-                  className="text-[18px] font-medium text-white"
-                  style={{ fontFamily: "var(--font-outfit)", letterSpacing: "-0.25px" }}
+                  className="text-[15px] font-bold text-white font-outfit"
+                  style={{ fontFamily: "var(--font-outfit)" }}
                 >
-                  Best RPC Now
+                  Routing State
                 </h3>
               </div>
               
               {decision.best ? (
-                <div className="card flex flex-col gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-[4px] border border-white/10 bg-[#1e1e1e] flex items-center justify-center">
-                      <span
-                        className="text-[10px] font-medium text-[#6798ff]"
-                        style={{ fontFamily: "var(--font-jetbrains-mono)" }}
-                      >
-                        {decision.best.provider_id.slice(0, 2).toUpperCase()}
+                <div className="flex flex-col gap-4">
+                  {/* Summary row */}
+                  <div className="flex items-center justify-between py-2 border-b border-white/5">
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full" style={{ backgroundColor: PROVIDER_COLORS[decision.best.provider_id] || "#6798ff" }} />
+                      <span className="text-[14px] font-semibold text-white font-inter">
+                        {getProviderLabel(decision.best.provider_id)}
                       </span>
                     </div>
-                    <div className="flex-1 flex items-center justify-between">
-                      <div>
-                        <p
-                          className="text-[14px] font-medium text-white"
-                          style={{ fontFamily: "var(--font-inter)", letterSpacing: "-0.25px" }}
-                        >
-                          {decision.best.provider_id}
-                        </p>
-                        <p
-                          className="text-[11px] text-[#6798ff]"
-                          style={{ fontFamily: "var(--font-jetbrains-mono)" }}
-                        >
-                          Score {decision.best.score}/100
-                        </p>
-                      </div>
-                      <span
-                        className={`badge text-[9px] uppercase px-1.5 py-0.5 rounded-[4px] border ${
-                          decision.status === "DEGRADED"
-                            ? "border-amber-500/20 text-amber-500 bg-amber-500/5"
-                            : "border-[#4dffb0]/20 text-[#4dffb0] bg-[#4dffb0]/5"
-                        }`}
-                        style={{ fontFamily: "var(--font-jetbrains-mono)" }}
-                      >
-                        {decision.status}
-                      </span>
+                    <span className="text-[11px] font-mono text-[#00f0ff] bg-[#00f0ff]/5 border border-[#00f0ff]/20 px-2 py-0.5 rounded-[4px]">
+                      {decision.best.score} pts
+                    </span>
+                  </div>
+
+                  {/* Single-line failover chain flow */}
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-[9px] uppercase tracking-wider text-[#454545] font-semibold font-mono">Failover Path</span>
+                    <div className="flex items-center gap-1.5 flex-wrap text-[11px] font-mono text-[#7c7c7c]">
+                      {decision.candidates.slice(0, 3).map((cand, idx) => (
+                        <div key={cand.provider_id} className="flex items-center gap-1.5">
+                          <span className={idx === 0 ? "text-white font-bold" : "text-[#454545]"}>
+                            {getProviderLabel(cand.provider_id).split(" ")[0]}
+                          </span>
+                          {idx < 2 && idx < decision.candidates.length - 1 && (
+                            <span className="text-[#313131]">➔</span>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </div>
-                  <p className="text-[12px] text-[#7c7c7c] leading-relaxed">
-                    {decision.status === "DEGRADED"
-                      ? "Warning: All available providers are currently degraded. Showing the least-bad option."
-                      : "Censoring/lying providers are fast but corrupt. Argus prioritizes verified honest endpoints."}
-                  </p>
-                  <code className="mono-code text-[10px] break-all">{decision.best.url}</code>
                 </div>
               ) : (
-                <div className="card flex items-center justify-center py-6 text-[#454545]">
-                  No route decision available
-                </div>
+                <div className="text-xs text-[#454545]">No routing decision</div>
               )}
             </div>
 
             {/* Incident Feed */}
-            <div className="flex flex-col gap-3">
-              <div className="px-2">
-                <p className="eyebrow text-[10px] mb-1">INCIDENT PROTOCOLS</p>
+            <div className="flex flex-col gap-4">
+              <div>
+                <span className="text-[9px] text-[#7c7c7c] uppercase tracking-wider font-semibold font-mono">Incident Feed</span>
                 <h3
-                  className="text-[18px] font-medium text-white"
-                  style={{ fontFamily: "var(--font-outfit)", letterSpacing: "-0.25px" }}
+                  className="text-[15px] font-bold text-white font-outfit"
+                  style={{ fontFamily: "var(--font-outfit)" }}
                 >
-                  Live Malfeasance Feed
+                  Live Malfeasance Log
                 </h3>
               </div>
               <IncidentFeed
@@ -743,6 +1068,7 @@ export function DashboardContainer() {
                 onSelectIncident={(id) => setSelectedIncidentId(id)}
               />
             </div>
+
           </div>
         </div>
       ) : (
@@ -788,7 +1114,7 @@ export function DashboardContainer() {
         incidentId={selectedIncidentId}
         open={!!selectedIncidentId}
         onClose={() => setSelectedIncidentId(null)}
-        incidents={incidents} // Pass client incidents list to Evidence Drawer
+        incidents={incidents}
       />
     </div>
   );

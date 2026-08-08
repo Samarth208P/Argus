@@ -23,7 +23,7 @@ export function FinalCTA() {
               real time — or paste an incident ID and verify the evidence yourself.
             </p>
             <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-              <Link href="/#leaderboard" className="btn-primary">
+              <Link href="/terminal" className="btn-primary">
                 Open the terminal
                 <ArrowRight size={16} weight="bold" />
               </Link>

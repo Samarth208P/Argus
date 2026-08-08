@@ -44,9 +44,9 @@ type NavItem = {
 };
 
 const PLATFORM_ITEMS: NavItem[] = [
-  { label: "Live Monitor", desc: "Real-time integrity dashboard", href: "/", icon: Gauge },
-  { label: "Integrity Leaderboard", desc: "Rank every RPC by honesty", href: "/#leaderboard", icon: Trophy },
-  { label: "Incident Feed", desc: "Detections as they happen", href: "/#live-feed", icon: Broadcast },
+  { label: "Live Monitor", desc: "Real-time integrity dashboard", href: "/terminal", icon: Gauge },
+  { label: "Integrity Leaderboard", desc: "Rank every RPC by honesty", href: "/terminal#leaderboard", icon: Trophy },
+  { label: "Incident Feed", desc: "Detections as they happen", href: "/terminal#live-feed", icon: Broadcast },
   { label: "Verify Evidence", desc: "Recompute any claim in your browser", href: "/verify", icon: ShieldCheck },
 ];
 
@@ -114,12 +114,12 @@ export function Navbar() {
         <div className="hidden md:flex items-center gap-2">
           <CommandTrigger className="flex h-9 items-center gap-2 rounded-[9px] border border-white/10 bg-white/[0.03] px-3 text-[13px] text-[#a5a5ac] transition-colors hover:border-white/18 hover:text-white focus-ring" />
           <Link
-            href="/#leaderboard"
+            href="/terminal"
             className="flex h-9 items-center rounded-[9px] px-3 text-[14px] font-medium text-[#a5a5ac] transition-colors hover:text-white focus-ring"
           >
             Sign in
           </Link>
-<Link href="/#leaderboard" className="btn-primary btn-sm">
+<Link href="/terminal" className="btn-primary btn-sm">
             Open Terminal
           </Link>
         </div>
@@ -230,7 +230,7 @@ export function Navbar() {
             </nav>
             <div className="border-t border-white/8 p-5">
               <Link
-                href="/verify"
+                href="/terminal"
                 className="btn-primary w-full"
                 onClick={() => setMobileOpen(false)}
               >

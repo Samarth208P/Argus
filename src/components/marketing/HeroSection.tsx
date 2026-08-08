@@ -56,7 +56,7 @@ export function HeroSection() {
           </motion.p>
 
           <motion.div {...entry(0.2)} className="flex flex-wrap items-center gap-3">
-            <Link href="/#leaderboard" className="btn-primary">
+            <Link href="/terminal" className="btn-primary">
               Open the terminal
               <ArrowRight size={16} weight="bold" />
             </Link>

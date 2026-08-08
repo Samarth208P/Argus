@@ -25,7 +25,11 @@ const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 
 export async function selectRoute(force = false): Promise<RouteDecision> {
   const now = Date.now();
-  if (!force && cachedDecision && (now - lastDecidedAt < CACHE_DURATION_MS)) {
+  const ROTATION_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+  const currentBucket = Math.floor(now / ROTATION_INTERVAL_MS);
+  const lastBucket = Math.floor(lastDecidedAt / ROTATION_INTERVAL_MS);
+
+  if (!force && cachedDecision && currentBucket === lastBucket) {
     return {
       ...cachedDecision,
       decided_at: new Date(lastDecidedAt).toISOString(),
@@ -71,12 +75,33 @@ export async function selectRoute(force = false): Promise<RouteDecision> {
   }
 
   const healthy = candidates.filter((c) => c.healthy);
-  const chain = healthy.length ? healthy : candidates;              // fail-open, but FLAGGED
+  let rotatedChain = [...candidates];
+  let best: Candidate | null = null;
+
+  if (healthy.length > 0) {
+    const rotateIndex = currentBucket % healthy.length;
+    best = healthy[rotateIndex];
+    const healthyCopy = [...healthy];
+    const rotatedHealthy = [
+      best,
+      ...healthyCopy.filter((c) => c.provider_id !== best!.provider_id),
+    ];
+    const unhealthy = candidates.filter((c) => !c.healthy);
+    rotatedChain = [...rotatedHealthy, ...unhealthy];
+  } else if (candidates.length > 0) {
+    const rotateIndex = currentBucket % candidates.length;
+    best = candidates[rotateIndex];
+    const candidatesCopy = [...candidates];
+    rotatedChain = [
+      best,
+      ...candidatesCopy.filter((c) => c.provider_id !== best!.provider_id),
+    ];
+  }
   
   const decision: RouteDecision = {
     status: healthy.length ? "HEALTHY" : candidates.length ? "DEGRADED" : "NO_CANDIDATES",
-    best: chain[0] ?? null,
-    candidates: chain,
+    best,
+    candidates: rotatedChain,
     policy: { min_score: ROUTER_MIN_SCORE, max_age_ms: SCORE_MAX_AGE_MS },
     decided_at: new Date(now).toISOString(),
   };

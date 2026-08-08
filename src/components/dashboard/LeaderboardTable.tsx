@@ -122,9 +122,10 @@ export function LeaderboardTable({ scores, providers, isRefreshing = false }: Le
             return (
               <motion.div
                 key={row.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.04, duration: 0.4, ease: "easeOut" }}
+                initial={{ opacity: 0, y: 12, scale: 0.985 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                whileTap={{ scale: 0.985 }}
+                transition={{ delay: i * 0.03, duration: 0.24, ease: [0.23, 1, 0.32, 1] }}
                 className="grid grid-cols-[1fr_80px_80px_100px_60px_90px_80px] gap-4 rounded-[8px] bg-[#141414] border border-[#1e1e1e] px-5 py-4 items-center transition-all duration-200 ease-out cursor-pointer hover:border-[#313131] hover:bg-[#1e1e1e]/50"
                 onClick={() => setSelectedProvider(row)}
                 role="row"
@@ -132,6 +133,25 @@ export function LeaderboardTable({ scores, providers, isRefreshing = false }: Le
               >
                 {/* Provider name */}
                 <div className="flex items-center gap-3 min-w-0">
+                  {/* Rank & Change Badge */}
+                  <div className="flex items-center justify-between gap-1 w-9 shrink-0">
+                    <span className="text-[11px] font-bold text-white font-mono">
+                      #{i + 1}
+                    </span>
+                    {row.rankChange !== undefined && row.rankChange !== 0 ? (
+                      <span
+                        className={`text-[9px] font-extrabold flex items-center shrink-0 ${
+                          row.rankChange > 0 ? "text-[#4dffb0]" : "text-[#ff6b6b]"
+                        }`}
+                        title={`Rank changed by ${row.rankChange}`}
+                      >
+                        {row.rankChange > 0 ? `▲` : `▼`}
+                      </span>
+                    ) : (
+                      <span className="text-[9px] text-[#454545] font-bold shrink-0">—</span>
+                    )}
+                  </div>
+
                   <div
                     className="h-7 w-7 shrink-0 rounded-[4px] border border-[#313131] bg-[#1e1e1e] flex items-center justify-center"
                     aria-hidden="true"
