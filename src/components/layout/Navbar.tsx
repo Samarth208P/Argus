@@ -15,7 +15,6 @@ import {
   GitBranch,
 } from "@phosphor-icons/react";
 import Link from "next/link";
-import { CommandTrigger } from "@/components/command/CommandPalette";
 
 function ArgusLogo() {
   return (
@@ -112,14 +111,7 @@ export function Navbar() {
 
         {/* Right actions */}
         <div className="hidden md:flex items-center gap-2">
-          <CommandTrigger className="flex h-9 items-center gap-2 rounded-[9px] border border-white/10 bg-white/[0.03] px-3 text-[13px] text-[#a5a5ac] transition-colors hover:border-white/18 hover:text-white focus-ring" />
-          <Link
-            href="/terminal"
-            className="flex h-9 items-center rounded-[9px] px-3 text-[14px] font-medium text-[#a5a5ac] transition-colors hover:text-white focus-ring"
-          >
-            Sign in
-          </Link>
-<Link href="/terminal" className="btn-primary btn-sm">
+          <Link href="/terminal" className="btn-primary btn-sm">
             Open Terminal
           </Link>
         </div>

@@ -7,7 +7,6 @@ import {
   Broadcast,
   ShieldCheck,
   Path,
-  MagnifyingGlass,
   ArrowUp,
   ArrowDown,
   Minus,
@@ -70,7 +69,7 @@ export function ProductPreview() {
           {/* Sidebar */}
           <aside className="hidden flex-col gap-1 border-r border-white/8 bg-[#0e0e10] p-3 sm:flex">
             <div className="mb-3 flex items-center gap-2 px-2">
-              <svg viewBox="0 0 24 24" className="h-4 w-4 text-[#6798ff]" fill="currentColor" aria-hidden><path fillRule="evenodd" clipRule="evenodd" d="M7.675.281A.609.609 0 018.32.014l13.303 2.94a.609.609 0 01.408.688l-3.63 19.82a.609.609 0 01-.989.358L1.718 10.605a.609.609 0 01-.123-.794l6.08-9.53z" /></svg>
+              <svg viewBox="0 0 24 24" className="h-4 w-4 text-[#6798ff]" fill="currentColor" aria-hidden><path fillRule="evenodd" clipRule="evenodd" d="M7.675.281A.609.609 0 018.32.014l10.047 2.222 2.511.555.628.139.157.034.04.01.01.001a.04.04 0 01.002.001l.06.016a.609.609 0 01.408.688l-3.63 19.82a.609.609 0 01-.989.358L1.718 10.605a.609.609 0 01-.123-.794l6.08-9.53zM3.34 10.374l13.118 10.971-5.76-13.394-7.358 2.423zm8.519-2.805l5.874 13.659L20.77 4.635l-8.912 2.934zM3.539 9.026l6.675-2.197-2.123-4.937L3.54 9.026zm7.836-2.58l8.195-2.698-1.466-.324-8.872-1.962 2.143 4.984z" /></svg>
               <span className="text-[13px] font-semibold text-white">Argus</span>
             </div>
             {[
@@ -113,12 +112,6 @@ export function ProductPreview() {
                 <p className="flex items-center gap-1.5 text-[11px] text-[#7c7c82]" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
                   <span className="h-1.5 w-1.5 rounded-full bg-[#6798ff] live-dot" /> Refreshes every 20s
                 </p>
-              </div>
-              <div className="hidden items-center gap-2 sm:flex">
-                <div className="flex h-8 items-center gap-2 rounded-[8px] border border-white/8 bg-white/[0.02] px-2.5 text-[12px] text-[#54545a]">
-                  <MagnifyingGlass size={13} /> Search
-                  <span className="kbd">⌘K</span>
-                </div>
               </div>
             </div>
 
