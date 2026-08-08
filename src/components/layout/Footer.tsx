@@ -6,10 +6,10 @@ const FOOTER_COLUMNS = [
   {
     heading: "Platform",
     links: [
-      { label: "Live Monitor", href: "/" },
-      { label: "Integrity Leaderboard", href: "/#leaderboard" },
-      { label: "Incident Feed", href: "/#live-feed" },
-      { label: "Auto Router", href: "/#leaderboard" },
+      { label: "Overview", href: "/" },
+      { label: "RPC Leaderboard", href: "/rpcs" },
+      { label: "Incident Feed", href: "/rpcs" },
+      { label: "Verify a Claim", href: "/verify" },
     ],
   },
   {
