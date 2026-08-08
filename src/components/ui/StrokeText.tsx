@@ -1,5 +1,6 @@
-// @ts-nocheck
-import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
+"use client";
+
+import React, { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -7,6 +8,25 @@ import './StrokeText.css';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
+}
+
+interface StrokeTextProps {
+  text?: string;
+  strokeColor?: string;
+  fillColor?: string;
+  strokeWidth?: number | string;
+  drawDuration?: number;
+  fillDelay?: number;
+  stagger?: number;
+  ease?: string;
+  trigger?: string;
+  fillMode?: string;
+  fontSize?: number;
+  fontWeight?: number;
+  letterSpacing?: number;
+  reverse?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 const DEFAULT_TEXT = 'Draw Attention';
@@ -28,12 +48,12 @@ const StrokeText = ({
   reverse = false,
   className = '',
   style = {}
-}) => {
-  const rootRef = useRef(null);
-  const strokeTextRef = useRef(null);
-  const wipeRectRef = useRef(null);
+}: StrokeTextProps) => {
+  const rootRef = useRef<HTMLSpanElement>(null);
+  const strokeTextRef = useRef<SVGTextElement>(null);
+  const wipeRectRef = useRef<SVGRectElement>(null);
 
-  const [box, setBox] = useState(null);
+  const [box, setBox] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
 
   const rawId = useId();
   const wipeId = `stroke-text-wipe-${rawId.replace(/[^a-zA-Z0-9_-]/g, '')}`;
@@ -107,7 +127,7 @@ const StrokeText = ({
     const fillEnabled = fillMode !== 'none';
     const useWipe = fillEnabled && fillMode === 'wipe';
     const fillDuration = Math.max(0.4, drawDuration * 0.5);
-    const staggerConfig = reverse ? { each: stagger, from: 'end' } : stagger;
+    const staggerConfig: any = reverse ? { each: stagger, from: 'end' } : stagger;
     const targets = [...strokes, ...fills, wipe].filter(Boolean);
 
     const setStart = () => {
@@ -158,9 +178,9 @@ const StrokeText = ({
       return tl;
     };
 
-    let timeline = null;
-    let scrollTrigger = null;
-    let removeHover = null;
+    let timeline: gsap.core.Timeline | null = null;
+    let scrollTrigger: any = null;
+    let removeHover: (() => void) | null = null;
 
     if (trigger === 'hover') {
       setEnd();
@@ -199,7 +219,7 @@ const StrokeText = ({
     <span
       ref={rootRef}
       className={`stroke-text ${trigger === 'hover' ? 'stroke-text--hover' : ''} ${className}`.trim()}
-      style={{ ...style, '--stroke-text-height': `${Math.round(fontSize * 1.3)}px` }}
+      style={{ ...style, '--stroke-text-height': `${Math.round(fontSize * 1.3)}px` } as React.CSSProperties}
       role="img"
       aria-label={String(text ?? '')}
     >
