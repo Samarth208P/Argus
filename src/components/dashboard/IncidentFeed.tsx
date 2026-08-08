@@ -11,6 +11,7 @@ import { COLORS, scoreColor } from "@/lib/design-tokens";
 interface IncidentFeedProps {
   initialIncidents: DbIncident[];
   scores: Record<string, number>; // providerId → score
+  onSelectIncident?: (id: string) => void;
 }
 
 const KIND_ICONS = {
@@ -34,9 +35,8 @@ function timeAgo(isoString: string): string {
   return `${Math.floor(diff / 3600)}h ago`;
 }
 
-export function IncidentFeed({ initialIncidents, scores }: IncidentFeedProps) {
+export function IncidentFeed({ initialIncidents, scores, onSelectIncident }: IncidentFeedProps) {
   const [incidents, setIncidents] = useState<DbIncident[]>(initialIncidents);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // ── Supabase Realtime subscription ───────────────────────
   useEffect(() => {
@@ -96,9 +96,9 @@ export function IncidentFeed({ initialIncidents, scores }: IncidentFeedProps) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.35, ease: "easeOut", delay: i === 0 ? 0 : 0 }}
-              onClick={() => setSelectedId(selectedId === incident.id ? null : incident.id)}
+              onClick={() => onSelectIncident?.(incident.id)}
               className="w-full rounded-[12px] bg-black/40 backdrop-blur-xl border border-white/5 px-5 py-3.5 flex items-center gap-4 text-left hover:bg-white/5 hover:scale-[1.01] hover:border-white/20 hover:shadow-[0_8px_30px_rgba(255,255,255,0.05)] transition-all duration-200 ease-out"
-              aria-expanded={selectedId === incident.id}
+              aria-haspopup="dialog"
               id={`incident-row-${incident.id}`}
             >
               <Icon
