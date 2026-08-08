@@ -39,14 +39,14 @@ export function IncidentFeed({ incidents, scores, onSelectIncident }: IncidentFe
 
   if (incidents.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 rounded-[12px] border border-white/10 bg-black/40 backdrop-blur-xl py-16 text-center shadow-xl">
-        <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md">
-          <Circle size={16} color="#888888" />
+      <div className="flex flex-col items-center justify-center gap-3 rounded-[8px] border border-[#1e1e1e] bg-[#141414] py-16 text-center">
+        <div className="h-8 w-8 rounded-full bg-[#1e1e1e] flex items-center justify-center">
+          <Circle size={16} color="#7c7c7c" />
         </div>
-        <p className="text-[14px] text-[#888888]" style={{ fontFamily: "var(--font-outfit)" }}>
+        <p className="text-[14px] text-[#a7a7a7]" style={{ fontFamily: "var(--font-inter)" }}>
           No incidents detected yet. All providers appear honest.
         </p>
-        <p className="eyebrow text-[#888888]">MONITORING IN PROGRESS</p>
+        <p className="eyebrow text-[#a7a7a7]">MONITORING IN PROGRESS</p>
       </div>
     );
   }
@@ -66,14 +66,14 @@ export function IncidentFeed({ incidents, scores, onSelectIncident }: IncidentFe
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.35, ease: "easeOut", delay: i === 0 ? 0 : 0 }}
-              onClick={() => onSelectIncident?.(incident.id)}
-              className="w-full rounded-[12px] bg-black/40 backdrop-blur-xl border border-white/5 px-5 py-3.5 flex items-center gap-4 text-left hover:bg-white/5 hover:scale-[1.01] hover:border-white/20 hover:shadow-[0_8px_30px_rgba(255,255,255,0.05)] transition-all duration-200 ease-out"
-              aria-haspopup="dialog"
+              onClick={() => setSelectedId(selectedId === incident.id ? null : incident.id)}
+              className="w-full rounded-[8px] bg-[#141414] border border-[#1e1e1e] px-5 py-3.5 flex items-center gap-4 text-left hover:border-[#313131] hover:bg-[#1e1e1e]/50 transition-all duration-200 ease-out"
+              aria-expanded={selectedId === incident.id}
               id={`incident-row-${incident.id}`}
             >
               <Icon
                 size={16}
-                color={incident.kind === "DEVIANT" ? "#ff6b6b" : incident.kind === "STALE" ? "#ffc04d" : incident.kind === "CENSORING" ? "#9898ff" : "#454545"}
+                color={incident.kind === "DEVIANT" ? "#ff6b6b" : incident.kind === "STALE" ? "#ffc04d" : incident.kind === "CENSORING" ? "#6798ff" : "#7c7c7c"}
                 aria-hidden="true"
               />
 
@@ -84,7 +84,7 @@ export function IncidentFeed({ incidents, scores, onSelectIncident }: IncidentFe
                   </span>
                   <span
                     className="text-[13px] text-white truncate"
-                    style={{ fontFamily: "var(--font-outfit)", letterSpacing: "0.5px" }}
+                    style={{ fontFamily: "var(--font-inter)", letterSpacing: "-0.25px" }}
                   >
                     {incident.provider_id}
                   </span>
@@ -109,7 +109,7 @@ export function IncidentFeed({ incidents, scores, onSelectIncident }: IncidentFe
                 <a
                   href={`/verify?id=${incident.id}`}
                   onClick={(e) => e.stopPropagation()}
-                  className="flex items-center gap-1 text-[12px] text-[#00f0ff] hover:text-white transition-colors"
+                  className="flex items-center gap-1 text-[12px] text-[#6798ff] hover:text-white transition-colors"
                   style={{ fontFamily: "var(--font-jetbrains-mono)" }}
                   title="Verify this incident"
                 >

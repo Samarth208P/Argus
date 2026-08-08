@@ -1,156 +1,259 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { List, X, ArrowUpRight } from "@phosphor-icons/react";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import {
+  List,
+  X,
+  CaretDown,
+  Gauge,
+  Trophy,
+  Broadcast,
+  ShieldCheck,
+  FileCode,
+  ArrowUpRight,
+  GitBranch,
+} from "@phosphor-icons/react";
 import Link from "next/link";
+import { CommandTrigger } from "@/components/command/CommandPalette";
 
 function ArgusLogo() {
   return (
-    <div className="relative flex items-center justify-center">
-      {/* Glow behind the logo */}
-      <div className="absolute inset-0 bg-[#4f46e5] opacity-20 blur-md rounded-full animate-pulse" />
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        className="h-6 w-6 shrink-0 relative z-10"
-        aria-hidden="true"
-      >
-        <defs>
-          <linearGradient id="metallic-indigo" x1="0%" y1="0%" x2="200%" y2="200%">
-            <stop offset="0%" stopColor="#818cf8" />
-            <stop offset="25%" stopColor="#c7d2fe" />
-            <stop offset="50%" stopColor="#3730a3" />
-            <stop offset="75%" stopColor="#4f46e5" />
-            <stop offset="100%" stopColor="#818cf8" />
-            <animate
-              attributeName="x1"
-              values="0%;-100%;0%"
-              dur="6s"
-              repeatCount="indefinite"
-            />
-            <animate
-              attributeName="y1"
-              values="0%;-100%;0%"
-              dur="6s"
-              repeatCount="indefinite"
-            />
-          </linearGradient>
-        </defs>
-        <path
-          fill="url(#metallic-indigo)"
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M7.675.281A.609.609 0 018.32.014l10.047 2.222 2.511.555.628.139.157.034.04.01.01.001a.04.04 0 01.002.001l.06.016a.609.609 0 01.408.688l-3.63 19.82a.609.609 0 01-.989.358L1.718 10.605a.609.609 0 01-.123-.794l6.08-9.53zM3.34 10.374l13.118 10.971-5.76-13.394-7.358 2.423zm8.519-2.805l5.874 13.659L20.77 4.635l-8.912 2.934zM3.539 9.026l6.675-2.197-2.123-4.937L3.54 9.026zm7.836-2.58l8.195-2.698-1.466-.324-8.872-1.962 2.143 4.984z"
-        />
-      </svg>
-    </div>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      className="h-[22px] w-[22px] shrink-0 text-[#6798ff]"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M7.675.281A.609.609 0 018.32.014l10.047 2.222 2.511.555.628.139.157.034.04.01.01.001a.04.04 0 01.002.001l.06.016a.609.609 0 01.408.688l-3.63 19.82a.609.609 0 01-.989.358L1.718 10.605a.609.609 0 01-.123-.794l6.08-9.53zM3.34 10.374l13.118 10.971-5.76-13.394-7.358 2.423zm8.519-2.805l5.874 13.659L20.77 4.635l-8.912 2.934zM3.539 9.026l6.675-2.197-2.123-4.937L3.54 9.026zm7.836-2.58l8.195-2.698-1.466-.324-8.872-1.962 2.143 4.984z"
+      />
+    </svg>
   );
 }
 
-const NAV_LINKS = [
-  { href: "/", label: "Monitor" },
-  { href: "/#leaderboard", label: "Leaderboard" },
-  { href: "/verify", label: "Verify Claims" },
+type NavItem = {
+  label: string;
+  desc: string;
+  href: string;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  external?: boolean;
+};
+
+const PLATFORM_ITEMS: NavItem[] = [
+  { label: "Live Monitor", desc: "Real-time integrity dashboard", href: "/", icon: Gauge },
+  { label: "Integrity Leaderboard", desc: "Rank every RPC by honesty", href: "/#leaderboard", icon: Trophy },
+  { label: "Incident Feed", desc: "Detections as they happen", href: "/#live-feed", icon: Broadcast },
+  { label: "Verify Evidence", desc: "Recompute any claim in your browser", href: "/verify", icon: ShieldCheck },
+];
+
+const RESOURCE_ITEMS: NavItem[] = [
+  { label: "Evidence API", desc: "Raw signed bundles", href: "/api/evidence", icon: FileCode, external: true },
+  { label: "How it works", desc: "The detection pipeline", href: "/#how", icon: GitBranch },
+  { label: "Sepolia Attestations", desc: "On-chain Merkle roots", href: "https://sepolia.etherscan.io", icon: ArrowUpRight, external: true },
 ];
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [menu, setMenu] = useState<null | "platform" | "resources">(null);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
 
   return (
-    <header role="banner" className="fixed top-6 left-0 right-0 z-50 px-6 pointer-events-none">
-      <div className="mx-auto max-w-[1200px] flex justify-center pointer-events-auto">
-        {/* Floating Island */}
-        <div className="flex h-14 w-full md:w-auto items-center justify-between gap-8 rounded-full border border-[#222222] bg-[#000000]/60 px-6 backdrop-blur-xl shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
-          {/* Brand */}
-          <Link
-            href="/"
-            className="flex items-center gap-2.5 transition-opacity hover:opacity-80"
-            aria-label="Argus home"
-          >
-            <ArgusLogo />
-            <span className="text-[16px] font-bold tracking-[2px] text-white" style={{ fontFamily: "var(--font-cinzel)" }}>
-              ARGUS
-            </span>
+    <header
+      role="banner"
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "border-b border-white/8 bg-[#0a0a0b]/72 backdrop-blur-xl"
+          : "border-b border-transparent bg-transparent"
+      }`}
+      onMouseLeave={() => setMenu(null)}
+    >
+      <div className="container-page flex h-[68px] items-center justify-between">
+        {/* Brand */}
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 transition-opacity hover:opacity-80 focus-ring"
+          aria-label="Argus home"
+        >
+          <ArgusLogo />
+          <span className="text-[16px] font-semibold tracking-[0.5px] text-white" style={{ fontFamily: "var(--font-inter)" }}>
+            Argus
+          </span>
+        </Link>
+
+        {/* Center nav */}
+        <nav role="navigation" className="hidden md:flex items-center gap-0.5">
+          <MenuButton label="Platform" open={menu === "platform"} onOpen={() => setMenu("platform")} />
+          <Link href="/#how" className="nav-link" onMouseEnter={() => setMenu(null)}>
+            How it works
           </Link>
+          <Link href="/verify" className="nav-link" onMouseEnter={() => setMenu(null)}>
+            Verify
+          </Link>
+          <MenuButton label="Resources" open={menu === "resources"} onOpen={() => setMenu("resources")} />
+        </nav>
 
-          {/* Desktop Links */}
-          <nav role="navigation" className="hidden md:flex items-center gap-1">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="rounded-full px-5 py-2 text-[13px] font-semibold text-[#888888] transition-all duration-200 hover:bg-[#111111] hover:text-white active:scale-95"
-                style={{ fontFamily: "var(--font-outfit)", letterSpacing: "0.5px" }}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-
-          {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-3">
-            <Link
-              href="/verify"
-              className="group relative inline-flex h-9 items-center justify-center gap-2 rounded-full bg-white px-5 text-[13px] font-bold text-black transition-all duration-300 hover:scale-[0.97] active:scale-95 overflow-hidden"
-              style={{ fontFamily: "var(--font-outfit)" }}
-            >
-              <span className="relative z-10">Terminal Access</span>
-              <div className="absolute inset-0 bg-[#00f0ff] opacity-0 transition-opacity duration-300 group-hover:opacity-10" />
-            </Link>
-          </div>
-
-          {/* Mobile Toggle */}
-          <button
-            className="md:hidden text-[#a7a7a7] hover:text-white transition-colors"
-            onClick={() => setMobileOpen((o) => !o)}
-            aria-label="Toggle mobile menu"
+        {/* Right actions */}
+        <div className="hidden md:flex items-center gap-2">
+          <CommandTrigger className="flex h-9 items-center gap-2 rounded-[9px] border border-white/10 bg-white/[0.03] px-3 text-[13px] text-[#a5a5ac] transition-colors hover:border-white/18 hover:text-white focus-ring" />
+          <Link
+            href="/#leaderboard"
+            className="flex h-9 items-center rounded-[9px] px-3 text-[14px] font-medium text-[#a5a5ac] transition-colors hover:text-white focus-ring"
           >
-            {mobileOpen ? <X size={20} /> : <List size={20} />}
-          </button>
+            Sign in
+          </Link>
+<Link href="/#leaderboard" className="btn-primary btn-sm">
+            Open Terminal
+          </Link>
         </div>
+
+        {/* Mobile toggle */}
+        <button
+          className="flex h-9 w-9 items-center justify-center rounded-[9px] text-[#a5a5ac] transition-colors hover:text-white md:hidden focus-ring"
+          onClick={() => setMobileOpen((o) => !o)}
+          aria-label="Toggle menu"
+          aria-expanded={mobileOpen}
+        >
+          {mobileOpen ? <X size={20} /> : <List size={20} />}
+        </button>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mega-menu panel */}
+      <AnimatePresence>
+        {menu && (
+          <motion.div
+            key={menu}
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
+            className="absolute inset-x-0 top-[68px] hidden md:block"
+            onMouseEnter={() => setMenu(menu)}
+          >
+            <div className="container-page">
+              <div className="ml-auto w-full max-w-[520px] overflow-hidden rounded-[16px] border border-white/10 bg-[#111114]/95 p-2 shadow-[0_30px_70px_-24px_rgba(0,0,0,0.8)] backdrop-blur-xl">
+                {(menu === "platform" ? PLATFORM_ITEMS : RESOURCE_ITEMS).map((item) => {
+                  const Icon = item.icon;
+                  const external = "external" in item && item.external;
+                  const inner = (
+                    <>
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] border border-white/8 bg-white/[0.03] text-[#6798ff] transition-colors group-hover:border-[#6798ff]/30 group-hover:bg-[#6798ff]/10">
+                        <Icon size={17} />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="flex items-center gap-1 text-[14px] font-medium text-white" style={{ fontFamily: "var(--font-inter)" }}>
+                          {item.label}
+                          {external && <ArrowUpRight size={12} className="text-[#54545a]" />}
+                        </span>
+                        <span className="block truncate text-[12.5px] text-[#7c7c82]" style={{ fontFamily: "var(--font-inter)" }}>
+                          {item.desc}
+                        </span>
+                      </span>
+                    </>
+                  );
+                  const cls = "group flex items-center gap-3 rounded-[11px] p-2.5 transition-colors hover:bg-white/[0.04]";
+                  return external ? (
+                    <a key={item.label} href={item.href} target="_blank" rel="noopener noreferrer" className={cls} onClick={() => setMenu(null)}>
+                      {inner}
+                    </a>
+                  ) : (
+                    <Link key={item.label} href={item.href} className={cls} onClick={() => setMenu(null)}>
+                      {inner}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Mobile drawer */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10, filter: "blur(4px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-            className="pointer-events-auto absolute left-6 right-6 top-[72px] mt-2 rounded-[16px] border border-[#222222] bg-[#000000]/80 p-4 backdrop-blur-xl md:hidden shadow-2xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 top-[68px] z-40 flex flex-col border-t border-white/8 bg-[#0a0a0b]/98 backdrop-blur-xl md:hidden"
           >
-            <nav className="flex flex-col gap-1">
-              {NAV_LINKS.map((link, i) => (
-                <motion.div
-                  key={link.href}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.04, duration: 0.2, ease: "easeOut" }}
-                >
-                  <Link
-                    href={link.href}
-                    className="block rounded-lg px-4 py-3 text-[14px] font-semibold text-[#888888] hover:bg-[#111111] hover:text-white transition-colors"
-                    onClick={() => setMobileOpen(false)}
+            <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-5">
+              {[...PLATFORM_ITEMS, ...RESOURCE_ITEMS].map((item, i) => {
+                const Icon = item.icon;
+                const external = "external" in item && item.external;
+                return (
+                  <motion.div
+                    key={item.label}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.03, duration: 0.2 }}
                   >
-                    {link.label}
-                  </Link>
-                </motion.div>
-              ))}
-              <div className="mt-2 border-t border-[#222222] pt-3">
-                <Link
-                  href="/verify"
-                  className="flex h-11 w-full items-center justify-center rounded-lg bg-white text-[14px] font-bold text-black transition-transform active:scale-95"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  Terminal Access
-                </Link>
-              </div>
+                    <Link
+                      href={item.href}
+                      target={external ? "_blank" : undefined}
+                      className="flex items-center gap-3 rounded-[12px] px-3 py-3 hover:bg-white/[0.04]"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <span className="flex h-9 w-9 items-center justify-center rounded-[8px] border border-white/8 bg-white/[0.03] text-[#6798ff]">
+                        <Icon size={17} />
+                      </span>
+                      <span>
+                        <span className="block text-[15px] font-medium text-white" style={{ fontFamily: "var(--font-inter)" }}>
+                          {item.label}
+                        </span>
+                        <span className="block text-[12.5px] text-[#7c7c82]" style={{ fontFamily: "var(--font-inter)" }}>
+                          {item.desc}
+                        </span>
+                      </span>
+                    </Link>
+                  </motion.div>
+                );
+              })}
             </nav>
+            <div className="border-t border-white/8 p-5">
+              <Link
+                href="/verify"
+                className="btn-primary w-full"
+                onClick={() => setMobileOpen(false)}
+              >
+                Open Terminal
+              </Link>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
     </header>
+  );
+}
+
+function MenuButton({ label, open, onOpen }: { label: string; open: boolean; onOpen: () => void }) {
+  return (
+    <button
+      className={`nav-link ${open ? "text-white" : ""}`}
+      onMouseEnter={onOpen}
+      onFocus={onOpen}
+      aria-expanded={open}
+    >
+      {label}
+      <CaretDown size={12} className={`ml-1 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+    </button>
   );
 }

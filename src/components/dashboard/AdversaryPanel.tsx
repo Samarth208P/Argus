@@ -44,32 +44,32 @@ export function AdversaryPanel({ providers, activeAdversary, onToggle }: Adversa
     : 0;
 
   return (
-    <div className="flex flex-col gap-5 rounded-[16px] border border-white/10 bg-black/40 backdrop-blur-xl p-6 shadow-2xl relative overflow-hidden">
-      {/* Synth-board scanline effect */}
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:100%_4px] opacity-20" />
+    <div className="flex flex-col gap-5 rounded-[8px] border border-[#1e1e1e] bg-[#141414] p-6 relative overflow-hidden">
+      {/* Blueprint grid effect */}
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(30,30,30,0.3)_1px,transparent_1px)] bg-[size:100%_8px] opacity-20" />
 
       <div className="relative z-10 flex items-center justify-between">
         <div>
-          <p className="eyebrow mb-1 text-[#ff003c]">THREAT INJECTOR</p>
+          <p className="eyebrow mb-1 text-[#ff6b6b]">THREAT INJECTOR</p>
           <h3
-            className="text-[18px] font-bold text-white tracking-tight"
-            style={{ fontFamily: "var(--font-cinzel)" }}
+            className="text-[18px] font-medium text-white tracking-[-0.42px]"
+            style={{ fontFamily: "var(--font-inter)" }}
           >
             Adversary Console
           </h3>
         </div>
-        <div className={`h-3 w-3 rounded-full ${isSimulatorActive ? "bg-[#ff003c] animate-pulse shadow-[0_0_10px_#ff003c]" : "bg-[#222222]"}`} />
+        <div className={`h-2.5 w-2.5 rounded-full ${isSimulatorActive ? "bg-[#ff6b6b] animate-pulse" : "bg-[#313131]"}`} />
       </div>
 
-      <div className="relative z-10 border-t border-white/10 pt-5">
+      <div className="relative z-10 border-t border-[#1e1e1e] pt-5">
         {isSimulatorActive ? (
           // Active simulator mode display (Tactile alert state)
-          <div className="rounded-[12px] border border-[#ff003c]/30 bg-[#ff003c]/5 backdrop-blur-md p-5 flex flex-col gap-4 shadow-[0_0_30px_rgba(255,0,60,0.1)]">
-            <div className="flex items-center gap-3 border-b border-[#ff003c]/20 pb-3">
-              <Warning size={20} color="#ff003c" weight="bold" className="animate-pulse" />
+          <div className="rounded-[8px] border border-[#ff6b6b]/30 bg-[#ff6b6b]/5 p-5 flex flex-col gap-4">
+            <div className="flex items-center gap-3 border-b border-[#ff6b6b]/20 pb-3">
+              <Warning size={20} color="#ff6b6b" weight="bold" className="animate-pulse" />
               <p
-                className="text-[15px] font-bold text-white flex-1 tracking-tight"
-                style={{ fontFamily: "var(--font-outfit)" }}
+                className="text-[15px] font-medium text-white flex-1 tracking-tight"
+                style={{ fontFamily: "var(--font-inter)" }}
               >
                 ATTACK ACTIVE
               </p>
@@ -77,29 +77,29 @@ export function AdversaryPanel({ providers, activeAdversary, onToggle }: Adversa
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-[10px] text-[#ff003c] font-bold tracking-widest uppercase mb-1" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>Target</p>
-                <p className="text-[13px] font-medium text-white">{activeAdversary.targetId}</p>
+                <p className="text-[10px] text-[#ff6b6b] font-medium tracking-widest uppercase mb-1" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>Target</p>
+                <p className="text-[13px] font-medium text-white" style={{ fontFamily: "var(--font-inter)" }}>{activeAdversary.targetId}</p>
               </div>
               <div>
-                <p className="text-[10px] text-[#ff003c] font-bold tracking-widest uppercase mb-1" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>Vector</p>
-                <p className="text-[13px] font-medium text-white uppercase">{activeAdversary.mode}</p>
+                <p className="text-[10px] text-[#ff6b6b] font-medium tracking-widest uppercase mb-1" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>Vector</p>
+                <p className="text-[13px] font-medium text-white uppercase" style={{ fontFamily: "var(--font-inter)" }}>{activeAdversary.mode}</p>
               </div>
             </div>
 
-            <div className="flex items-center justify-between mt-2 bg-black/40 p-3 rounded-[6px] border border-[#ff003c]/20">
-              <span className="text-[11px] text-[#888888] font-bold tracking-widest" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>T-MINUS</span>
+            <div className="flex items-center justify-between mt-2 bg-[#0a0a0a] p-3 rounded-[6px] border border-[#313131]">
+              <span className="text-[11px] text-[#a7a7a7] font-medium tracking-widest" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>T-MINUS</span>
               <span
-                className="font-bold text-[#ff003c] tabular-nums text-[16px]"
+                className="font-medium text-[#ff6b6b] tabular-nums text-[16px]"
                 style={{ fontFamily: "var(--font-jetbrains-mono)" }}
               >
-                {timeRemaining > 0 ? `${Math.floor(timeRemaining / 60)}:${(timeRemaining % 60).toString().padStart(2, '0')}` : "0:00"}
+                {timeRemaining}s
               </span>
             </div>
 
             <button
               onClick={handleToggle}
               disabled={loading}
-              className="mt-2 flex items-center justify-center gap-2 w-full rounded-[6px] bg-[#ff003c] text-black font-bold text-[14px] h-11 hover:bg-white transition-all active:scale-[0.98]"
+              className="mt-2 flex items-center justify-center gap-2 w-full rounded-[8px] bg-[#ff6b6b] text-black font-medium text-[14px] h-10 hover:opacity-90 transition-all active:scale-[0.98]"
               id="deactivate-adversary-btn"
             >
               {loading ? <Spinner size={16} className="animate-spin" /> : <XCircle size={16} weight="bold" />}
@@ -111,15 +111,15 @@ export function AdversaryPanel({ providers, activeAdversary, onToggle }: Adversa
           <div className="flex flex-col gap-6">
             {/* Target Select */}
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold text-[#888888] uppercase tracking-[1px]" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
+              <label className="text-[11px] font-medium text-[#a7a7a7] uppercase tracking-[0.5px]" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
                 Target Node
               </label>
               <div className="relative">
                 <select
                   value={targetId}
                   onChange={(e) => setTargetId(e.target.value)}
-                  className="w-full appearance-none rounded-[8px] border border-white/20 bg-black/60 backdrop-blur-md px-4 py-3 text-[14px] font-bold text-white outline-none focus:border-[#00f0ff] transition-all cursor-pointer"
-                  style={{ fontFamily: "var(--font-outfit)" }}
+                  className="w-full appearance-none rounded-[8px] border border-[#313131] bg-[#0a0a0a] px-4 py-2.5 text-[14px] font-medium text-white outline-none focus:border-[#6798ff] transition-all cursor-pointer"
+                  style={{ fontFamily: "var(--font-inter)" }}
                 >
                   <option value="" disabled>Select target...</option>
                   {providers.map((p) => (
@@ -128,15 +128,12 @@ export function AdversaryPanel({ providers, activeAdversary, onToggle }: Adversa
                     </option>
                   ))}
                 </select>
-                <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
-                  <div className="h-2 w-2 rounded-full bg-[#00f0ff] shadow-[0_0_5px_#00f0ff]" />
-                </div>
               </div>
             </div>
 
             {/* Mode Select Buttons (Radio-like) */}
             <div className="flex flex-col gap-2">
-              <span className="text-[10px] font-bold text-[#888888] uppercase tracking-[1px]" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
+              <span className="text-[11px] font-medium text-[#a7a7a7] uppercase tracking-[0.5px]" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
                 Attack Vector
               </span>
               <div className="grid grid-cols-3 gap-2">
@@ -155,12 +152,12 @@ export function AdversaryPanel({ providers, activeAdversary, onToggle }: Adversa
                       onClick={() => setMode(opt.id)}
                       className={`flex flex-col items-center gap-2 rounded-[8px] border p-3 transition-all active:scale-95 ${
                         active
-                          ? "border-[#00f0ff]/50 bg-[#00f0ff]/10 text-[#00f0ff] shadow-[0_0_20px_rgba(0,240,255,0.1)]"
-                          : "border-white/10 bg-black/40 text-[#888888] hover:border-white/30 hover:text-white"
+                          ? "border-[#6798ff] bg-[#6798ff]/10 text-[#6798ff]"
+                          : "border-[#313131] bg-[#0a0a0a] text-[#a7a7a7] hover:border-[#454545] hover:text-white"
                       }`}
                     >
                       <Icon size={20} weight={active ? "bold" : "regular"} />
-                      <span className="text-[11px] font-bold uppercase tracking-widest">{opt.label}</span>
+                      <span className="text-[11px] font-medium uppercase tracking-wider" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>{opt.label}</span>
                     </button>
                   );
                 })}
@@ -169,7 +166,7 @@ export function AdversaryPanel({ providers, activeAdversary, onToggle }: Adversa
 
             {/* Duration Select */}
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold text-[#888888] uppercase tracking-[1px]" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
+              <label className="text-[11px] font-medium text-[#a7a7a7] uppercase tracking-[0.5px]" style={{ fontFamily: "var(--font-jetbrains-mono)" }}>
                 Duration
               </label>
               <div className="flex gap-2">
@@ -177,11 +174,12 @@ export function AdversaryPanel({ providers, activeAdversary, onToggle }: Adversa
                   <button
                     key={d}
                     onClick={() => setDuration(d)}
-                    className={`flex-1 rounded-[8px] border py-2 text-[12px] font-bold transition-all active:scale-95 ${
+                    className={`flex-1 rounded-[8px] border py-2 text-[12px] font-medium transition-all active:scale-95 ${
                       duration === d
-                        ? "border-white bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.2)]"
-                        : "border-white/10 bg-black/40 text-[#888888] hover:border-white/30 hover:text-white"
+                        ? "border-white bg-white text-[#0a0a0a]"
+                        : "border-[#313131] bg-[#0a0a0a] text-[#a7a7a7] hover:border-[#454545] hover:text-white"
                     }`}
+                    style={{ fontFamily: "var(--font-inter)" }}
                   >
                     {d < 60 ? `${d}s` : `${d / 60}m`}
                   </button>
@@ -193,8 +191,9 @@ export function AdversaryPanel({ providers, activeAdversary, onToggle }: Adversa
             <button
               onClick={handleToggle}
               disabled={loading || !targetId}
-              className="mt-4 flex items-center justify-center gap-2 w-full rounded-[8px] bg-gradient-to-r from-[#ff003c] to-[#ff3366] text-white font-bold text-[14px] h-12 hover:shadow-[0_0_25px_rgba(255,0,60,0.5)] disabled:opacity-30 disabled:pointer-events-none transition-all active:scale-[0.98]"
+              className="mt-2 flex items-center justify-center gap-2 w-full rounded-[8px] bg-[#ff6b6b] text-black font-medium text-[14px] h-11 hover:opacity-90 disabled:opacity-30 disabled:pointer-events-none transition-all active:scale-[0.98]"
               id="activate-adversary-btn"
+              style={{ fontFamily: "var(--font-inter)" }}
             >
               {loading ? <Spinner size={18} className="animate-spin" /> : null}
               {loading ? "ARMING..." : "ARM & INJECT"}

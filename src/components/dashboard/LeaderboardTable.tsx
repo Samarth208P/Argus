@@ -77,24 +77,24 @@ export function LeaderboardTable({ scores, providers, isRefreshing = false }: Le
       {/* Table container */}
       <div className="flex flex-col gap-2">
         {/* Header */}
-        <div className="grid grid-cols-[1fr_80px_80px_100px_60px_90px_80px] gap-4 border-b border-[#222222] px-5 py-3 items-center">
-          <span className="eyebrow text-[#888888]">Provider</span>
+        <div className="grid grid-cols-[1fr_80px_80px_100px_60px_90px_80px] gap-4 border-b border-[#1e1e1e] px-5 py-3 items-center">
+          <span className="eyebrow text-[#a7a7a7]">Provider</span>
           <SortButton k="score">Score</SortButton>
           <SortButton k="accuracy">Acc %</SortButton>
           <SortButton k="latency_avg">Latency</SortButton>
           <SortButton k="uptime">Up %</SortButton>
-          <span className="eyebrow text-[#888888]">Trend</span>
+          <span className="eyebrow text-[#a7a7a7]">Trend</span>
           <div className="flex items-center justify-between">
-            <span className="eyebrow text-[#888888]">Evidence</span>
+            <span className="eyebrow text-[#a7a7a7]">Evidence</span>
             {isRefreshing && (
-              <span className="h-1.5 w-1.5 rounded-full bg-[#00f0ff] animate-pulse drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]" aria-label="Refreshing" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#6798ff] animate-pulse" aria-label="Refreshing" />
             )}
           </div>
         </div>
 
         {/* Rows — loading skeleton */}
         {sorted.length === 0 && (
-          <div className="flex flex-col gap-0 bg-black/40 backdrop-blur-xl border border-white/5 rounded-[12px]">
+          <div className="flex flex-col gap-0 bg-[#141414] border border-[#1e1e1e] rounded-[8px]">
             {Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={i}
@@ -125,7 +125,7 @@ export function LeaderboardTable({ scores, providers, isRefreshing = false }: Le
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.04, duration: 0.4, ease: "easeOut" }}
-                className="grid grid-cols-[1fr_80px_80px_100px_60px_90px_80px] gap-4 rounded-[12px] bg-black/40 backdrop-blur-xl border border-white/5 px-5 py-4 items-center transition-all duration-200 ease-out cursor-pointer hover:bg-white/5 hover:scale-[1.01] hover:border-white/20 hover:shadow-[0_8px_30px_rgba(255,255,255,0.05)]"
+                className="grid grid-cols-[1fr_80px_80px_100px_60px_90px_80px] gap-4 rounded-[8px] bg-[#141414] border border-[#1e1e1e] px-5 py-4 items-center transition-all duration-200 ease-out cursor-pointer hover:border-[#313131] hover:bg-[#1e1e1e]/50"
                 onClick={() => setSelectedProvider(row)}
                 role="row"
                 aria-label={`${row.provider_id} score ${row.score}`}
@@ -137,30 +137,19 @@ export function LeaderboardTable({ scores, providers, isRefreshing = false }: Le
                     aria-hidden="true"
                   >
                     <span
-                      className="text-[10px] font-medium text-[#00f0ff]"
+                      className="text-[10px] font-medium text-[#6798ff]"
                       style={{ fontFamily: "var(--font-jetbrains-mono)" }}
                     >
                       {(row.provider?.label ?? row.provider_id).slice(0, 2).toUpperCase()}
                     </span>
                   </div>
                   <div className="min-w-0">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <p
-                        className="text-[14px] font-medium text-white truncate"
-                        style={{ fontFamily: "var(--font-outfit)", letterSpacing: "0.5px" }}
-                      >
-                        {row.provider?.label ?? row.provider_id}
-                      </p>
-                      {row.rankChange !== undefined && row.rankChange !== 0 && (
-                        <span className={`inline-flex items-center gap-0.5 text-[9px] font-bold px-1 py-0.5 rounded shrink-0 ${
-                          row.rankChange > 0 
-                            ? "text-[#4dffb0] bg-[#4dffb0]/10" 
-                            : "text-[#ff6b6b] bg-[#ff6b6b]/10"
-                        }`}>
-                          {row.rankChange > 0 ? `▲ +${row.rankChange}` : `▼ ${row.rankChange}`}
-                        </span>
-                      )}
-                    </div>
+                    <p
+                      className="text-[14px] font-medium text-white truncate"
+                      style={{ fontFamily: "var(--font-inter)", letterSpacing: "-0.25px" }}
+                    >
+                      {row.provider?.label ?? row.provider_id}
+                    </p>
                     <p
                       className="text-[11px] text-[#454545] truncate"
                       style={{ fontFamily: "var(--font-jetbrains-mono)" }}
@@ -173,7 +162,7 @@ export function LeaderboardTable({ scores, providers, isRefreshing = false }: Le
                 {/* Score */}
                 <span
                   className="text-[15px] font-medium tabular-nums"
-                  style={{ color: sc, fontFamily: "var(--font-outfit)", letterSpacing: "0.5px" }}
+                  style={{ color: sc, fontFamily: "var(--font-inter)", letterSpacing: "-0.25px" }}
                 >
                   {row.score}
                 </span>
@@ -181,7 +170,7 @@ export function LeaderboardTable({ scores, providers, isRefreshing = false }: Le
                 {/* Accuracy */}
                 <span
                   className="text-[14px] text-[#a7a7a7] tabular-nums"
-                  style={{ fontFamily: "var(--font-outfit)" }}
+                  style={{ fontFamily: "var(--font-inter)" }}
                 >
                   {Math.round(row.accuracy * 100)}%
                 </span>
@@ -197,7 +186,7 @@ export function LeaderboardTable({ scores, providers, isRefreshing = false }: Le
                 {/* Uptime */}
                 <span
                   className="text-[14px] text-[#a7a7a7] tabular-nums"
-                  style={{ fontFamily: "var(--font-outfit)" }}
+                  style={{ fontFamily: "var(--font-inter)" }}
                 >
                   {Math.round(row.uptime * 100)}%
                 </span>
@@ -214,7 +203,7 @@ export function LeaderboardTable({ scores, providers, isRefreshing = false }: Le
                 <a
                   href={`/verify?provider=${row.provider_id}`}
                   onClick={(e) => e.stopPropagation()}
-                  className="flex items-center gap-1 text-[12px] text-[#00f0ff] hover:text-white transition-colors"
+                  className="flex items-center gap-1 text-[12px] text-[#6798ff] hover:text-white transition-colors"
                   style={{ fontFamily: "var(--font-jetbrains-mono)" }}
                   title="View evidence for this provider"
                   id={`evidence-link-${row.provider_id}`}
