@@ -20,20 +20,17 @@ export default async function HomePage() {
     decided_at: new Date().toISOString(),
   };
 
-  try {
-    const [fetchedScores, fetchedIncidents, fetchedProviders, fetchedDecision] = await Promise.all([
-      getLatestScores(),
-      getRecentIncidents(50),
-      getProviders(),
-      selectRoute(),
-    ]);
-    scores = fetchedScores;
-    incidents = fetchedIncidents;
-    providers = fetchedProviders;
-    decision = fetchedDecision;
-  } catch {
-    // Supabase not yet configured — render with empty state
-  }
+  const [scoresResult, incidentsResult, providersResult, decisionResult] = await Promise.allSettled([
+    getLatestScores(),
+    getRecentIncidents(50),
+    getProviders(),
+    selectRoute(),
+  ]);
+
+  if (scoresResult.status === "fulfilled") scores = scoresResult.value;
+  if (incidentsResult.status === "fulfilled") incidents = incidentsResult.value;
+  if (providersResult.status === "fulfilled") providers = providersResult.value;
+  if (decisionResult.status === "fulfilled") decision = decisionResult.value;
 
   return (
     <>

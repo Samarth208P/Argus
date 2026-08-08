@@ -8,7 +8,7 @@ const FOOTER_COLUMNS = [
       { label: "Live Monitor", href: "/" },
       { label: "Leaderboard", href: "/#leaderboard" },
       { label: "Interrogate Console", href: "/#interrogate" },
-      { label: "Adversary Simulator", href: "/#adversary" },
+      { label: "Adversary Simulator", href: "/demo" },
     ],
   },
   {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   CheckCircle,
@@ -82,15 +82,17 @@ export default function VerifyPage() {
   ]);
   const [phase, setPhase] = useState<"input" | "evidence" | "computing" | "done">("input");
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const didAutoload = useRef(false);
 
   // ── Step 1: Fetch evidence from /api/evidence ─────────
-  const loadEvidence = useCallback(async () => {
-    if (!incidentId.trim()) return;
+  const loadEvidence = useCallback(async (idOverride?: string) => {
+    const targetId = (idOverride ?? incidentId).trim();
+    if (!targetId) return;
     setFetchError(null);
     setPhase("evidence");
 
     try {
-      const res = await fetch(`/api/evidence?id=${incidentId.trim()}&proof=true`);
+      const res = await fetch(`/api/evidence?id=${encodeURIComponent(targetId)}&proof=true`);
       if (!res.ok) {
         const err = await res.json();
         setFetchError(err.error ?? "Failed to fetch evidence");
@@ -107,6 +109,15 @@ export default function VerifyPage() {
       setPhase("input");
     }
   }, [incidentId]);
+
+  useEffect(() => {
+    if (didAutoload.current) return;
+    const id = new URLSearchParams(window.location.search).get("id");
+    if (!id) return;
+    didAutoload.current = true;
+    setIncidentId(id);
+    void loadEvidence(id);
+  }, [loadEvidence]);
 
   // ── Step 2: Run browser consensus + chain verification ─
   const runVerify = useCallback(async () => {
@@ -327,7 +338,7 @@ export default function VerifyPage() {
                 aria-describedby={fetchError ? "fetch-error-msg" : undefined}
               />
               <button
-                onClick={loadEvidence}
+                onClick={() => loadEvidence()}
                 disabled={phase !== "input" || !incidentId.trim()}
                 className="btn-primary disabled:opacity-40 disabled:cursor-not-allowed"
                 id="load-evidence-btn"
